@@ -1,40 +1,36 @@
 
-calculateGAI <- function(JulianDay,
-												 Yield,
-												 perennial) {
+calculateGAI <- function(InputTable) {
+	#Input should be a df/tibble with at least the columns JulianDay (int),
+	#Yield (float), and perennial (bool)
 	
-	#Holos V4 constant values for different crop types (see section 2.2.1.1.1.1, Green area index dynamics)
-	if(perennial == TRUE) {
-		EmergenceDay = 75
-		RipeningDay = 300
-		Variance = 1500
-	} else {
-		EmergenceDay = 141
-		RipeningDay = 197
-		Variance = 300
-	}
+	#Holos V4 constant values for different crop types (see section 2.2.1.1.1.1,
+	#Green area index dynamics)
+	EmergenceDay <- ifelse(InputTable$perennial == TRUE, 75, 141)
+	RipeningDay <- ifelse(InputTable$perennial == TRUE, 300, 197)
+	Variance <- ifelse(InputTable$perennial == TRUE, 1500, 300)
 	
 	#Eq. 2.2.1-1
-	GAI_max = 0.0731*(Yield/1000)^2 + 0.408*(Yield/1000)
+	GAI_max = 0.0731*(InputTable$Yield/1000)^2 + 0.408*(InputTable$Yield/1000)
 	
 	#Eq. 2.2.1-2
 	MidSeason = EmergenceDay + ((RipeningDay-EmergenceDay)/2)
 	
 	#Eq. 2.2.1-3
-	GAI = GAI_max*exp(-(((JulianDay-MidSeason)^2)/(2*Variance)))
+	GAI = GAI_max*exp(-(((InputTable$JulianDay-MidSeason)^2)/(2*Variance)))
 	
-	return(c(GAI_max = GAI_max, MidSeason = MidSeason, GAI = GAI))
+	return(tibble(JulianDay = InputTable$JulianDay, GAI_max = GAI_max, MidSeason = MidSeason, GAI = GAI))
 }
 
-calculateWaterContent <- function(SoilOrganicC_Percent,
-																	ClayContent,
-																	SandContent) {
+calculateWaterContent <- function(InputTable) {
+	#Input should be a df/tibble with at least the columns JulianDay (int),
+	#SoilOrganicC_Percent (float), ClayContent (float), and SandContent (float)
+	
 	#Eq. 2.2.1-4
-	OrgCfactor = -0.837531 + 0.430183*SoilOrganicC_Percent
+	OrgCfactor = -0.837531 + 0.430183*InputTable$SoilOrganicC_Percent
 	#Eq. 2.2.1-5
-	Clayfactor = -1.40744 + 0.0661969*ClayContent*100
+	Clayfactor = -1.40744 + 0.0661969*InputTable$ClayContent*100
 	#Eq. 2.2.1-6
-	Sandfactor = -1.51866 + 0.0393284*SandContent*100
+	Sandfactor = -1.51866 + 0.0393284*InputTable$SandContent*100
 	
 	#Eq. 2.2.1-7
 	WiltingPointPercent = 14.2568+7.36318*(
@@ -88,9 +84,56 @@ calculateWaterContent <- function(SoilOrganicC_Percent,
 	#Eq. 2.2.1-10
 	FieldCapacity = FieldCapacityPercent/100
 	
-	return(c(OrgCfactor = OrgCfactor,
+	return(tibble(JulianDay = InputTable$JulianDay,
+								OrgCfactor = OrgCfactor,
 				 Clayfactor = Clayfactor,
 				 Sandfactor = Sandfactor,
 				 WiltingPoint = WiltingPoint,
 				 FieldCapacity = FieldCapacity))
+}
+
+# This implementation doesn't work because it doesn't take into account the historical progression of soil temperature values. It goes from 0 to the new steady state, without taking into account the actual starting point.
+# calculateSoilTempRecursive <- function(JulianDay,
+# 															SurfaceTemp,
+# 															SoilMeanDepth,
+# 															GAI)
+# 	{
+# 		if(JulianDay == 1) {
+# 			SoilTemp_d = 0
+# 		} else {
+# 			
+# 			SoilTemp_dprev = calculateSoilTemp(JulianDay-1, SurfaceTemp, SoilMeanDepth, GAI)
+# 			SoilTemp_d = SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev)*0.24*exp(-SoilMeanDepth*0.0174)*exp(-0.15*GAI)
+# 			}
+# 	
+# 	return(SoilTemp_d)
+# }
+
+calculateSurfaceTemp <- function(InputTable){
+	#Input should be a df/tibble with at least the columns JulianDay (int),
+	#Tavg (float), and everything that's required for calculateGAI().
+	LeafAreaIndex = 0.8*calculateGAI(InputTable)[["GAI"]]
+	SurfaceTemp <- ifelse(InputTable$Tavg < 0, 0.20*InputTable$Tavg, InputTable$Tavg*(0.95+0.05*exp(-0.4*(LeafAreaIndex-3))))
+	return(SurfaceTemp)
+}
+
+calculateSoilTemp <- function(InputTable, SurfaceTemp, SoilMeanDepth, GAI) {
+	SoilTemp_d = ifelse(InputTable$JulianDay == 1, 0,SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev)*0.24*exp(-SoilMeanDepth*0.0174)*exp(-0.15*GAI))
+}
+
+SoilMeanDepth
+zz <- function(InputTable) {
+	GAI <- calculateGAI(InputTable)[["GAI"]]
+	SurfaceTemp <- calculateSurfaceTemp(InputTable)
+	if(InputTable$JulianDay == 1) {
+		SoilTemp_d = 0
+	} else {
+		SoilTemp_dprev = calculateSoilTemp(JulianDay-1, SurfaceTemp, SoilMeanDepth, GAI)
+		SoilTemp_d = 
+	}
+}
+
+xx <- function(JulianDay, SoilTemp_d) {
+	SoilTemp_dnew <- SoilTemp_d + (SurfaceTemp-SoilTemp_d)*0.24*exp(-SoilMeanDepth*0.0174)*exp(-0.15*GAI)
+	return(SoilTemp_dnew)
 }
