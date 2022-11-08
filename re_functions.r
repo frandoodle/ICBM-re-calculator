@@ -117,19 +117,23 @@ calculateSurfaceTemp <- function(InputTable){
 	return(SurfaceTemp)
 }
 
-calculateSoilTemp <- function(InputTable, SurfaceTemp, SoilMeanDepth, GAI) {
-	SoilTemp_d = ifelse(InputTable$JulianDay == 1, 0,SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev)*0.24*exp(-SoilMeanDepth*0.0174)*exp(-0.15*GAI))
+calculateSoilTemp <- function(JulianDay,SoilTemp_dprev, SoilMeanDepth, SurfaceTemp, GAI) {
+	SoilTemp_d = ifelse(JulianDay == 1, 0,SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev)*0.24*exp(-SoilMeanDepth*0.0174)*exp(-0.15*GAI))
+	return(SoilTemp_d)
 }
 
-SoilMeanDepth
-zz <- function(InputTable) {
+# aaa <- daily_input_test %>%
+# 	mutate(b = calculateSoilTemp(.$JulianDay, lag(b), 250, SurfaceTemp[1], GAI[1]))
+
+
+#SoilMeanDepth
+zz <- function(JulianDay, SoilTemp_dprev) {
 	GAI <- calculateGAI(InputTable)[["GAI"]]
 	SurfaceTemp <- calculateSurfaceTemp(InputTable)
-	if(InputTable$JulianDay == 1) {
+	if(JulianDay == 1) {
 		SoilTemp_d = 0
 	} else {
-		SoilTemp_dprev = calculateSoilTemp(JulianDay-1, SurfaceTemp, SoilMeanDepth, GAI)
-		SoilTemp_d = 
+		SoilTemp_d = calculateSoilTemp(JulianDay-1, SurfaceTemp, SoilMeanDepth, GAI)
 	}
 }
 
