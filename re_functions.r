@@ -92,52 +92,38 @@ calculateWaterContent <- function(InputTable) {
 				 FieldCapacity = FieldCapacity))
 }
 
-# This implementation doesn't work because it doesn't take into account the historical progression of soil temperature values. It goes from 0 to the new steady state, without taking into account the actual starting point.
-# calculateSoilTempRecursive <- function(JulianDay,
-# 															SurfaceTemp,
-# 															SoilMeanDepth,
-# 															GAI)
-# 	{
-# 		if(JulianDay == 1) {
-# 			SoilTemp_d = 0
-# 		} else {
-# 			
-# 			SoilTemp_dprev = calculateSoilTemp(JulianDay-1, SurfaceTemp, SoilMeanDepth, GAI)
-# 			SoilTemp_d = SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev)*0.24*exp(-SoilMeanDepth*0.0174)*exp(-0.15*GAI)
-# 			}
-# 	
-# 	return(SoilTemp_d)
-# }
-
 calculateSurfaceTemp <- function(InputTable){
-	#Input should be a df/tibble with at least the columns JulianDay (int),
+	#Input should be a df/tibble with the columns JulianDay (int),
 	#Tavg (float), and everything that's required for calculateGAI().
 	LeafAreaIndex = 0.8*calculateGAI(InputTable)[["GAI"]]
 	SurfaceTemp <- ifelse(InputTable$Tavg < 0, 0.20*InputTable$Tavg, InputTable$Tavg*(0.95+0.05*exp(-0.4*(LeafAreaIndex-3))))
 	return(SurfaceTemp)
 }
 
-calculateSoilTemp <- function(JulianDay,SoilTemp_dprev, SoilMeanDepth, SurfaceTemp, GAI) {
-	SoilTemp_d = ifelse(JulianDay == 1, 0,SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev)*0.24*exp(-SoilMeanDepth*0.0174)*exp(-0.15*GAI))
-	return(SoilTemp_d)
+calculateSoilTemp <- function(InputTable) {
+	#Input should be a df/tibble with the columns
+	#JulianDay (int) (these values need to be contiguous or else the function doesn't work),
+	#SoilMeanDepth (float)
+	#SurfaceTemp (float)
+	#GAI (float)
+	SoilTemp = InputTable %>%
+		#Subtract JulianDay by its first value to get 0.
+		#Since accumulate() takes .init from .x[[1]], this sets the initial value to 0 (Eq. 2.2.1-15).
+		mutate(d = accumulate(.x = JulianDay-first(JulianDay), .f=function(SoilTemp_dprev, row) {
+			data = cur_data_all()
+			
+			SoilMeanDepth = data$SoilMeanDepth[row]
+			SurfaceTemp = data$SurfaceTemp[row]
+			GAI = data$GAI[row]
+			
+			#Eq. 2.2.1-16
+			SoilTemp_d = SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev) * 0.24 * exp(-SoilMeanDepth*0.0174) * exp(-0.15*GAI)
+			
+			
+			return(SoilTemp_d)
+			
+		}))
+	
+	return(SoilTemp$d)
 }
 
-# aaa <- daily_input_test %>%
-# 	mutate(b = calculateSoilTemp(.$JulianDay, lag(b), 250, SurfaceTemp[1], GAI[1]))
-
-
-#SoilMeanDepth
-zz <- function(JulianDay, SoilTemp_dprev) {
-	GAI <- calculateGAI(InputTable)[["GAI"]]
-	SurfaceTemp <- calculateSurfaceTemp(InputTable)
-	if(JulianDay == 1) {
-		SoilTemp_d = 0
-	} else {
-		SoilTemp_d = calculateSoilTemp(JulianDay-1, SurfaceTemp, SoilMeanDepth, GAI)
-	}
-}
-
-xx <- function(JulianDay, SoilTemp_d) {
-	SoilTemp_dnew <- SoilTemp_d + (SurfaceTemp-SoilTemp_d)*0.24*exp(-SoilMeanDepth*0.0174)*exp(-0.15*GAI)
-	return(SoilTemp_dnew)
-}
