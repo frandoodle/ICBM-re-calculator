@@ -102,14 +102,11 @@ calculateSurfaceTemp <- function(InputTable){
 
 calculateSoilTemp <- function(InputTable) {
 	#Input should be a df/tibble with the columns
-	#JulianDay (int) (these values need to be contiguous or else the function doesn't work),
 	#SoilMeanDepth (float)
 	#SurfaceTemp (float)
 	#GAI (float)
-	SoilTemp = InputTable %>%
-		#Subtract JulianDay by its first value to get 0.
-		#Since accumulate() takes .init from .x[[1]], this sets the initial value to 0 (Eq. 2.2.1-15).
-		mutate(d = accumulate(.x = JulianDay-first(JulianDay), .f=function(SoilTemp_dprev, row) {
+	result = InputTable %>%
+		mutate(SoilTemp = accumulate(.x = row_number()[-1], .init = 0, .f=function(SoilTemp_dprev, row) {
 			data = cur_data_all()
 			
 			SoilMeanDepth = data$SoilMeanDepth[row]
@@ -119,11 +116,9 @@ calculateSoilTemp <- function(InputTable) {
 			#Eq. 2.2.1-16
 			SoilTemp_d = SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev) * 0.24 * exp(-SoilMeanDepth*0.0174) * exp(-0.15*GAI)
 			
-			
 			return(SoilTemp_d)
 			
 		}))
 	
-	return(SoilTemp$d)
+	return(result$SoilTemp)
 }
-

@@ -21,8 +21,6 @@ source("re_functions.r")
 # 	ClayContent = 0.05
 # 	SandContent = 0.20
 	
-
-
 SoilTemp_all <- NULL
 for(i in 1:nrow(daily_input_test)) {
 	GAI_return <- calculateGAI(JulianDay = i,

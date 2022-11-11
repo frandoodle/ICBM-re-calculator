@@ -1,5 +1,5 @@
 ---
-title: "ICBM r~e~ calculator"
+title: "ICBM r~e~ Calculator Walkthrough"
 author: "Francis Durnin-Vermette"
 date: "2022/10/31"
 output:
@@ -183,9 +183,144 @@ calculateSoilTemp
 
 
 ```{r}
-
 SoilTemp <- calculateSoilTemp(daily_input_test)
 ```
+
+# Water Balance
+We use the same approach of recursive `mutate()` and `accumulate()` for water balance calculations.
+We are interested in calculating topsoil water storage where the previous day's water storage is an input variable.
+
+## Crop Evapotranspiration
+```{r}
+#Eq. 2.2.1-17
+K_c = 1.3 - (1.3-0.8) * exp(-0.17*GAI) 
+```
+```{r}
+ET_0 = daily_input_test$PET
+#Eq. 2.2.1-18
+ET_c = ET_0 * K_c
+```
+
+where
+K_c is Crop coefficient [@martelParsimoniousWaterBudget2021],
+ET_c is Crop evapotranspiration under standard conditions (mm day-1), and
+ET_0 is Daily reference crop evapotranspiration (mm day-1), which should be calculated according to the FAO Penman-Monteith equation [@allenCropEvapotranspirationGuidelinesComputing1998].
+
+## Soil Available Water
+There is something unclear here: In the original algorithm document, Eq. 2.2.1-19 is based on a conditional involving only precipitation, however Eq. 2.2.1-20 takes both precipitation and irrigation into account.
+Here, we make the assumption that both equations should take both precipitation and irrigation into account in their conditional statements.
+
+```{r}
+Precipitation = daily_input_test$PREC
+
+Irrigation = rep(0,365)
+
+#Eq. 2.2.1-19 - Eq. 2.2.1-20
+CropInterception = ifelse(Precipitation + Irrigation < 0.2*GAI,
+													Precipitation + Irrigation,
+													0.2*GAI)
+
+#Eq. 2.2.1-21
+CropInterception <- ifelse(CropInterception > ET_c, ET_c, CropInterception)
+
+#Eq. 2.2.1-22
+SoilAvailWater = Precipitation + Irrigation - CropInterception
+```
+
+```{r}
+calculateVolSoilWaterContent <- function(InputTable) {
+	#Input should be a df/tibble with the columns
+	#JulianDay (int) (these values need to be contiguous or else the function doesn't work),
+	#SoilTopThickness (float)
+	#WiltingPoint (float)
+	VolSoilWaterContent = InputTable %>%
+		#Subtract JulianDay by its first value to get 0.
+		#Since accumulate() takes .init from .x[[1]], this sets the initial value to 0 (Eq. 2.2.1-15).
+		mutate(d = accumulate(.x = JulianDay, .f=function(WaterStorage_dprev, row) {
+			data = cur_data_all()
+			
+			print(row)
+			if(row == 1) {print(WaterStorage_dprev)}
+			
+			SoilTopThickness = data$SoilTopThickness[row]
+			WiltingPoint = data$WiltingPoint[row]
+			
+			#Eq. 2.2.1-23 to 2.2.1-24
+			VolSoilWaterContent = WaterStorage_dprev/SoilTopThickness
+			if (VolSoilWaterContent == 0) {
+				VolSoilWaterContent = WiltingPoint
+			}
+			
+			return(VolSoilWaterContent)
+			
+		}))
+	
+	return(VolSoilWaterContent$d)
+}
+
+calculateVolSoilWaterContent(daily_input_test)
+
+#Eq. 2.2.1-23
+VolSoilWaterContent = WaterStorage_dprev/SoilTopThickness
+#Eq. 2.2.1-24
+if(VolSoilWaterContent <= 0) {
+	VolSoilWaterContent = WiltingPoint
+}
+```
+where
+CropInterception is Crop interception of precipitation + irrigation (mm day-1),
+Precipitation is Daily precipitation + irrigation (mm day-1 - SLC data table),
+SoilAvailWater is Soil available water (mm day-1),
+VolSoilWaterContent is Volumetric soil water content  (mm3 mm-3),
+WaterStorage_dprev is Water storage in topsoil (mm day-1) calculated previous day in Eq. 2.1.1-29 or Eq. 2.1.1-30
+
+## Actual Evapotranspiration
+```{r}
+alfa = 0.7 #constant
+#Eq. 2.2.1-25
+K_r = (1 - ((0.95 * FieldCapacity - VolSoilWaterContent)/(0.95 * FieldCapacity - alfa*WiltingPoint)))^2
+
+#Eq. 2.2.1-26
+K_r = min(max(0,K_r),1)
+
+#Eq. 2.2.1-27
+if(VolSoilWaterContent < alfa/100*WiltingPoint) {
+	K_r = 0
+}
+
+#Eq. 2.2.1-28
+ET_a = ET_c * K_r
+```
+where
+K_r is Soil coefficient (dimensionless),
+alfa is Minimum water storage fraction of WiltingPoint, and
+ET_a is Actual evapotranspiration (mm day-1)
+
+## Water Storage
+```{r}
+if(JulianDay == 1) {
+	WaterStorage_dprev = FieldCapacity*SoilTopThickness
+	WaterStorage_d = FieldCapacity*SoilTopThickness
+} else {
+	DeepPerc = WaterStorage_dprev - FieldCapacity*SoilTopThickness
+	ifelse(DeepPerc<0,0,DeepPerc)
+	WaterStorage_d = WaterStorage_dprev + SoilAvailWater - ET_a - DeepPerc
+}
+```
+where
+DeepPerc is Water lost to percolation down the soil profile (mm day^-1^)
+
+# Decomposition rate - effect of soil temperature
+
+# Decomposition rate - effect of soil moisture
+
+# Climate Factor (re_crop)
+
+# Tillage Factor (rc)
+
+# Irrigation
+
+# Climate/management Factor (re)
 
 <!-- Test weather data is from the NASA POWER database for a latitude and longitude approximately equal to the location of Ottawa Central Experimental Farm (45.3875035,-75.7113529 according to google maps) -->
 <!-- ```{r} -->
@@ -195,7 +330,7 @@ SoilTemp <- calculateSoilTemp(daily_input_test)
 <!-- geo_pretty(climate_test_wheat1) -->
 <!-- ``` -->
 
-# Holos test r~e~ results
+# Testing r~e~ against Holos implementation
 
 
 <!-- ```{r results = "asis"} -->
