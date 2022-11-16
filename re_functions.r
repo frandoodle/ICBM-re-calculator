@@ -115,10 +115,76 @@ calculateSoilTemp <- function(InputTable) {
 			
 			#Eq. 2.2.1-16
 			SoilTemp_d = SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev) * 0.24 * exp(-SoilMeanDepth*0.0174) * exp(-0.15*GAI)
-			
+
 			return(SoilTemp_d)
 			
 		}))
 	
 	return(result$SoilTemp)
+}
+
+calculateVolSoilWaterContent <- function(WaterStorage_dprev, SoilTopThickness, WiltingPoint) {
+	VolSoilWaterContent = WaterStorage_dprev/SoilTopThickness
+	VolSoilWaterContent_return = ifelse(VolSoilWaterContent == 0, WiltingPoint, VolSoilWaterContent)
+	return(VolSoilWaterContent_return)
+}
+
+calculateWaterStorage <- function(InputTable) {
+	WaterStorage_dprev_initial = InputTable$FieldCapacity[1]*InputTable$SoilTopThickness[1]
+	#Input should be a df/tibble with these columns:
+	#SoilTopThickness (float)
+	#WiltingPoint (float)
+	#FieldCapacity (float)
+	#SoilAvailWater (float)
+	#ET_c (float)
+	#alfa (float)
+	result = InputTable %>%
+		#Subtract JulianDay by its first value to get 0.
+		#Since accumulate() takes .init from .x[[1]], this sets the initial value to 0 (Eq. 2.2.1-15).
+		mutate(d = accumulate(.x = row_number()[-1], .init = WaterStorage_dprev_initial, .f=function(WaterStorage_dprev, row) {
+			data = cur_data_all()
+			
+			SoilTopThickness = data$SoilTopThickness[row]
+			WiltingPoint = data$WiltingPoint[row]
+			FieldCapacity = data$FieldCapacity[row]
+			SoilAvailWater = data$SoilAvailWater[row]
+			ET_c = data$ET_c[row]
+			alfa = data$alfa[row]
+			
+			#Calculate volumetric soil water content
+			#Eq. 2.2.1-23 to 2.2.1-24
+			VolSoilWaterContent <- calculateVolSoilWaterContent(WaterStorage_dprev, SoilTopThickness, WiltingPoint)
+			
+			#Calculate actual evapotranspiration
+			#Eq. 2.2.1-25
+			K_r = (1 - ((0.95 * FieldCapacity - VolSoilWaterContent)/(0.95 * FieldCapacity - alfa*WiltingPoint)))^2
+			
+			#Eq. 2.2.1-26
+			K_r = pmin(pmax(0,K_r),1)
+			
+			#Eq. 2.2.1-27
+			if(VolSoilWaterContent < alfa/100*WiltingPoint) {
+				K_r = 0
+			}
+			
+			#Eq. 2.2.1-28
+			ET_a = ET_c * K_r
+			
+			#Eq. 2.2.1-29 and #Eq. 2.2.1-30 are addressed in the .init parameter of
+			#the "accumulate" function
+			
+			#Calculate water storage
+			#Eq. 2.2.1-31
+			DeepPerc = WaterStorage_dprev - FieldCapacity*SoilTopThickness
+			#Eq. 2.2.1-32
+			DeepPerc = ifelse(DeepPerc<0,0,DeepPerc)
+			
+			#Eq. 2.2.1-33
+			WaterStorage_d = WaterStorage_dprev + SoilAvailWater - ET_a - DeepPerc
+			
+			return(WaterStorage_d)
+			
+		}))
+	
+	return(result$d)
 }
