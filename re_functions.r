@@ -10,13 +10,13 @@ calculateGAI <- function(InputTable) {
 	Variance <- ifelse(InputTable$perennial == TRUE, 1500, 300)
 	
 	#Eq. 2.2.1-1
-	GAI_max = 0.0731*(InputTable$Yield/1000)^2 + 0.408*(InputTable$Yield/1000)
+	GAI_max <- 0.0731*(InputTable$Yield/1000)^2 + 0.408*(InputTable$Yield/1000)
 	
 	#Eq. 2.2.1-2
-	MidSeason = EmergenceDay + ((RipeningDay-EmergenceDay)/2)
+	MidSeason <- EmergenceDay + ((RipeningDay-EmergenceDay)/2)
 	
 	#Eq. 2.2.1-3
-	GAI = GAI_max*exp(-(((InputTable$JulianDay-MidSeason)^2)/(2*Variance)))
+	GAI <- GAI_max*exp(-(((InputTable$JulianDay-MidSeason)^2)/(2*Variance)))
 	
 	return(tibble(JulianDay = InputTable$JulianDay, GAI_max = GAI_max, MidSeason = MidSeason, GAI = GAI))
 }
@@ -26,14 +26,14 @@ calculateWaterContent <- function(InputTable) {
 	#SoilOrganicC_Percent (float), ClayContent (float), and SandContent (float)
 	
 	#Eq. 2.2.1-4
-	OrgCfactor = -0.837531 + 0.430183*InputTable$SoilOrganicC_Percent
+	OrgCfactor <- -0.837531 + 0.430183*InputTable$SoilOrganicC_Percent
 	#Eq. 2.2.1-5
-	Clayfactor = -1.40744 + 0.0661969*InputTable$ClayContent*100
+	Clayfactor <- -1.40744 + 0.0661969*InputTable$ClayContent*100
 	#Eq. 2.2.1-6
-	Sandfactor = -1.51866 + 0.0393284*InputTable$SandContent*100
+	Sandfactor <- -1.51866 + 0.0393284*InputTable$SandContent*100
 	
 	#Eq. 2.2.1-7
-	WiltingPointPercent = 14.2568+7.36318*(
+	WiltingPointPercent <- 14.2568+7.36318*(
 		0.06865
 		+(0.108713*OrgCfactor)
 		-(0.0157225*OrgCfactor^2)
@@ -57,10 +57,10 @@ calculateWaterContent <- function(InputTable) {
 	)
 	
 	#Eq. 2.2.1-8
-	WiltingPoint = WiltingPointPercent/100
+	WiltingPoint <- WiltingPointPercent/100
 	
 	#Eq. 2.2.1-9
-	FieldCapacityPercent = 29.7528+10.3544*(
+	FieldCapacityPercent <- 29.7528+10.3544*(
 		0.0461615
 		+0.290955*(OrgCfactor)
 		-0.0496845*(OrgCfactor^2)
@@ -82,7 +82,7 @@ calculateWaterContent <- function(InputTable) {
 	)
 	
 	#Eq. 2.2.1-10
-	FieldCapacity = FieldCapacityPercent/100
+	FieldCapacity <- FieldCapacityPercent/100
 	
 	return(tibble(JulianDay = InputTable$JulianDay,
 								OrgCfactor = OrgCfactor,
@@ -95,7 +95,7 @@ calculateWaterContent <- function(InputTable) {
 calculateSurfaceTemp <- function(InputTable){
 	#Input should be a df/tibble with the columns JulianDay (int),
 	#Tavg (float), and everything that's required for calculateGAI().
-	LeafAreaIndex = 0.8*calculateGAI(InputTable)[["GAI"]]
+	LeafAreaIndex <- 0.8*calculateGAI(InputTable)[["GAI"]]
 	SurfaceTemp <- ifelse(InputTable$Tavg < 0, 0.20*InputTable$Tavg, InputTable$Tavg*(0.95+0.05*exp(-0.4*(LeafAreaIndex-3))))
 	return(SurfaceTemp)
 }
@@ -105,16 +105,16 @@ calculateSoilTemp <- function(InputTable) {
 	#SoilMeanDepth (float)
 	#SurfaceTemp (float)
 	#GAI (float)
-	result = InputTable %>%
+	result <- InputTable %>%
 		mutate(SoilTemp = accumulate(.x = row_number()[-1], .init = 0, .f=function(SoilTemp_dprev, row) {
-			data = cur_data_all()
+			data <- cur_data_all()
 			
-			SoilMeanDepth = data$SoilMeanDepth[row]
-			SurfaceTemp = data$SurfaceTemp[row]
-			GAI = data$GAI[row]
+			SoilMeanDepth <- data$SoilMeanDepth[row]
+			SurfaceTemp <- data$SurfaceTemp[row]
+			GAI <- data$GAI[row]
 			
 			#Eq. 2.2.1-16
-			SoilTemp_d = SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev) * 0.24 * exp(-SoilMeanDepth*0.0174) * exp(-0.15*GAI)
+			SoilTemp_d <- SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev) * 0.24 * exp(-SoilMeanDepth*0.0174) * exp(-0.15*GAI)
 
 			return(SoilTemp_d)
 			
@@ -124,13 +124,13 @@ calculateSoilTemp <- function(InputTable) {
 }
 
 calculateVolSoilWaterContent <- function(WaterStorage_dprev, SoilTopThickness, WiltingPoint) {
-	VolSoilWaterContent = WaterStorage_dprev/SoilTopThickness
-	VolSoilWaterContent_return = ifelse(VolSoilWaterContent == 0, WiltingPoint, VolSoilWaterContent)
+	VolSoilWaterContent <- WaterStorage_dprev/SoilTopThickness
+	VolSoilWaterContent_return <- ifelse(VolSoilWaterContent == 0, WiltingPoint, VolSoilWaterContent)
 	return(VolSoilWaterContent_return)
 }
 
 calculateWaterStorage <- function(InputTable) {
-	WaterStorage_dprev_initial = InputTable$FieldCapacity[1]*InputTable$SoilTopThickness[1]
+	WaterStorage_dprev_initial <- InputTable$FieldCapacity[1]*InputTable$SoilTopThickness[1]
 	#Input should be a df/tibble with these columns:
 	#SoilTopThickness (float)
 	#WiltingPoint (float)
@@ -142,14 +142,14 @@ calculateWaterStorage <- function(InputTable) {
 		#Subtract JulianDay by its first value to get 0.
 		#Since accumulate() takes .init from .x[[1]], this sets the initial value to 0 (Eq. 2.2.1-15).
 		mutate(d = accumulate(.x = row_number()[-1], .init = WaterStorage_dprev_initial, .f=function(WaterStorage_dprev, row) {
-			data = cur_data_all()
+			data <- cur_data_all()
 			
-			SoilTopThickness = data$SoilTopThickness[row]
-			WiltingPoint = data$WiltingPoint[row]
-			FieldCapacity = data$FieldCapacity[row]
-			SoilAvailWater = data$SoilAvailWater[row]
-			ET_c = data$ET_c[row]
-			alfa = data$alfa[row]
+			SoilTopThickness <- data$SoilTopThickness[row]
+			WiltingPoint <- data$WiltingPoint[row]
+			FieldCapacity <- data$FieldCapacity[row]
+			SoilAvailWater <- data$SoilAvailWater[row]
+			ET_c <- data$ET_c[row]
+			alfa <- data$alfa[row]
 			
 			#Calculate volumetric soil water content
 			#Eq. 2.2.1-23 to 2.2.1-24
@@ -157,30 +157,30 @@ calculateWaterStorage <- function(InputTable) {
 			
 			#Calculate actual evapotranspiration
 			#Eq. 2.2.1-25
-			K_r = (1 - ((0.95 * FieldCapacity - VolSoilWaterContent)/(0.95 * FieldCapacity - alfa*WiltingPoint)))^2
+			K_r <- (1 - ((0.95 * FieldCapacity - VolSoilWaterContent)/(0.95 * FieldCapacity - alfa*WiltingPoint)))^2
 			
 			#Eq. 2.2.1-26
-			K_r = pmin(pmax(0,K_r),1)
+			K_r <- pmin(pmax(0,K_r),1)
 			
 			#Eq. 2.2.1-27
 			if(VolSoilWaterContent < alfa/100*WiltingPoint) {
-				K_r = 0
+				K_r <- 0
 			}
 			
 			#Eq. 2.2.1-28
-			ET_a = ET_c * K_r
+			ET_a <- ET_c * K_r
 			
 			#Eq. 2.2.1-29 and #Eq. 2.2.1-30 are addressed in the .init parameter of
 			#the "accumulate" function
 			
 			#Calculate water storage
 			#Eq. 2.2.1-31
-			DeepPerc = WaterStorage_dprev - FieldCapacity*SoilTopThickness
+			DeepPerc <- WaterStorage_dprev - FieldCapacity*SoilTopThickness
 			#Eq. 2.2.1-32
-			DeepPerc = ifelse(DeepPerc<0,0,DeepPerc)
+			DeepPerc <- ifelse(DeepPerc<0,0,DeepPerc)
 			
 			#Eq. 2.2.1-33
-			WaterStorage_d = WaterStorage_dprev + SoilAvailWater - ET_a - DeepPerc
+			WaterStorage_d <- WaterStorage_dprev + SoilAvailWater - ET_a - DeepPerc
 			
 			return(WaterStorage_d)
 			

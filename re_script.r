@@ -34,23 +34,23 @@ for(i in 1:nrow(daily_input_test)) {
 	WaterContent_return
 	
 	SoilTopThickness = 250 #millimetres
-	SoilMeanDepth = SoilTopThickness/20
+	SoilMeanDepth <- SoilTopThickness/20
 	
-	LeafAreaIndex = 0.8*GAI 
+	LeafAreaIndex <- 0.8*GAI 
 	
-	Temperature = filter(daily_input_test, `JulianDay` == i)$Tavg
+	Temperature <- filter(daily_input_test, `JulianDay` == i)$Tavg
 	
 	if(Temperature < 0) {
-		SurfaceTemp = 0.20*Temperature
+		SurfaceTemp <- 0.20*Temperature
 	} else {
-		SurfaceTemp = Temperature*(0.95+0.05*exp(-0.4*(LeafAreaIndex-3)))
+		SurfaceTemp <- Temperature*(0.95+0.05*exp(-0.4*(LeafAreaIndex-3)))
 	}
 	
 	if(i == 1) {
-		SoilTemp_d = 0
+		SoilTemp_d <- 0
 	} else {
-		SoilTemp_dprev = SoilTemp_all[[i-1]]
-		SoilTemp_d = SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev)*0.24*exp(-SoilMeanDepth*0.0174)*exp(-0.15*GAI)
+		SoilTemp_dprev <- SoilTemp_all[[i-1]]
+		SoilTemp_d <- SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev)*0.24*exp(-SoilMeanDepth*0.0174)*exp(-0.15*GAI)
 	}
 	SoilTemp_all <- c(SoilTemp_all, SoilTemp_d)
 	

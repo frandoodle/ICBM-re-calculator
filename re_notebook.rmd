@@ -21,6 +21,7 @@ library(tibble)
 library(purrr)
 library(stringr)
 library(here)
+library(lubridate)
 
 source("re_functions.r")
 
@@ -33,20 +34,22 @@ We use the monthly climate normals that are shipped with Holos V4 in order to ma
 To use these, we need to specify an SLC polygon.
 We arbitrarily choose SLC poly #1001009 for this.
 ```{r}
-slc = 1001009
+slc <- 1001009
 climate_test_norms1 <- readr::read_csv("climate/climateNorms_by_poly_1980_2010.csv") %>%
 	filter(SLC == slc)
 climate_test_norms1 %>%
-	kable(caption="Climate normals for SLC polygon 1001009 for the period 1980 - 2010.")
+	kable(caption = "Climate normals for SLC polygon 1001009 for the period 1980 - 2010.")
 ```
 
 ## Test input data
-For our first test, let's say our crop is an annual with Yield = 3000.
+For our first test, let's say our crop is an annual with `Yield = 3000`.
 ```{r}
 climate_data_monthly <- climate_test_norms1
 
 daily_input_test <- tibble(
+	Year = 2018,
 	JulianDay = 1:365,
+	Region = "QC",
 	Yield = rep(3000, 365),
 	perennial = rep(FALSE, 365),
 	SoilOrganicC_Percent = rep(12, 365),
@@ -54,7 +57,6 @@ daily_input_test <- tibble(
 	SandContent = rep(0.2, 365)
 ) %>%
 	rowwise() %>%
-	#add climate data to the input thing
 	mutate(Tavg = filter(climate_data_monthly, month==ceiling(JulianDay/30.4375))$Tavg,
 				 PREC = filter(climate_data_monthly, month==ceiling(JulianDay/30.4375))$PREC,
 				 PET = filter(climate_data_monthly, month==ceiling(JulianDay/30.4375))$PET) %>%
@@ -67,20 +69,26 @@ daily_input_test <- tibble(
 
 ## Eq. 2.2.1-1 through Eq. 2.2.1-3
 ```{r}
+calculateGAI
+```
+
+where
+`Yield` is the crop yield (kg dry matter ha-1),
+`JulianDay` is the day,
+`MidSeason` is the median day of growing season (Julian day),
+`EmergenceDay` is the day of crop emergence (Julian day),
+`RipeningDay` is the day of crop ripening (Julian day),
+`GAI_max` is the maximum amplitude of green area index,
+`GAI` is the green area index, and
+`Variance` is the width of the distribution function
+
+```{r}
 GAI_return <- calculateGAI(daily_input_test)
 GAI_return
 GAI <- GAI_return[["GAI"]]
 ```
 
-Where
-GAImax is Maximum amplitude of green area index, 
-Yield is Crop yield (kg dry matter ha-1, database default or user specific),
-MidSeason is Median day of growing season (Julian day),
-EmergenceDay is Day of crop emergence (Julian day),
-RipeningDay is Day of crop ripening (Julian day),
-GAI is Green area index,
-JulianDay is Day (Julian day), and
-Variance is Width of distribution function.
+
 
 # Water content at wilting point and field capacity
 
@@ -92,35 +100,40 @@ WiltingPoint <- WaterContent_return[["WiltingPoint"]]
 FieldCapacity <- WaterContent_return[["FieldCapacity"]]
 ```
 
-Where
-OrgCfactor is Organic carbon factor,
-SoilOrganicCPercent is Percentage of organic carbon in soil, by weight (%, SLC data table),
-Clayfactor is Clay factor,
-ClayContent is Proportion of clay in soil (SLC data table),
-Sandfactor is Sand factor,
-SandContent is Proportion of sand in soil (SLC data table),
-WiltingPointPercent is Water content at wilting point (%),
-WiltingPoint is Proportion of water content at wilting point (mm3 mm-3),
-FieldCapacityPercent is Water content at field capacity (%), and
-FieldCapacity is Proportion of water at field capacity (mm3 mm-3).
+where
+`OrgCfactor` is the organic carbon factor,
+`SoilOrganicCPercent` is the percentage of organic carbon in soil, by weight (%, SLC data table),
+`Clayfactor` is the clay factor,
+`ClayContent` is the proportion of clay in soil (SLC data table),
+`Sandfactor` is the sand factor,
+`SandContent` is the proportion of sand in soil (SLC data table),
+`WiltingPointPercent` is the water content at wilting point (%),
+`WiltingPoint` is the proportion of water content at wilting point (mm3 mm-3),
+`FieldCapacityPercent` is the water content at field capacity (%), and
+`FieldCapacity` is the proportion of water at field capacity (mm3 mm-3).
 
 
 # Soil temperature
 
 ## Eq. 2.2.1-11
 ```{r}
-SoilTopThickness = 250 #Constant (millimetres)
-SoilMeanDepth = SoilTopThickness/20
+SoilTopThickness <- 250
+SoilMeanDepth <- SoilTopThickness/20
 ```
 ## Eq. 2.2.1-12
 ```{r}
-LeafAreaIndex = 0.8*GAI
+LeafAreaIndex <- 0.8*GAI
 ```
+
+where
+`SoilMeanDepth` is the Soil mean depth (mm),
+`SoilTopThickness` is the thickness of top layer (mm), and
+`LeafAreaIndex` is the leaf area index
 
 # Surface temperature
 Temperature is set according to the proper month in the climate normals.
 ```{r}
-Temperature = daily_input_test$Tavg
+Temperature <- daily_input_test$Tavg
 ```
 
 ##  Eq. 2.2.1-13 & Eq. 2.2.1-14
@@ -130,8 +143,8 @@ SurfaceTemp <- ifelse(Temperature < 0, 0.20*Temperature,
 ```
 
 Where
-Temperature is Daily mean air temperature (˚C, by month - SLC data table), and
-SurfaceTemp is Soil surface temperature (˚C).
+`Temperature` is the daily mean air temperature (˚C, by month - SLC data table), and
+`SurfaceTemp` is the soil surface temperature (˚C)
 
 # Soil Temperature
 In order to recursively solve soil temperature, we first need to concatenate all of our calculated parameters that we have so far:
@@ -147,7 +160,7 @@ daily_input_test <- bind_cols(daily_input_test,
 
 ```
 
-## Sidenote 1: How do we handle recursive equations?
+## Sidenote: How do we handle recursive equations?
 How are we able to recursively calculate soil temperature using the previous day's calculated soil temperature?
 Our implementation is based on Dan Chaltiel's answer to this Stack Overflow question: https://stackoverflow.com/questions/67525729/recursive-lag-during-mutate
 
@@ -179,8 +192,8 @@ The function we are using in `accumulate()` here is `SoilTemp_d = SoilTemp_dprev
 calculateSoilTemp
 ```
 Where
-SoilTemp is soil temperature (˚C), and
-SoilTemp_dprev is soil temperature on the previous day (˚C).
+`SoilTemp` is the soil temperature (˚C), and
+`SoilTemp_dprev` is the soil temperature on the previous day (˚C)
 
 ```{r}
 SoilTemp <- calculateSoilTemp(daily_input_test)
@@ -190,18 +203,90 @@ SoilTemp <- calculateSoilTemp(daily_input_test)
 ## Eq. 2.2.1-17 & Eq. 2.2.1-18
 ```{r}
 #Eq. 2.2.1-17
-K_c = 1.3 - (1.3-0.8) * exp(-0.17*GAI) 
+K_c <- 1.3 - (1.3-0.8) * exp(-0.17*GAI) 
 ```
 ```{r}
-ET_0 = daily_input_test$PET
+ET_0 <- daily_input_test$PET
 #Eq. 2.2.1-18
-ET_c = ET_0 * K_c
+ET_c <- ET_0 * K_c
 ```
 
 where
-K_c is Crop coefficient [@martelParsimoniousWaterBudget2021],
-ET_c is Crop evapotranspiration under standard conditions (mm day-1), and
-ET_0 is Daily reference crop evapotranspiration (mm day-1), which should be calculated according to the FAO Penman-Monteith equation [@allenCropEvapotranspirationGuidelinesComputing1998].
+`K_c` is the crop coefficient [@martelParsimoniousWaterBudget2021],
+`ET_c` is the crop evapotranspiration under standard conditions (mm day-1), and
+`ET_0` is the daily reference crop evapotranspiration (mm day-1), which should be calculated according to the FAO Penman-Monteith equation [@allenCropEvapotranspirationGuidelinesComputing1998]
+
+
+# Irrigation
+Irrigation can either be calculated using Eqs. 2.2.1-45 and 2.2.1-46, or specified by the user.
+
+## Monthly distribution of irrigation (Table 7)
+<span style="color: red;">
+Question for Holos team: In Eq. 2.2.1-46, one of the terms is `(Irrigation_annual + Fraction_monthly)/Days_month`,
+Is it meant to be `(Irrigation_annual * Fraction_monthly)/Days_month`?
+</span>
+
+From the Holos algorithm document:
+"The proportion of the annual irrigation amount applied in each month and for each province is estimated as an average of values derived from the Agricultural Water Use Survey for 2010 and 2012 [@AgriculturalWaterUse2011; @AgriculturalWaterUse2013]".
+
+```{r}
+Irrigation_percentage_monthly <- tibble(
+	`Province/Region` = c("Canada", "BC", "AB", "SK", "MB", "ON", "QC", "Atlantic Provinces"),
+	`Jan` = 0,
+	`Feb` = 0,
+	`Mar` = 0,
+	`Apr` = c(4.69, 8.00, 3.06, 15.08, 0.22, 3.81, 10.54, 7.30),
+	`May` = c(4.69, 8.00, 3.06, 15.08, 0.22, 3.81, 10.54, 7.30),
+	`Jun` = c(15.64, 19.54, 13.92, 14.80, 11.30, 18.35, 19.54, 10.62),
+	`Jul` = c(38.96, 27.77, 42.65, 29.58, 48.15, 41.46, 32.24, 27.97),
+	`Aug` = c(26.92, 25.66, 28.04, 19.40, 34.88, 26.74, 25.97, 34.06),
+	`Sep` = c(4.56, 5.51, 4.63, 3.03, 2.61, 2.91, 2.71, 5.63),
+	`Oct` = c(4.56, 5.51, 4.63, 3.03, 2.61, 2.91, 2.71, 5.63),
+	`Nov` = 0,
+	`Dec` = 0
+) %>%
+	mutate(Total = select(., where(is.numeric)) %>% rowSums())
+Irrigation_percentage_monthly %>%
+	kable(caption = "Percentage of total annual irrigation water applied by month for each province/region in Canada using average values across 2010 and 2012 (Adapted from Table 7 in the Holos algorithm document).")
+```
+
+
+The order of the equations has been changed from the original Holos algorithm document because irrigation is needed to calculate water balance.
+
+## Eq. 2.2.1-45 & Eq. 2.2.1-46
+
+```{r}
+P <- sum(daily_input_test$PREC)
+PE <- sum(daily_input_test$PET)
+Region <- "QC"
+
+Days_month <- lubridate::days_in_month(as.Date(paste(daily_input_test$Year, daily_input_test$JulianDay, sep="-"), "%Y-%j"))
+
+Fraction_monthly <- Irrigation_percentage_monthly %>%
+	filter(`Province/Region` == Region) %>%
+	`[`(names(Days_month)) %>%
+	unlist %>%
+	`/`(100)
+
+if(PE > P) {
+	warning("Using Eqs. 2.2.1-45 and 2.2.1-46 to calculate default irrigation values")
+	Irrigation_annual <- PE - P
+	
+	Irrigation <- ((Irrigation_annual * Fraction_monthly)/Days_month) %>%
+		unname
+} else {
+	Irrigation <- 0
+}
+
+```
+where
+`PE` is the annual evapotranspiration (mm yr-1),
+`P` is the annual precipitation (mm yr-1),
+`Irrigation_annual` is the annual irrigation (mm yr-1),
+`Fraction_monthly` is the assumed monthly distribution of irrigation (%) which is detailed in the next section,
+`Days_month` is the number of days per month, and
+`Irrigation` is the irrigation moisture input per day (mm d-1)
+
 
 # Soil Available Water
 <span style="color: red;">
@@ -212,12 +297,10 @@ Here, we assume that both equations use both precipitation and irrigation into a
 
 ## Eq. 2.2.1-19 through Eq. 2.2.1-22
 ```{r}
-Precipitation = daily_input_test$PREC
-
-Irrigation = rep(0,365)
+Precipitation <- daily_input_test$PREC
 
 #Eq. 2.2.1-19 - Eq. 2.2.1-20
-CropInterception = ifelse(Precipitation + Irrigation < 0.2*GAI,
+CropInterception <- ifelse(Precipitation + Irrigation < 0.2*GAI,
 													Precipitation + Irrigation,
 													0.2*GAI)
 
@@ -225,12 +308,12 @@ CropInterception = ifelse(Precipitation + Irrigation < 0.2*GAI,
 CropInterception <- ifelse(CropInterception > ET_c, ET_c, CropInterception)
 
 #Eq. 2.2.1-22
-SoilAvailWater = Precipitation + Irrigation - CropInterception
+SoilAvailWater <- Precipitation + Irrigation - CropInterception
 ```
 where
-CropInterception is Crop interception of precipitation + irrigation (mm day-1),
-Precipitation is Daily precipitation + irrigation (mm day-1 - SLC data table),
-SoilAvailWater is Soil available water (mm day-1),
+`CropInterception` is the crop interception of precipitation + irrigation (mm day-1),
+`Precipitation` is the daily precipitation (mm day-1), and
+`SoilAvailWater` is the soil available water (mm day-1)
 
 # Water Balance
 
@@ -243,12 +326,13 @@ In order to calculate water storage, we use this function:
 calculateWaterStorage
 ```
 where
-VolSoilWaterContent is Volumetric soil water content  (mm3 mm-3),
-K_r is Soil coefficient (dimensionless),
-alfa is Minimum water storage fraction of WiltingPoint, and
-ET_a is Actual evapotranspiration (mm day-1)
-WaterStorage_dprev is Water storage in topsoil (mm day-1) calculated previous day in Eq. 2.1.1-29 or Eq. 2.1.1-30
-DeepPerc is Water lost to percolation down the soil profile (mm day^-1^)
+`VolSoilWaterContent` is the volumetric soil water content  (mm3 mm-3),
+`K_r` is the soil coefficient (dimensionless),
+`alfa` is the minimum water storage fraction of WiltingPoint, and
+`ET_a` is the actual evapotranspiration (mm day-1)
+`WaterStorage_dprev` is the previous day's water storage in topsoil (mm day-1),
+`WaterStorage_d` is the current day's water storage in topsoil (mm day-1), and
+`DeepPerc` is the water lost to percolation down the soil profile (mm day^-1^)
 
 Let's bind together the inputs required to calculate water storage every day:
 ```{r}
@@ -260,29 +344,29 @@ daily_input_test2 <- bind_cols(daily_input_test,
 
 
 ```{r}
-WaterStorage = calculateWaterStorage(daily_input_test2)
+WaterStorage <- calculateWaterStorage(daily_input_test2)
 ```
 
 # Decomposition rate - effect of soil temperature
 <span style="color: red;">
-Question for Holos team: In Eq. 2.2.1-15, SoilTemp_d was set to 0 if JulianDay = 1; what does this make SoilTemp_dprev on JulianDay = 1?
+Question for Holos team: In Eq. 2.2.1-15, `SoilTemp_d = 0` if `JulianDay = 1`; what does this make `SoilTemp_dprev` on `JulianDay = 1`?
 </span>
 
-Here, we assume that SoilTemp_dprev and SoilTemp_d are both equal to 0 on JulianDay = 1.
+Here, we assume that `SoilTemp_dprev` and `SoilTemp_d` are both equal to 0 on `JulianDay = 1`.
 
 ## Eq. 2.2.1-34 & Eq. 2.2.1-35
 ```{r}
-SoilTemp_dprev = lag(SoilTemp, default=0)
-Temp_min = -3.78
-Temp_max = 30
+SoilTemp_dprev <- lag(SoilTemp, default=0)
+Temp_min <- -3.78
+Temp_max <- 30
 
 # Eq. 2.2.1-34 - Eq. 2.2.1-35
-re_temp = ifelse(SoilTemp_dprev < -3.78, 0, ((SoilTemp_dprev - Temp_min)^2)/((Temp_max-Temp_min)^2))
+re_temp <- ifelse(SoilTemp_dprev < -3.78, 0, ((SoilTemp_dprev - Temp_min)^2)/((Temp_max-Temp_min)^2))
 ```
 where
-re_temp is the Temperature response factor,
-Temp_min is the Critical soil temperature (˚C), and
-Temp_max is the Maximum soil temperature (˚C)
+`re_temp` is the temperature response factor,
+`Temp_min` is the critical soil temperature (˚C), and
+`Temp_max` is the maximum soil temperature (˚C)
 
 # Decomposition rate - effect of soil moisture
 ## Eq. 2.2.1-36 through Eq. 2.2.1-41
@@ -290,16 +374,16 @@ Temp_max is the Maximum soil temperature (˚C)
 WaterStorage_dprev <- lag(WaterStorage, default = FieldCapacity[1]*SoilTopThickness)
 VolSoilWaterContent <- calculateVolSoilWaterContent(WaterStorage_dprev, SoilTopThickness, WiltingPoint)
 
-r_s = 0.42
-r_wp = 0.18
+r_s <- 0.42
+r_wp <- 0.18
 
 # Eq. 2.2.1-36
-VolSoilWaterContent_sat = 1.2*FieldCapacity
+VolSoilWaterContent_sat <- 1.2*FieldCapacity
 # Eq. 2.2.1-37
-VolSoilWaterContent_opt = 0.9*FieldCapacity
+VolSoilWaterContent_opt <- 0.9*FieldCapacity
 
 # Eq. 2.2.1-38 - Eq. 2.2.1-40
-re_water = ifelse(
+re_water <- ifelse(
 	# if...
 	VolSoilWaterContent > VolSoilWaterContent_opt,
 	# then...
@@ -313,42 +397,71 @@ re_water = ifelse(
 		(1-r_wp)*((VolSoilWaterContent-WiltingPoint)/(VolSoilWaterContent_opt-WiltingPoint)) + r_wp)) # Eq. 2.2.1-40
 
 # Eq. 2.2.1-41
-re_water = pmin(pmax(0,re_water),1)
+re_water <- pmin(pmax(0,re_water),1)
 ```
 where
-VolSoilWaterContent_sat is the Volumetric soil water content at saturation level (mm3 mm-3),
-VolSoilWaterContent_opt is the Volumetric soil water content at optimal water content (mm3 mm-3),
-r_s is the Reference saturation (mm3 mm-3),
-r_wp is the Reference wilting point (mm3 mm-3), and
-re_water is the Moisture response factor
+`VolSoilWaterContent_sat` is the volumetric soil water content at saturation level (mm3 mm-3),
+`VolSoilWaterContent_opt` is the volumetric soil water content at optimal water content (mm3 mm-3),
+`r_s` is the reference saturation (mm3 mm-3),
+`r_wp` is the reference wilting point (mm3 mm-3), and
+`re_water` is the moisture response factor
 
-# Climate Factor (re_crop)
+# Climate Factor (re~crop~)
 
 ## Eq. 2.2.1-42 through Eq. 2.2.1-44
 
-In Holos, re_crop is calculated daily and then averaged annually.
+In Holos, re~crop~ is calculated daily and then averaged annually.
 ```{r}
 ReferenceAdjustment = 0.10516
 
 # Eq. 2.2.1-42
-re_x1 = re_temp*re_water
+re_x1 <- re_temp*re_water
 
 # Eq. 2.2.1-43
-re_cropdaily = re_x1/ReferenceAdjustment
+re_cropdaily <- re_x1/ReferenceAdjustment
 
 # Eq. 2.2.1-44
-re_crop = mean(re_cropdaily)
+re_crop <- mean(re_cropdaily)
 ```
 where
-ReferenceAdjustment is the calibration factor for a bare-fallow treatment considering a soil thickness of 25 cm (Uppsala, Sweden), and
-re_crop is the climate parameter
+`re_x1` is the uncalibrated daily climate parameter,
+`ReferenceAdjustment` is the calibration factor for a bare-fallow treatment considering a soil thickness of 25 cm (Uppsala, Sweden),
+`re_cropdaily` is the daily climate parameter, and
+`re_crop` is the climate parameter
 
 
-# Tillage Factor (rc)
+# Tillage Factor (r~c~)
+From the Holos algorithm document: "For the prairie provinces (Alberta, Saskatchewan, and Manitoba), changes in tillage management have been shown to influence soil carbon stocks. Accordingly, the tillage factor varies with soil type and tillage intensity."
 
-# Irrigation
+For non-prairie provinces, `r_c = 1.0`,
+for perennials, `r_c = 0.9` for the first year of planting; then the no-till factor is used for subsequent years,
+for root crops in every province and soil zone, `r_c = 1.13`.
+```{r}
+tibble(`Soil type` = c("Brown", "Dark Brown", "Black"),
+			 `Intensive Tillage` = c(1,1,1),
+			 `Reduced tillage` = c(0.9, 0.85, 0.8),
+			 `No-till` = c(0.8, 0.7, 0.6)) %>%
+	kable(caption="r_c factor for Alberta, Saskatchewan, and Manitoba only (adapted from Holos algorithm document)")
+```
 
-# Climate/management Factor (re)
+```{r}
+r_c <- 1
+```
+
+
+# Climate/management Factor (r~e~)
+
+## Eq. 2.2.1-47
+
+```{r}
+r_edaily <- re_cropdaily*r_c
+r_e <- mean(r_e)
+r_e
+```
+where
+`r_c` is the tillage factor, and
+`re_cropdaily` is the daily climate/management factor, and
+`r_e` is the climate/management factor averaged for the year.
 
 <!-- Test weather data is from the NASA POWER database for a latitude and longitude approximately equal to the location of Ottawa Central Experimental Farm (45.3875035,-75.7113529 according to google maps) -->
 <!-- ```{r} -->
