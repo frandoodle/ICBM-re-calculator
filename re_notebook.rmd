@@ -22,6 +22,7 @@ library(purrr)
 library(stringr)
 library(here)
 library(lubridate)
+library(tidyr)
 
 source("re_functions.r")
 
@@ -486,6 +487,15 @@ daily_input_test_all
 
 ## Test 2: NASA daily climate data (10 years)
 
+```{r}
+holos_output <- readr::read_csv(here("your_path.csv"), col_names=F) %>%
+	pivot_longer(cols = 2:ncol(.)) %>%
+	pivot_wider(names_from = `X1`) %>%
+	select(-1)
+holos_output_oneyear <- holos_output %>%
+	filter(Year == 2000)
+view(holos_output_oneyear)
+```
 
 
 ## Test 3: re_script.r
