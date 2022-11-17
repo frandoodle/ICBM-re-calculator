@@ -3,8 +3,8 @@ calculateGAI <- function(InputTable) {
 	#Input should be a df/tibble with at least the columns JulianDay (int),
 	#Yield (float), and perennial (bool)
 	
-	#Holos V4 constant values for different crop types (see section 2.2.1.1.1.1,
-	#Green area index dynamics)
+	#Holos V4 constant values for different crop types
+	#(see section 2.2.1.1.1.1, Green area index dynamics)
 	EmergenceDay <- ifelse(InputTable$perennial == TRUE, 75, 141)
 	RipeningDay <- ifelse(InputTable$perennial == TRUE, 300, 197)
 	Variance <- ifelse(InputTable$perennial == TRUE, 1500, 300)

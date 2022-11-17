@@ -54,7 +54,8 @@ daily_input_test <- tibble(
 	perennial = rep(FALSE, 365),
 	SoilOrganicC_Percent = rep(12, 365),
 	ClayContent = rep(0.05, 365),
-	SandContent = rep(0.2, 365)
+	SandContent = rep(0.2, 365),
+	alfa = rep(0.7, 365)
 ) %>%
 	rowwise() %>%
 	mutate(Tavg = filter(climate_data_monthly, month==ceiling(JulianDay/30.4375))$Tavg,
@@ -149,14 +150,13 @@ Where
 # Soil Temperature
 In order to recursively solve soil temperature, we first need to concatenate all of our calculated parameters that we have so far:
 ```{r}
-daily_input_test <- bind_cols(daily_input_test,
-															GAI = GAI,
-															WiltingPoint = WiltingPoint,
-															FieldCapacity = FieldCapacity,
-															SoilTopThickness = SoilTopThickness,
-															SoilMeanDepth = SoilMeanDepth,
-															LeafAreaIndex = LeafAreaIndex,
-															SurfaceTemp = SurfaceTemp)
+daily_input_test_soiltemp <- daily_input_test %>%
+	full_join(GAI_return, by="JulianDay") %>%
+	full_join(WaterContent_return, by="JulianDay") %>%
+	bind_cols(SoilTopThickness = SoilTopThickness,
+						SoilMeanDepth = SoilMeanDepth,
+						LeafAreaIndex = LeafAreaIndex,
+						SurfaceTemp = SurfaceTemp)
 
 ```
 
@@ -196,7 +196,7 @@ Where
 `SoilTemp_dprev` is the soil temperature on the previous day (˚C)
 
 ```{r}
-SoilTemp <- calculateSoilTemp(daily_input_test)
+SoilTemp <- calculateSoilTemp(daily_input_test_soiltemp)
 ```
 
 # Crop Evapotranspiration
@@ -215,7 +215,6 @@ where
 `K_c` is the crop coefficient [@martelParsimoniousWaterBudget2021],
 `ET_c` is the crop evapotranspiration under standard conditions (mm day-1), and
 `ET_0` is the daily reference crop evapotranspiration (mm day-1), which should be calculated according to the FAO Penman-Monteith equation [@allenCropEvapotranspirationGuidelinesComputing1998]
-
 
 # Irrigation
 Irrigation can either be calculated using Eqs. 2.2.1-45 and 2.2.1-46, or specified by the user.
@@ -287,7 +286,6 @@ where
 `Days_month` is the number of days per month, and
 `Irrigation` is the irrigation moisture input per day (mm d-1)
 
-
 # Soil Available Water
 <span style="color: red;">
 Question for Holos team: In the original algorithm document, Eq. 2.2.1-19 is based on a conditional involving only precipitation, however Eq. 2.2.1-20 takes both precipitation and irrigation into account.
@@ -317,6 +315,14 @@ where
 
 # Water Balance
 
+We need to make sure all the required inputs are in our input table:
+
+```{r}
+daily_input_test_waterstorage <- bind_cols(daily_input_test_soiltemp,
+																					 SoilAvailWater = SoilAvailWater,
+																					 ET_c = ET_c)
+```
+
 ## Eq. 2.2.1-23 through Eq. 2.2.1-33
 We use `mutate()` and `accumulate()` to vectorize water balance calculations.
 We are interested in calculating topsoil water storage where the previous day's water storage is an input variable.
@@ -334,17 +340,8 @@ where
 `WaterStorage_d` is the current day's water storage in topsoil (mm day-1), and
 `DeepPerc` is the water lost to percolation down the soil profile (mm day^-1^)
 
-Let's bind together the inputs required to calculate water storage every day:
 ```{r}
-daily_input_test2 <- bind_cols(daily_input_test,
-															 ET_c = ET_c,
-															 SoilAvailWater = SoilAvailWater,
-															 alfa = 0.7)
-```
-
-
-```{r}
-WaterStorage <- calculateWaterStorage(daily_input_test2)
+WaterStorage <- calculateWaterStorage(daily_input_test_waterstorage)
 ```
 
 # Decomposition rate - effect of soil temperature
@@ -455,34 +452,42 @@ r_c <- 1
 
 ```{r}
 r_edaily <- re_cropdaily*r_c
-r_e <- mean(r_e)
+r_e <- mean(r_edaily)
 r_e
 ```
 where
 `r_c` is the tillage factor, and
-`re_cropdaily` is the daily climate/management factor, and
-`r_e` is the climate/management factor averaged for the year.
-
-<!-- Test weather data is from the NASA POWER database for a latitude and longitude approximately equal to the location of Ottawa Central Experimental Farm (45.3875035,-75.7113529 according to google maps) -->
-<!-- ```{r} -->
-<!-- climate_test_wheat1 <- readr::read_file("nasa_climate_data_lat_45.0024867523983_long_-74.9998855590822") %>% -->
-<!-- 	as.geojson -->
-<!-- zz <- tibble(climate_test_wheat1) -->
-<!-- geo_pretty(climate_test_wheat1) -->
-<!-- ``` -->
-
-# Testing r~e~ against Holos implementation
+`re_cropdaily` is the daily climate/management factor,
+`r_edaily` is the daily climate/management factor, and
+`r_e` is the climate/management factor averaged for the year
 
 
-<!-- ```{r results = "asis"} -->
-<!-- results_test_wheat1 <- readr::read_csv("wheat1.csv", skip=1) -->
+# Testing R implementation of r~e~ against Holos implementation
 
-<!-- table_test_wheat1 <- results_test_wheat1%>% -->
-<!-- 	select(Farm, Field, Year, Crop, `Yield (kg ha^-1)`, `Moisture content (%)`, `Tillage type`, -->
-<!-- 				 `Climate Factor (re_crop)`, `Tillage Factor (r_c)`, `Management factor (r_e)`) %>% -->
-<!-- 	kable(caption="Holos results for the wheat1 test farm.") -->
-<!-- table_test_wheat1 -->
-<!-- ``` -->
+## Test 1: Test data (1 year)
 
+First we compare our intermediate calculations with Holos:
+```{r}
+daily_input_test_all <- daily_input_test %>%
+	bind_cols(Days_month = Days_month,
+						Fraction_monthly = Fraction_monthly,
+						Irrigation = Irrigation,
+						SoilTemp = SoilTemp,
+						K_c = K_c,
+						ET_c = ET_c,
+						Days_month = Days_month,
+						Fraction_monthly = Fraction_monthly,
+						Irrigation = Irrigation,
+						CropInterception = CropInterception,
+						SoilAvailWater = SoilAvailWater)
+daily_input_test_all
+```
+
+
+## Test 2: NASA daily climate data (10 years)
+
+
+
+## Test 3: re_script.r
 
 # References
