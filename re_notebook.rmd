@@ -29,40 +29,25 @@ source("re_functions.r")
 here::i_am("re_notebook.rmd")
 ```
 
-# Climate data
-We use the monthly climate normals that are shipped with Holos V4 in order to make our first calculations.
+# Input data
 
-To use these, we need to specify an SLC polygon.
-We arbitrarily choose SLC poly #1001009 for this.
 ```{r}
-slc <- 1001009
-climate_test_norms1 <- readr::read_csv("climate/climateNorms_by_poly_1980_2010.csv") %>%
-	filter(SLC == slc)
-climate_test_norms1 %>%
-	kable(caption = "Climate normals for SLC polygon 1001009 for the period 1980 - 2010.")
-```
-
-## Test input data
-For our first test, let's say our crop is an annual with `Yield = 3000`.
-```{r}
-climate_data_monthly <- climate_test_norms1
+holos_re <- readr::read_csv(here("holos_re_calculation.csv"))
 
 daily_input_test <- tibble(
-	Year = 2018,
+	Year = 2020,
 	JulianDay = 1:365,
 	Region = "QC",
 	Yield = rep(3000, 365),
 	perennial = rep(FALSE, 365),
-	SoilOrganicC_Percent = rep(12, 365),
+	SoilOrganicC_Percent = rep(2, 365),
 	ClayContent = rep(0.05, 365),
 	SandContent = rep(0.2, 365),
 	alfa = rep(0.7, 365)
 ) %>%
-	rowwise() %>%
-	mutate(Tavg = filter(climate_data_monthly, month==ceiling(JulianDay/30.4375))$Tavg,
-				 PREC = filter(climate_data_monthly, month==ceiling(JulianDay/30.4375))$PREC,
-				 PET = filter(climate_data_monthly, month==ceiling(JulianDay/30.4375))$PET) %>%
-	ungroup()
+	mutate(Tavg = holos_re$InputTemperature,
+				 PREC = holos_re$InputPrecipitation,
+				 PET = holos_re$InputEvapotranspiration)
 ```
 
 
@@ -268,7 +253,7 @@ Fraction_monthly <- Irrigation_percentage_monthly %>%
 	unlist %>%
 	`/`(100)
 
-if(PE > P) {
+if (PE > P) {
 	warning("Using Eqs. 2.2.1-45 and 2.2.1-46 to calculate default irrigation values")
 	Irrigation_annual <- PE - P
 	
@@ -287,12 +272,19 @@ where
 `Days_month` is the number of days per month, and
 `Irrigation` is the irrigation moisture input per day (mm d-1)
 
+However, because Holos does not use the `if (PE > P)` conditional to assess whether irrigation should be added, we get a different result from the Holos version if we include irrigation. Therefore, for the sake of comparison, we remove the influence of irrigation.
+```{r}
+Irrigation <- 0
+```
+
+
 # Soil Available Water
 <span style="color: red;">
 Question for Holos team: In the original algorithm document, Eq. 2.2.1-19 is based on a conditional involving only precipitation, however Eq. 2.2.1-20 takes both precipitation and irrigation into account.
 </span>
 
 Here, we assume that both equations use both precipitation and irrigation into account in their conditional statements.
+
 
 ## Eq. 2.2.1-19 through Eq. 2.2.1-22
 ```{r}
@@ -465,39 +457,69 @@ where
 
 # Testing R implementation of r~e~ against Holos implementation
 
-## Test 1: Test data (1 year)
-
-First we compare our intermediate calculations with Holos:
-```{r}
+## Test 1: this notebook vs. Holos
+```{r echo=FALSE}
 daily_input_test_all <- daily_input_test %>%
 	bind_cols(Days_month = Days_month,
 						Fraction_monthly = Fraction_monthly,
 						Irrigation = Irrigation,
+						
+						GAI = GAI,
+						
+						SurfaceTemp = SurfaceTemp,
 						SoilTemp = SoilTemp,
+						
 						K_c = K_c,
 						ET_c = ET_c,
 						Days_month = Days_month,
 						Fraction_monthly = Fraction_monthly,
 						Irrigation = Irrigation,
 						CropInterception = CropInterception,
-						SoilAvailWater = SoilAvailWater)
-daily_input_test_all
+						SoilAvailWater = SoilAvailWater,
+						WaterStorage = WaterStorage,
+						SoilTemp_dprev = SoilTemp_dprev,
+						WaterStorage_dprev = WaterStorage_dprev,
+						VolSoilWaterContent = VolSoilWaterContent,
+						
+						
+						re_temp = re_temp,
+						re_water = re_water,
+						re_x1 = re_x1,
+						re_cropdaily = re_cropdaily,
+						
+						re_crop = re_crop,
+						r_c = r_c,
+						
+						r_edaily = r_edaily,
+						r_e = r_e)
 ```
-
-
-## Test 2: NASA daily climate data (10 years)
 
 ```{r}
-holos_output <- readr::read_csv(here("your_path.csv"), col_names=F) %>%
-	pivot_longer(cols = 2:ncol(.)) %>%
-	pivot_wider(names_from = `X1`) %>%
-	select(-1)
-holos_output_oneyear <- holos_output %>%
-	filter(Year == 2000)
-view(holos_output_oneyear)
+test_re <- daily_input_test_all %>%
+	summarise(r_e = mean(r_e)) %>%
+	unlist
 ```
 
+```{r}
+holos_re_calculation <- readr::read_csv(here("holos_re_calculation.csv")) %>%
+	mutate(r_e = mean(ClimateParameter))
+holos_re <- holos_re_calculation %>%
+	summarise(r_e = mean(ClimateParameter)) %>%
+	unlist
+```
+Now we can find the difference between the averaged yearly r_e values:
+```{r}
+PercentageDifference = 100*(holos_re - test_re)/holos_re
 
-## Test 3: re_script.r
+PercentageDifference
+```
+This means our R implementation of r~e~ is only `r PercentageDifference`% different from the r~e~ as calculated by Holos.
+
+## Test 2: re_script.r vs. Holos
+
+```{r}
+
+```
+
 
 # References

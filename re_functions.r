@@ -22,7 +22,7 @@ calculateGAI <- function(InputTable) {
 }
 
 calculateWaterContent <- function(InputTable) {
-	#Input should be a df/tibble with at least the columns JulianDay (int),
+	#Input should be a df/tibble with at least the columns
 	#SoilOrganicC_Percent (float), ClayContent (float), and SandContent (float)
 	
 	#Eq. 2.2.1-4
