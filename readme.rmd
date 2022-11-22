@@ -24,16 +24,18 @@ library(here)
 library(lubridate)
 library(tidyr)
 
-source("re_functions.r")
+dir.create(tempdir()) #This fixes a bug if the temporary directory is not found
 
-here::i_am("re_notebook.rmd")
+here::i_am("readme.rmd")
+source(here::here("re_functions.r"))
+
 ```
 
-# Input data
+# Walkthrough
+## Input data
 
 ```{r}
-holos_re <- readr::read_csv(here("holos_re_calculation.csv"))
-
+holos_re_calculation <- readr::read_csv(here::here("holos_re_calculation.csv"))
 daily_input_test <- tibble(
 	Year = 2020,
 	JulianDay = 1:365,
@@ -45,16 +47,16 @@ daily_input_test <- tibble(
 	SandContent = rep(0.2, 365),
 	alfa = rep(0.7, 365)
 ) %>%
-	mutate(Tavg = holos_re$InputTemperature,
-				 PREC = holos_re$InputPrecipitation,
-				 PET = holos_re$InputEvapotranspiration)
+	mutate(Tavg = holos_re_calculation$InputTemperature,
+				 PREC = holos_re_calculation$InputPrecipitation,
+				 PET = holos_re_calculation$InputEvapotranspiration)
 ```
 
 
 
-# Green area index (GAI) dynamics
+## Green area index (GAI) dynamics
 
-## Eq. 2.2.1-1 through Eq. 2.2.1-3
+### Eq. 2.2.1-1 through Eq. 2.2.1-3
 ```{r}
 calculateGAI
 ```
@@ -77,9 +79,15 @@ GAI <- GAI_return[["GAI"]]
 
 
 
-# Water content at wilting point and field capacity
+## Water content at wilting point and field capacity
+<span style="color: red;">
+Question for Holos team:
+In Eq. 2.2.1-7, SoilOrganicC~Percent~ is defined as "Percentage of organic carbon in soil, by weight (%, SLC data table)".
+I'm curious if this is planned to take its value from the ICBM model itself, calculated using bulk density?
+</span>
 
-## Eq. 2.2.1-4 through Eq. 2.2.1-10
+
+### Eq. 2.2.1-4 through Eq. 2.2.1-10
 ```{r}
 WaterContent_return <- calculateWaterContent(daily_input_test)
 WaterContent_return
@@ -100,14 +108,14 @@ where
 `FieldCapacity` is the proportion of water at field capacity (mm3 mm-3).
 
 
-# Soil temperature
+## Soil temperature
 
-## Eq. 2.2.1-11
+### Eq. 2.2.1-11
 ```{r}
 SoilTopThickness <- 250
 SoilMeanDepth <- SoilTopThickness/20
 ```
-## Eq. 2.2.1-12
+### Eq. 2.2.1-12
 ```{r}
 LeafAreaIndex <- 0.8*GAI
 ```
@@ -117,13 +125,13 @@ where
 `SoilTopThickness` is the thickness of top layer (mm), and
 `LeafAreaIndex` is the leaf area index
 
-# Surface temperature
+## Surface temperature
 Temperature is set according to the proper month in the climate normals.
 ```{r}
 Temperature <- daily_input_test$Tavg
 ```
 
-##  Eq. 2.2.1-13 & Eq. 2.2.1-14
+###  Eq. 2.2.1-13 & Eq. 2.2.1-14
 ```{r}
 SurfaceTemp <- ifelse(Temperature < 0, 0.20*Temperature,
 											Temperature*(0.95+0.05*exp(-0.4*(LeafAreaIndex-3))))
@@ -133,7 +141,7 @@ Where
 `Temperature` is the daily mean air temperature (˚C, by month - SLC data table), and
 `SurfaceTemp` is the soil surface temperature (˚C)
 
-# Soil Temperature
+## Soil Temperature
 In order to recursively solve soil temperature, we first need to concatenate all of our calculated parameters that we have so far:
 ```{r}
 daily_input_test_soiltemp <- daily_input_test %>%
@@ -146,7 +154,7 @@ daily_input_test_soiltemp <- daily_input_test %>%
 
 ```
 
-## Sidenote: How do we handle recursive equations?
+### Sidenote: How do we handle recursive equations?
 How are we able to recursively calculate soil temperature using the previous day's calculated soil temperature?
 Our implementation is based on Dan Chaltiel's answer to this Stack Overflow question: https://stackoverflow.com/questions/67525729/recursive-lag-during-mutate
 
@@ -167,7 +175,7 @@ sidenote1
 
 The reason we use this approach is because it lets us keep the functions vectorized
 
-## Eq. 2.2.1-15 & Eq. 2.2.1-16
+### Eq. 2.2.1-15 & Eq. 2.2.1-16
 Using the same method as above, we can `accumulate()` the value of `SoilTemp` using its value in the previous row (`SoilTemp_dprev`).
 In this case, the name "accumulate" might lead to some confusion because the soil temperature goes both up and down over the course of the year.
 The function `accumulate()` doesn't itself increase the value of of a variable, it just passes both the previous value and the current value of the variable into a function that you specify.
@@ -185,8 +193,8 @@ Where
 SoilTemp <- calculateSoilTemp(daily_input_test_soiltemp)
 ```
 
-# Crop Evapotranspiration
-## Eq. 2.2.1-17 & Eq. 2.2.1-18
+## Crop Evapotranspiration
+### Eq. 2.2.1-17 & Eq. 2.2.1-18
 ```{r}
 #Eq. 2.2.1-17
 K_c <- 1.3 - (1.3-0.8) * exp(-0.17*GAI) 
@@ -202,10 +210,10 @@ where
 `ET_c` is the crop evapotranspiration under standard conditions (mm day-1), and
 `ET_0` is the daily reference crop evapotranspiration (mm day-1), which should be calculated according to the FAO Penman-Monteith equation [@allenCropEvapotranspirationGuidelinesComputing1998]
 
-# Irrigation
+## Irrigation
 Irrigation can either be calculated using Eqs. 2.2.1-45 and 2.2.1-46, or specified by the user.
 
-## Monthly distribution of irrigation (Table 7)
+### Monthly distribution of irrigation (Table 7)
 <span style="color: red;">
 Question for Holos team: In Eq. 2.2.1-46, one of the terms is `(Irrigation_annual + Fraction_monthly)/Days_month`,
 Is it meant to be `(Irrigation_annual * Fraction_monthly)/Days_month`?
@@ -238,7 +246,7 @@ Irrigation_percentage_monthly %>%
 
 The order of the equations has been changed from the original Holos algorithm document because irrigation is needed to calculate water balance.
 
-## Eq. 2.2.1-45 & Eq. 2.2.1-46
+### Eq. 2.2.1-45 & Eq. 2.2.1-46
 
 ```{r}
 P <- sum(daily_input_test$PREC)
@@ -278,7 +286,7 @@ Irrigation <- 0
 ```
 
 
-# Soil Available Water
+## Soil Available Water
 <span style="color: red;">
 Question for Holos team: In the original algorithm document, Eq. 2.2.1-19 is based on a conditional involving only precipitation, however Eq. 2.2.1-20 takes both precipitation and irrigation into account.
 </span>
@@ -286,7 +294,7 @@ Question for Holos team: In the original algorithm document, Eq. 2.2.1-19 is bas
 Here, we assume that both equations use both precipitation and irrigation into account in their conditional statements.
 
 
-## Eq. 2.2.1-19 through Eq. 2.2.1-22
+### Eq. 2.2.1-19 through Eq. 2.2.1-22
 ```{r}
 Precipitation <- daily_input_test$PREC
 
@@ -306,7 +314,7 @@ where
 `Precipitation` is the daily precipitation (mm day-1), and
 `SoilAvailWater` is the soil available water (mm day-1)
 
-# Water Balance
+## Water Balance
 
 We need to make sure all the required inputs are in our input table:
 
@@ -316,7 +324,7 @@ daily_input_test_waterstorage <- bind_cols(daily_input_test_soiltemp,
 																					 ET_c = ET_c)
 ```
 
-## Eq. 2.2.1-23 through Eq. 2.2.1-33
+### Eq. 2.2.1-23 through Eq. 2.2.1-33
 We use `mutate()` and `accumulate()` to vectorize water balance calculations.
 We are interested in calculating topsoil water storage where the previous day's water storage is an input variable.
 
@@ -337,14 +345,14 @@ where
 WaterStorage <- calculateWaterStorage(daily_input_test_waterstorage)
 ```
 
-# Decomposition rate - effect of soil temperature
+## Decomposition rate - effect of soil temperature
 <span style="color: red;">
 Question for Holos team: In Eq. 2.2.1-15, `SoilTemp_d = 0` if `JulianDay = 1`; what does this make `SoilTemp_dprev` on `JulianDay = 1`?
 </span>
 
 Here, we assume that `SoilTemp_dprev` and `SoilTemp_d` are both equal to 0 on `JulianDay = 1`.
 
-## Eq. 2.2.1-34 & Eq. 2.2.1-35
+### Eq. 2.2.1-34 & Eq. 2.2.1-35
 ```{r}
 SoilTemp_dprev <- lag(SoilTemp, default=0)
 Temp_min <- -3.78
@@ -358,8 +366,8 @@ where
 `Temp_min` is the critical soil temperature (˚C), and
 `Temp_max` is the maximum soil temperature (˚C)
 
-# Decomposition rate - effect of soil moisture
-## Eq. 2.2.1-36 through Eq. 2.2.1-41
+## Decomposition rate - effect of soil moisture
+### Eq. 2.2.1-36 through Eq. 2.2.1-41
 ```{r}
 WaterStorage_dprev <- lag(WaterStorage, default = FieldCapacity[1]*SoilTopThickness)
 VolSoilWaterContent <- calculateVolSoilWaterContent(WaterStorage_dprev, SoilTopThickness, WiltingPoint)
@@ -396,9 +404,9 @@ where
 `r_wp` is the reference wilting point (mm3 mm-3), and
 `re_water` is the moisture response factor
 
-# Climate Factor (re~crop~)
+## Climate Factor (re~crop~)
 
-## Eq. 2.2.1-42 through Eq. 2.2.1-44
+### Eq. 2.2.1-42 through Eq. 2.2.1-44
 
 In Holos, re~crop~ is calculated daily and then averaged annually.
 ```{r}
@@ -420,7 +428,7 @@ where
 `re_crop` is the climate parameter
 
 
-# Tillage Factor (r~c~)
+## Tillage Factor (r~c~)
 From the Holos algorithm document: "For the prairie provinces (Alberta, Saskatchewan, and Manitoba), changes in tillage management have been shown to influence soil carbon stocks. Accordingly, the tillage factor varies with soil type and tillage intensity."
 
 For non-prairie provinces, `r_c = 1.0`,
@@ -439,9 +447,9 @@ r_c <- 1
 ```
 
 
-# Climate/management Factor (r~e~)
+## Climate/management Factor (r~e~)
 
-## Eq. 2.2.1-47
+### Eq. 2.2.1-47
 
 ```{r}
 r_edaily <- re_cropdaily*r_c
@@ -455,10 +463,10 @@ where
 `r_e` is the climate/management factor averaged for the year
 
 
-# Testing R implementation of r~e~ against Holos implementation
+# Testing
 
-## Test 1: this notebook vs. Holos
-```{r echo=FALSE}
+## This notebook vs. Holos
+```{r, include = FALSE}
 daily_input_test_all <- daily_input_test %>%
 	bind_cols(Days_month = Days_month,
 						Fraction_monthly = Fraction_monthly,
@@ -494,20 +502,22 @@ daily_input_test_all <- daily_input_test %>%
 						r_e = r_e)
 ```
 
+r~e~ value from this notebook:
 ```{r}
 test_re <- daily_input_test_all %>%
 	summarise(r_e = mean(r_e)) %>%
 	unlist
 ```
 
+r~e~ value from Holos:
 ```{r}
-holos_re_calculation <- readr::read_csv(here("holos_re_calculation.csv")) %>%
-	mutate(r_e = mean(ClimateParameter))
 holos_re <- holos_re_calculation %>%
+	mutate(r_e = mean(ClimateParameter)) %>%
 	summarise(r_e = mean(ClimateParameter)) %>%
 	unlist
 ```
-Now we can find the difference between the averaged yearly r_e values:
+
+Percentage difference between the two implementations:
 ```{r}
 PercentageDifference = 100*(holos_re - test_re)/holos_re
 
@@ -515,11 +525,131 @@ PercentageDifference
 ```
 This means our R implementation of r~e~ is only `r PercentageDifference`% different from the r~e~ as calculated by Holos.
 
-## Test 2: re_script.r vs. Holos
+## re_script.r vs. Holos
 
-```{r}
+Now let's test whether our standalone r~e~ script works as well:
 
+```{r, include = FALSE}
+source(here::here("re_script.r"))
 ```
 
+```{r}
+script_re <- calculate_re(daily_input_test, irrigation_use_estimate = FALSE)
+
+PercentageDifference = 100*(holos_re - script_re)/holos_re
+
+PercentageDifference
+```
+The error value from `script_re` (the r~e~ calculator implementation in the standalone script) is the same as from `test_re` (the r~e~ calculator implementation in this R notebook), meaning our re_script.r implementation works as intended.
+
+## Testing irrigation parameters
+
+In order to account for irrigation, we must specify whether we want to estimate daily irrigation values using Eqs. 2.2.1-45 and 2.2.1-46, or whether we want to put in our own daily irrigation values.
+
+In order to use the built-in daily irrigation estimations, use `irrigation_use_estimate = TRUE` and `irrigation_region`:
+```{r}
+calculate_re(daily_input_test,
+						 irrigation_use_estimate = TRUE,
+						 irrigation_region = "Canada")
+```
+
+Otherwise, a vector of daily irrigation values for the year can be passed into the `irrigation` parameter directly with `irrigation_use_estimate` set to `FALSE`:
+
+```{r}
+calculate_re(daily_input_test,
+						 irrigation_use_estimate = FALSE,
+						 irrigation = rep(20,365))
+```
+
+`irrigation_use_estimate` needs to be specified, and can only take values of either `TRUE` or `FALSE`. If these conditions are not met, an error is returned:
+
+```{r}
+try(calculate_re(daily_input_test))
+
+try(calculate_re(daily_input_test,
+						 irrigation_use_estimate = NA))
+```
+
+An error is returned if `irrigation_region` is not passed a valid argument:
+
+```{r}
+try(calculate_re(daily_input_test,
+						 irrigation_region = "Nebraska",
+						 irrigation_use_estimate = TRUE))
+```
+
+## Testing tillage parameter (r~c~)
+
+By default, r~c~ is given a value of 1.
+This can either be changed based on Table 6 by specifying a `tillage_type` and a `tillage_soil`, or by supplying a vector of `r_c` values of length 365.
+```{r}
+calculate_re(daily_input_test,
+						 tillage_type = "Reduced tillage",
+						 tillage_soil = "Brown",
+						 irrigation_use_estimate = FALSE)
+
+calculate_re(daily_input_test,
+						 tillage_type = "No-till",
+						 tillage_soil = "Brown",
+						 irrigation_use_estimate = FALSE)
+
+calculate_re(daily_input_test,
+						 tillage_type = "No-till",
+						 tillage_soil = "Black",
+						 irrigation_use_estimate = FALSE)
+
+calculate_re(daily_input_test,
+						 r_c = rep(0.05,365),
+						 irrigation_use_estimate = FALSE)
+```
+An error is returned if either `tillage_type` or `tillage_soil` are not passed valid arguments:
+
+```{r}
+try(calculate_re(daily_input_test,
+						 tillage_type = "Quadruple tillage",
+						 tillage_soil = "Brown",
+						 irrigation_use_estimate = FALSE))
+
+try(calculate_re(daily_input_test,
+						 tillage_type = "Reduced tillage",
+						 tillage_soil = "Green",
+						 irrigation_use_estimate = FALSE))
+```			 
+If there is even one NA value in `r_c`, it is estimated using Table 6:
+```{r}
+try(calculate_re(daily_input_test,
+						 r_c = c(NA,rep(0.05,364)),
+						 irrigation_use_estimate = FALSE))
+```
+
+
+# Running the code over multiple years
+
+In order to run the script for multiple years, we need a daily input table with a `Year` column.
+We can use `Year` as a grouping variable to run `calculate_re` for every year seperately.
+This creates a vector of r~e~ values the same length as the number of years in the input data.
+
+```{r}
+multi_year_input <- 
+bind_rows(mutate(daily_input_test, Year = 2020),
+					mutate(daily_input_test, Year = 2021),
+					mutate(daily_input_test, Year = 2022)
+)
+multi_year_input
+```
+
+```{r}
+multi_year_input %>%
+	group_by(Year) %>%
+	group_split() %>% # Split the table into a list of tables based on the grouping variable
+	map(~calculate_re(., irrigation_use_estimate=FALSE)) %>% # Run calculate_re for every member of the list
+	unlist()
+	
+```
+From the above output, each value in `multi_year_re` corresponds to the yearly value of r~e~.
+This vector can then be used as an input parameter in the ICBM R script, which takes a vector of r~e~ values of the same length as the simulation duration.
+
+Note: use the `suppressWarnings` function to run a function without any warnings
+(e.g. `suppressWarnings(calculate_re())`).
 
 # References
