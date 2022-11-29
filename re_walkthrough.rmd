@@ -29,11 +29,55 @@ dir.create(tempdir()) #This fixes a bug if the temporary directory is not found
 here::i_am("re_walkthrough.rmd")
 source(here::here("re_script.r"))
 source(here::here("re_functions.r"))
+source(here::here("run_icbm_and_re.r"))
 
 ```
 
-# Quick Start
-This code chunk represents the necessary input table and function call to use this r~e~ calculator.
+# Quick Start - ICBM + r~e~ Calculator
+In order to run ICBM simulations that include the calculated r~e~ parameter from climate data, you can use the function `RunICBMAndRe` from the script `run_icbm_and_re.r`. The definitions of every input are given in the header of that script. The function returns the same output as the ICBM function `icbm_holos4_classic_manure`; a table with ICBM C pools for every year, as well as the yearly mean r~e~ value.
+
+Note that the length of the simulation run in years is determined by the number of years represented in the climate data.
+The climate data should have these mandatory columns: `Year`, `JulianDay`, `MeanDailyAirTemperature`, `MeanDailyPrecipitation`, and `MeanDailyPET`.
+
+Note: use the `suppressWarnings` function to run a function without any warnings
+(e.g. `suppressWarnings(run_icbm_and_re.r())`).
+
+```{r}
+# Import weather data
+# This is arbitrary weather data from the lat/long 45/45.
+holos_nasa_climate <- readr::read_csv(here::here("holos_nasa_climate.csv")) %>%
+	filter(Year >= 2000)
+# These are arbitrary annual C inputs
+iag <- rep(977,length(unique(holos_nasa_climate$Year))) #aboveground young
+ibg <- rep(288,length(unique(holos_nasa_climate$Year))) #belowground young
+iman <- rep(88,length(unique(holos_nasa_climate$Year))) #manure
+# This is annual yield for an arbitrary crop type
+yield <- 3000
+perennial <- FALSE
+# These are arbitrary soil parameters;
+# not related to an SLC polygon or the location of the climate data
+SoilOrganicC_Percent <- 5
+ClayContent <- 0.05
+SandContent <- 0.2
+
+RunICBMAndRe(yield = yield,
+						 iag = iag,
+						 ibg = ibg,
+						 iman = iman,
+						 iag_init = 0,
+						 ibg_init = 0,
+						 io_init = 0,
+						 DailyClimateTable = holos_nasa_climate,
+						 perennial = perennial,
+						 SoilOrganicC_Percent = SoilOrganicC_Percent,
+						 ClayContent = ClayContent,
+						 SandContent = SandContent,
+						 irrigation_use_estimate = FALSE)
+```
+
+
+# Quick Start - r~e~ Calculator
+This code chunk represents the necessary input table and function call to use the r~e~ calculator.
 Definitions of the input variables can be found in the header section of the re_script.r file.
 `calculate_re` returns a single numeric value: the mean daily r~e~ value averages across every day of one year.
 In order to build a vector of r~e~ values for a multi-year simulation, see the code chunks in [this section](#multiyear).
@@ -838,8 +882,5 @@ multi_year_input %>%
 ```
 From the above output, each value in `multi_year_re` corresponds to the yearly value of r~e~.
 This vector can then be used as an input parameter in the ICBM R script, which takes a vector of r~e~ values of the same length as the simulation duration.
-
-Note: use the `suppressWarnings` function to run a function without any warnings
-(e.g. `suppressWarnings(calculate_re())`).
 
 # References

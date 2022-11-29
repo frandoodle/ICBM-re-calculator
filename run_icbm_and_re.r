@@ -124,30 +124,3 @@ RunICBMAndRe <- function(DailyClimateTable,
 	
 	return(result)
 }
-
-
-
-## Test ----------------------------------------------------------------------
-## Import weather data
-# holos_nasa_climate <- readr::read_csv(here::here("holos_nasa_climate.csv")) %>%
-# 	filter(Year >= 2000)
-# 
-# iag <- rep(977,length(unique(holos_nasa_climate$Year)))
-# ibg <- rep(288,length(unique(holos_nasa_climate$Year)))
-# iman <- rep(88,length(unique(holos_nasa_climate$Year)))
-# 
-# yield <- 3000
-# 
-# RunICBMAndRe(yield = yield,
-# 						 iag = iag,
-# 						 ibg = ibg,
-# 						 iman = iman,
-# 						 iag_init = 0,
-# 						 ibg_init = 0,
-# 						 io_init = 0,
-# 						 DailyClimateTable = holos_nasa_climate,
-# 						 perennial = FALSE,
-# 						 SoilOrganicC_Percent = 5,
-# 						 ClayContent = 0.05,
-# 						 SandContent = 0.2,
-# 						 irrigation_use_estimate = FALSE)
