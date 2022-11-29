@@ -40,13 +40,8 @@ In order to build a vector of r~e~ values for a multi-year simulation, see the c
 
 ```{r}
 quickstart_input <- tibble(
+	Year = 2000,
 	JulianDay = 1:365,
-	Yield = rep(3000, 365),
-	perennial = rep(FALSE, 365),
-	SoilOrganicC_Percent = rep(2, 365),
-	ClayContent = rep(0.05, 365),
-	SandContent = rep(0.2, 365),
-	alfa = rep(0.7, 365),
 	Tavg = rep(0,365),
 	PREC = rep(0,365),
 	PET = rep(0,365)
@@ -88,20 +83,33 @@ calculate_re
 ```{r, message=FALSE}
 holos_re_calculation <- readr::read_csv(here::here("holos_re_calculation.csv"))
 
+# climate data
 daily_input_test <- tibble(
-	Year = 2020,
+	Year = 2000,
 	JulianDay = 1:365,
-	Region = "QC",
-	Yield = rep(3000, 365),
-	perennial = rep(FALSE, 365),
-	SoilOrganicC_Percent = rep(2, 365),
-	ClayContent = rep(0.05, 365),
-	SandContent = rep(0.2, 365),
-	alfa = rep(0.7, 365)
-) %>%
-	mutate(Tavg = holos_re_calculation$InputTemperature,
-				 PREC = holos_re_calculation$InputPrecipitation,
-				 PET = holos_re_calculation$InputEvapotranspiration)
+	Tavg = holos_re_calculation$InputTemperature,
+	PREC = holos_re_calculation$InputPrecipitation,
+	PET = holos_re_calculation$InputEvapotranspiration)
+
+# other values
+yield = 3000
+perennial = FALSE
+SoilOrganicC_Percent = 2
+ClayContent = 0.05
+SandContent = 0.2
+alfa = 0.7
+SoilTopThickness = 250
+Temp_min = -3.78
+Temp_max = 30
+r_s = 0.42
+r_wp = 0.18
+ReferenceAdjustment = 0.10516
+r_c = NA
+tillage_soil = "Brown"
+tillage_type = "Intensive Tillage"
+irrigation_region = "Canada"
+irrigation_use_estimate = FALSE
+irrigation = 0
 ```
 
 
@@ -129,8 +137,8 @@ Where
 
 ```{r}
 GAI_return <- calculateGAI(daily_input_test$JulianDay,
-													 daily_input_test$Yield,
-													 daily_input_test$perennial)
+													 yield,
+													 perennial)
 GAI_return
 GAI <- GAI_return[["GAI"]]
 ```
@@ -169,9 +177,9 @@ Where
 `FieldCapacity` is the proportion of water at field capacity (mm^3^ mm^-3^).
 
 ```{r}
-WaterContent_return <- calculateWaterContent(SoilOrganicC_Percent = daily_input_test$SoilOrganicC_Percent[[1]],
-																						 ClayContent = daily_input_test$ClayContent[[1]],
-																						 SandContent = daily_input_test$SandContent[[1]])
+WaterContent_return <- calculateWaterContent(SoilOrganicC_Percent = SoilOrganicC_Percent,
+																						 ClayContent = ClayContent,
+																						 SandContent = SandContent)
 WaterContent_return
 WiltingPoint <- WaterContent_return[["WiltingPoint"]]
 FieldCapacity <- WaterContent_return[["FieldCapacity"]]
@@ -669,6 +677,12 @@ In order to account for irrigation, we must specify whether we want to estimate 
 In order to use the built-in daily irrigation estimations, use `irrigation_use_estimate = TRUE` and `irrigation_region`:
 ```{r}
 calculate_re(daily_input_test,
+						 yield = 3000,
+						 perennial = FALSE,
+						 SoilOrganicC_Percent = 2,
+						 ClayContent = 0.05,
+						 SandContent = 0.2,
+						 
 						 irrigation_use_estimate = TRUE,
 						 irrigation_region = "Canada")
 ```
@@ -677,25 +691,41 @@ If you do *not* want to use the built-in daily irrigation estimations, a vector 
 
 ```{r}
 calculate_re(daily_input_test,
+						 yield = 3000,
+						 perennial = FALSE,
+						 SoilOrganicC_Percent = 2,
+						 ClayContent = 0.05,
+						 SandContent = 0.2,
+						 
 						 irrigation_use_estimate = FALSE,
 						 irrigation = rep(20,365))
 ```
 
-`irrigation_use_estimate` needs to be specified, and can only take values of either `TRUE` or `FALSE`. If these conditions are not met, an error is returned:
+`irrigation_use_estimate` can only take values of either `TRUE` or `FALSE`. If it is not, an error is returned:
 
 ```{r}
-try(calculate_re(daily_input_test))
-
 try(calculate_re(daily_input_test,
-						 irrigation_use_estimate = NA))
+								 yield = 3000,
+								 perennial = FALSE,
+								 SoilOrganicC_Percent = 2,
+								 ClayContent = 0.05,
+								 SandContent = 0.2,
+						 
+								 irrigation_use_estimate = NA))
 ```
 
 An error is returned if `irrigation_region` is not passed a valid argument:
 
 ```{r}
 try(calculate_re(daily_input_test,
-						 irrigation_region = "Nebraska",
-						 irrigation_use_estimate = TRUE))
+								 yield = 3000,
+								 perennial = FALSE,
+								 SoilOrganicC_Percent = 2,
+								 ClayContent = 0.05,
+								 SandContent = 0.2,
+								 
+								 irrigation_region = "Nebraska",
+								 irrigation_use_estimate = TRUE))
 ```
 
 ## Testing tillage parameter (r~c~) {#tillage}
@@ -704,42 +734,77 @@ By default, r~c~ is given a value of 1.
 This can either be changed based on the tillage table by specifying a `tillage_type` and a `tillage_soil`, or by supplying a vector of `r_c` values of length 365.
 ```{r}
 calculate_re(daily_input_test,
+						 yield = 3000,
+						 perennial = FALSE,
+						 SoilOrganicC_Percent = 2,
+						 ClayContent = 0.05,
+						 SandContent = 0.2,
+						 
 						 tillage_type = "Reduced Tillage",
-						 tillage_soil = "Brown",
-						 irrigation_use_estimate = FALSE)
+						 tillage_soil = "Brown")
 
 calculate_re(daily_input_test,
+						 yield = 3000,
+						 perennial = FALSE,
+						 SoilOrganicC_Percent = 2,
+						 ClayContent = 0.05,
+						 SandContent = 0.2,
+						 
 						 tillage_type = "No-till",
-						 tillage_soil = "Brown",
-						 irrigation_use_estimate = FALSE)
+						 tillage_soil = "Brown")
 
 calculate_re(daily_input_test,
+						 yield = 3000,
+						 perennial = FALSE,
+						 SoilOrganicC_Percent = 2,
+						 ClayContent = 0.05,
+						 SandContent = 0.2,
+						 
 						 tillage_type = "No-till",
-						 tillage_soil = "Black",
-						 irrigation_use_estimate = FALSE)
+						 tillage_soil = "Black")
 
 calculate_re(daily_input_test,
-						 r_c = rep(0.05,365),
-						 irrigation_use_estimate = FALSE)
+						 yield = 3000,
+						 perennial = FALSE,
+						 SoilOrganicC_Percent = 2,
+						 ClayContent = 0.05,
+						 SandContent = 0.2,
+						 
+						 r_c = rep(0.05,365))
 ```
 An error is returned if either `tillage_type` or `tillage_soil` are not passed valid arguments:
 
 ```{r}
 try(calculate_re(daily_input_test,
-						 tillage_type = "Quadruple tillage",
-						 tillage_soil = "Brown",
-						 irrigation_use_estimate = FALSE))
+								 yield = 3000,
+								 perennial = FALSE,
+								 SoilOrganicC_Percent = 2,
+								 ClayContent = 0.05,
+								 SandContent = 0.2,
+								 
+								 tillage_type = "Quadruple tillage",
+								 tillage_soil = "Brown"))
 
 try(calculate_re(daily_input_test,
-						 tillage_type = "Reduced tillage",
-						 tillage_soil = "Green",
-						 irrigation_use_estimate = FALSE))
+								 yield = 3000,
+								 perennial = FALSE,
+								 SoilOrganicC_Percent = 2,
+								 ClayContent = 0.05,
+								 SandContent = 0.2,
+								 
+								 tillage_type = "Reduced tillage",
+								 tillage_soil = "Green"))
 ```			 
 If there is even one NA value in `r_c`, it is estimated using the tillage table.
 ```{r}
 try(calculate_re(daily_input_test,
-						 r_c = c(NA,rep(0.05,364)),
-						 irrigation_use_estimate = FALSE))
+								 yield = 3000,
+								 perennial = FALSE,
+								 SoilOrganicC_Percent = 2,
+								 ClayContent = 0.05,
+								 SandContent = 0.2,
+								 
+								 r_c = c(NA,rep(0.05,364))))
 ```
 
 
@@ -762,7 +827,12 @@ multi_year_input
 multi_year_input %>%
 	group_by(Year) %>%
 	group_split() %>% # Split the table into a list of tables based on the grouping variable
-	map(~calculate_re(., irrigation_use_estimate=FALSE)) %>% # Run calculate_re for every member of the list
+	map(~calculate_re(.,
+										 yield = 3000,
+										 perennial = FALSE,
+										 SoilOrganicC_Percent = 2,
+										 ClayContent = 0.05,
+										 SandContent = 0.2)) %>% # Run calculate_re for every member of the list
 	unlist()
 	
 ```

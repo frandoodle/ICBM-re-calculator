@@ -27,19 +27,31 @@ source(here::here("ICBM_Sarah_TimeSeries_Tested_Manure_V1.r"))
 # ClayContent - (0-1) soil clay content
 # SandContent - (0-1) soil sand content
 
-RunICBMAndRe <- function(yield,
+RunICBMAndRe <- function(DailyClimateTable,
+												 perennial,
+												 SoilOrganicC_Percent,
+												 ClayContent,
+												 SandContent,
+												 yield,
 												 iag,
 												 ibg,
 												 iman,
 												 iag_init = 0,
 												 ibg_init = 0,
 												 io_init = 0,
-												 DailyClimateTable,
-												 Perennial,
-												 SoilOrganicC_Percent,
-												 ClayContent,
-												 SandContent,
-												 irrigation_use_estimate)
+												 alfa = 0.7,
+												 SoilTopThickness = 250,
+												 Temp_min = -3.78,
+												 Temp_max = 30,
+												 r_s = 0.42,
+												 r_wp = 0.18,
+												 ReferenceAdjustment = 0.10516,
+												 r_c = NA,
+												 tillage_soil = "Brown",
+												 tillage_type = "Intensive Tillage",
+												 irrigation_region = "Canada",
+												 irrigation_use_estimate = FALSE,
+												 irrigation = 0)
 {
 	simulation_years <- unique(DailyClimateTable$Year)
 	
@@ -62,8 +74,23 @@ RunICBMAndRe <- function(yield,
 		group_split() %>%
 		map(~calculate_re(.,
 											yield = yield,
-											perennial = Perennial,
-											irrigation_use_estimate=irrigation_use_estimate)) %>% 
+											perennial = perennial,
+											SoilOrganicC_Percent = SoilOrganicC_Percent,
+											ClayContent = ClayContent,
+											SandContent = SandContent,
+											alfa = alfa,
+											SoilTopThickness = SoilTopThickness,
+											Temp_min = Temp_min,
+											Temp_max = Temp_max,
+											r_s = r_s,
+											r_wp = r_wp,
+											ReferenceAdjustment = ReferenceAdjustment,
+											r_c = r_c,
+											tillage_soil = tillage_soil,
+											tillage_type = tillage_type,
+											irrigation_region = irrigation_region,
+											irrigation_use_estimate = irrigation_use_estimate,
+											irrigation = irrigation)) %>% 
 		unlist()
 	
 	# Run ICBM ------------------------------------------------------------------
@@ -100,27 +127,27 @@ RunICBMAndRe <- function(yield,
 
 
 
-# Test ----------------------------------------------------------------------
-# Import weather data
-holos_nasa_climate <- readr::read_csv(here::here("holos_nasa_climate.csv")) %>%
-	filter(Year >= 2000)
-
-iag <- rep(977,length(unique(holos_nasa_climate$Year)))
-ibg <- rep(288,length(unique(holos_nasa_climate$Year)))
-iman <- rep(88,length(unique(holos_nasa_climate$Year)))
-
-yield <- rep(3000,nrow(holos_nasa_climate))
-
-RunICBMAndRe(yield = yield,
-						 iag = iag,
-						 ibg = ibg,
-						 iman = iman,
-						 iag_init = 0,
-						 ibg_init = 0,
-						 io_init = 0,
-						 DailyClimateTable = holos_nasa_climate,
-						 Perennial = FALSE,
-						 SoilOrganicC_Percent = 5,
-						 ClayContent = 0.05,
-						 SandContent = 0.2,
-						 irrigation_use_estimate = FALSE)
+## Test ----------------------------------------------------------------------
+## Import weather data
+# holos_nasa_climate <- readr::read_csv(here::here("holos_nasa_climate.csv")) %>%
+# 	filter(Year >= 2000)
+# 
+# iag <- rep(977,length(unique(holos_nasa_climate$Year)))
+# ibg <- rep(288,length(unique(holos_nasa_climate$Year)))
+# iman <- rep(88,length(unique(holos_nasa_climate$Year)))
+# 
+# yield <- 3000
+# 
+# RunICBMAndRe(yield = yield,
+# 						 iag = iag,
+# 						 ibg = ibg,
+# 						 iman = iman,
+# 						 iag_init = 0,
+# 						 ibg_init = 0,
+# 						 io_init = 0,
+# 						 DailyClimateTable = holos_nasa_climate,
+# 						 perennial = FALSE,
+# 						 SoilOrganicC_Percent = 5,
+# 						 ClayContent = 0.05,
+# 						 SandContent = 0.2,
+# 						 irrigation_use_estimate = FALSE)

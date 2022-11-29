@@ -152,7 +152,8 @@ icbm_holos4_classic_manure=function(times, iag, ibg,iman,re, yopool){
   print(length(Yman))
   out=data.frame("time"=times, "Yag"=unlist(Yag), "Ybg"=unlist(Ybg), "Old"=unlist(O), "YManure"=unlist(Yman))  
   out$Tot=out$Yag+out$Ybg+out$Old+out$YManure
-  View(out)
+  out$re=re
+  #View(out)
   
   return(out%>%arrange(time))
 }

@@ -16,31 +16,32 @@ source(here::here("re_functions.r"))
 # 
 # YearInputTable, a table comprised of 365 rows with the following columns:
 # 		Year(int)	-	simulation year
-# 		Yield(float)	-	simulation crop yield (kg dry matter ha-1)
-# 		perennial(logical)	-	whether the simulated crop is perennial (TRUE/FALSE)
-# 		SoilOrganicC_Percent(float)	-	soil OC level from the SLC database (%)
-# 		ClayContent(float)	-	soil clay content (fraction)
-# 		SandContent(float)	soil sand content (fraction)
-# 		alfa(float)	-	Minimum water storage fraction of Wilting Point, constant value, typically 0.7
+# 		JulianDay(int) - the julian day for each day of the year
 # 		Tavg(float)	-	mean daily temperature (celsius)
 # 		PREC	-	total daily precipitation (mm d-1)
 # 		PET	-	total daily evapotranspiration (mm d-1)
-# SoilTopThickness, thickness of topsoil (mm), default = 250
-# Temp_min, critical soil temperature (celsius), default -3.78
-# Temp_max, maximum soil temperature (celsius), default = 30
-# r_s, reference saturation, default = 0.42
-# r_wp, reference wilting point, default = 0.18
-# ReferenceAdjustment, Calibration factor for a bare-fallow treatment considering a soil thickness of 25 cm, (Uppsala, Sweden), default = 0.10516,
-# r_c, tillage factor, can either be manually inputted or estimated, default = NA, meaning estimated using built-in calculator
-# tillage_soil, soil type to use in considering tillage factor, default = "Brown"
+# Yield(float)	-	simulation crop yield (kg dry matter ha-1)
+# perennial(logical)	-	whether the simulated crop is perennial (TRUE/FALSE)
+# SoilOrganicC_Percent(float)	-	soil OC level from the SLC database (%)
+# ClayContent(float)	-	soil clay content (fraction)
+# SandContent(float)	soil sand content (fraction)
+# alfa(float)	-	Minimum water storage fraction of Wilting Point, constant value, typically 0.7
+# SoilTopThickness(float), thickness of topsoil (mm), default = 250
+# Temp_min(float), critical soil temperature (celsius), default -3.78
+# Temp_max(float), maximum soil temperature (celsius), default = 30
+# r_s(float), reference saturation, default = 0.42
+# r_wp(float), reference wilting point, default = 0.18
+# ReferenceAdjustment(float), Calibration factor for a bare-fallow treatment considering a soil thickness of 25 cm, (Uppsala, Sweden), default = 0.10516,
+# r_c(float), tillage factor, can either be manually inputted or estimated, default = NA. When set to NA, r_c is estimated using built-in calculator
+# tillage_soil(chr), soil type to use in considering tillage factor, default = "Brown"
 # 		Brown
 # 		Dark Brown
 # 		Black
-# tillage_type, tillage type to use in considering tillage factor, default = "Intensive Tillage"
+# tillage_type(chr), tillage type to use in considering tillage factor, default = "Intensive Tillage"
 # 		Intensive Tillage
 # 		Reduced Tillage
 # 		No-till
-# irrigation_region, region to use when estimating daily irrigation, default = "Canada"
+# irrigation_region(chr), region to use when estimating daily irrigation, default = "Canada"
 # 		Canada
 # 		BC
 # 		AB
@@ -49,12 +50,12 @@ source(here::here("re_functions.r"))
 # 		ON
 # 		QC
 # 		Atlantic Provinces
-# irrigation_use_estimate, whether the use the built-in irrigation estimation or not (TRUE/FALSE)
-# irrigation, daily irrigation values, default = 0
+# irrigation_use_estimate(logical), whether the use the built-in irrigation estimation or not (TRUE/FALSE), default=FALSE
+# irrigation(float), daily irrigation values (mm/d), default = 0
 #
 #  OUTPUTS:
 #  
-#  a numeric value representing the mean annual r_e value for that year's input
+#  a numeric value representing the mean annual r_e value given that year's inputs
 
 # table definitions ----------------------------------------------------
 
@@ -99,7 +100,7 @@ calculate_re <- function(YearInputTable,
 												 tillage_soil = "Brown",
 												 tillage_type = "Intensive Tillage",
 												 irrigation_region = "Canada",
-												 irrigation_use_estimate,
+												 irrigation_use_estimate = FALSE,
 												 irrigation = 0) {
 	
 	# Eq. 2.2.1-1 through Eq. 2.2.1-3
