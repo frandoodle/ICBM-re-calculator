@@ -109,8 +109,7 @@ calculate_re <- function(YearInputTable,
 	GAI = GAI_return[["GAI"]]
 	
 	# Eq. 2.2.1-4 through Eq. 2.2.1-10
-	WaterContentReturn <- calculateWaterContent(JulianDay = YearInputTable$JulianDay,
-																							SoilOrganicC_Percent = SoilOrganicC_Percent,
+	WaterContentReturn <- calculateWaterContent(SoilOrganicC_Percent = SoilOrganicC_Percent,
 																							ClayContent = ClayContent,
 																							SandContent = SandContent)
 	WiltingPoint <- WaterContentReturn[["WiltingPoint"]]
@@ -126,13 +125,13 @@ calculate_re <- function(YearInputTable,
 	SurfaceTemp <- ifelse(YearInputTable$Tavg < 0, 0.20*YearInputTable$Tavg,
 												YearInputTable$Tavg*(0.95+0.05*exp(-0.4*(LeafAreaIndex-3))))
 	
-	input_soiltemp <- YearInputTable %>%
-		full_join(GAI_return, by="JulianDay") %>%
-		full_join(WaterContentReturn, by="JulianDay") %>%
-		bind_cols(SoilTopThickness = SoilTopThickness,
-							SoilMeanDepth = SoilMeanDepth,
-							LeafAreaIndex = LeafAreaIndex,
-							SurfaceTemp = SurfaceTemp)
+	# input_soiltemp <- YearInputTable %>%
+	# 	full_join(GAI_return, by="JulianDay") %>%
+	# 	full_join(WaterContentReturn, by="JulianDay") %>%
+	# 	bind_cols(SoilTopThickness = SoilTopThickness,
+	# 						SoilMeanDepth = SoilMeanDepth,
+	# 						LeafAreaIndex = LeafAreaIndex,
+	# 						SurfaceTemp = SurfaceTemp)
 	
 	# Eq. 2.2.1-15 & Eq. 2.2.1-16
 	SoilTemp <- calculateSoilTemp(SurfaceTemp = SurfaceTemp,
@@ -196,11 +195,16 @@ calculate_re <- function(YearInputTable,
 	SoilAvailWater <- Precipitation + Irrigation - CropInterception
 	
 	# Eq. 2.2.1-25 through Eq. 2.2.1-35
-	input_waterstorage <- bind_cols(input_soiltemp,
-																						 SoilAvailWater = SoilAvailWater,
-																						 ET_c = ET_c)
+	# input_waterstorage <- bind_cols(input_soiltemp,
+	# 																					 SoilAvailWater = SoilAvailWater,
+	# 																					 ET_c = ET_c)
 	
-	WaterStorage <- calculateWaterStorage(input_waterstorage)
+	WaterStorage <- calculateWaterStorage(SoilAvailWater = SoilAvailWater,
+																				ET_c = ET_c,
+																				alfa = alfa,
+																				SoilTopThickness = SoilTopThickness,
+																				WiltingPoint = WiltingPoint,
+																				FieldCapacity = FieldCapacity)
 
 	# Eq. 2.2.1-36 - Eq. 2.2.1-37
 	SoilTemp_dprev <- lag(SoilTemp, default=0)
@@ -210,7 +214,9 @@ calculate_re <- function(YearInputTable,
 
 	
 	WaterStorage_dprev <- lag(WaterStorage, default = FieldCapacity[1]*SoilTopThickness)
-	VolSoilWaterContent <- calculateVolSoilWaterContent(WaterStorage_dprev, SoilTopThickness, WiltingPoint)
+	VolSoilWaterContent <- calculateVolSoilWaterContent(WaterStorage_dprev = WaterStorage_dprev,
+																											SoilTopThickness = SoilTopThickness,
+																											WiltingPoint = WiltingPoint)
 	
 	# Eq. 2.2.1-38
 	VolSoilWaterContent_sat <- 1.2*FieldCapacity

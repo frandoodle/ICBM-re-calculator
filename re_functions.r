@@ -1,5 +1,7 @@
 
-calculateGAI <- function(JulianDay, yield, perennial) {
+calculateGAI <- function(JulianDay,
+												 yield,
+												 perennial) {
 	# Inputs:
 	# JulianDay (int)
 	# Yield (float) which represents the total annual yield for the current year
@@ -23,7 +25,7 @@ calculateGAI <- function(JulianDay, yield, perennial) {
 	return(tibble(JulianDay = JulianDay, GAI_max = GAI_max, MidSeason = MidSeason, GAI = GAI))
 }
 
-calculateWaterContent <- function(JulianDay, SoilOrganicC_Percent, ClayContent, SandContent) {
+calculateWaterContent <- function(SoilOrganicC_Percent, ClayContent, SandContent) {
 	# Inputs:
 	# SoilOrganicC_Percent (float)
 	# ClayContent (float)
@@ -88,8 +90,7 @@ calculateWaterContent <- function(JulianDay, SoilOrganicC_Percent, ClayContent, 
 	# Eq. 2.2.1-10
 	FieldCapacity <- FieldCapacityPercent/100
 	
-	return(tibble(JulianDay = JulianDay,
-								OrgCfactor = OrgCfactor,
+	return(c(OrgCfactor = OrgCfactor,
 				 Clayfactor = Clayfactor,
 				 Sandfactor = Sandfactor,
 				 WiltingPoint = WiltingPoint,
@@ -106,11 +107,13 @@ calculateWaterContent <- function(JulianDay, SoilOrganicC_Percent, ClayContent, 
 # 	return(SurfaceTemp)
 # }
 
-calculateSoilTemp <- function(SurfaceTemp, GAI, SoilMeanDepth) {
+calculateSoilTemp <- function(SurfaceTemp,
+															GAI,
+															SoilMeanDepth) {
 	# Inputs:
-	# SoilMeanDepth (float)
 	# SurfaceTemp (float)
 	# GAI (float)
+	# SoilMeanDepth (float)
 	table <- tibble(SurfaceTemp = SurfaceTemp,
 									GAI = GAI)
 	result <- table %>%
@@ -130,31 +133,38 @@ calculateSoilTemp <- function(SurfaceTemp, GAI, SoilMeanDepth) {
 	return(result$SoilTemp)
 }
 
-calculateVolSoilWaterContent <- function(WaterStorage_dprev, SoilTopThickness, WiltingPoint) {
+calculateVolSoilWaterContent <- function(WaterStorage_dprev,
+																				 SoilTopThickness,
+																				 WiltingPoint) {
 	VolSoilWaterContent <- WaterStorage_dprev/SoilTopThickness
 	VolSoilWaterContent_return <- ifelse(VolSoilWaterContent == 0, WiltingPoint, VolSoilWaterContent)
 	return(VolSoilWaterContent_return)
 }
 
-calculateWaterStorage <- function(InputTable) {
-	WaterStorage_dprev_initial <- InputTable$FieldCapacity[1]*InputTable$SoilTopThickness[1]
-	# Input should be a table with the columns
+calculateWaterStorage <- function(SoilAvailWater,
+																	ET_c,
+																	alfa = 0.7,
+																	SoilTopThickness,
+																	WiltingPoint,
+																	FieldCapacity) {
+	WaterStorage_dprev_initial <- FieldCapacity*SoilTopThickness
+	# Inputs:
 	# SoilTopThickness (float)
 	# WiltingPoint (float)
 	# FieldCapacity (float)
 	# SoilAvailWater (float)
 	# ET_c (float)
 	# alfa (float)
-	result = InputTable %>%
+	
+	table <- tibble(SoilAvailWater = SoilAvailWater,
+									ET_c = ET_c)
+	
+	result = table %>%
 		mutate(d = accumulate(.x = row_number()[-1], .init = WaterStorage_dprev_initial, .f=function(WaterStorage_dprev, row) {
 			data <- cur_data_all()
 			
-			SoilTopThickness <- data$SoilTopThickness[row]
-			WiltingPoint <- data$WiltingPoint[row]
-			FieldCapacity <- data$FieldCapacity[row]
 			SoilAvailWater <- data$SoilAvailWater[row]
 			ET_c <- data$ET_c[row]
-			alfa <- data$alfa[row]
 			
 			# Calculate volumetric soil water content
 			# Eq. 2.2.1-25 to 2.2.1-26
