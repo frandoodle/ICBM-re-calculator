@@ -7,12 +7,58 @@ library(purrr)
 library(stringr)
 library(here)
 
-dir.create(tempdir()) #This fixes a bug if the temporary directory is not found
+dir.create(tempdir()) # This fixes a bug if the temporary directory is not found
 
 here::i_am("re_script.r")
 source(here::here("re_functions.r"))
 
+# INPUTS:
+# 
+# YearInputTable, a table comprised of 365 rows with the following columns:
+# 		Year(int)	-	simulation year
+# 		Yield(float)	-	simulation crop yield (kg dry matter ha-1)
+# 		perennial(logical)	-	whether the simulated crop is perennial (TRUE/FALSE)
+# 		SoilOrganicC_Percent(float)	-	soil OC level from the SLC database (%)
+# 		ClayContent(float)	-	soil clay content (fraction)
+# 		SandContent(float)	soil sand content (fraction)
+# 		alfa(float)	-	Minimum water storage fraction of Wilting Point, constant value, typically 0.7
+# 		Tavg(float)	-	mean daily temperature (celsius)
+# 		PREC	-	total daily precipitation (mm d-1)
+# 		PET	-	total daily evapotranspiration (mm d-1)
+# SoilTopThickness, thickness of topsoil (mm), default = 250
+# Temp_min, critical soil temperature (celsius), default -3.78
+# Temp_max, maximum soil temperature (celsius), default = 30
+# r_s, reference saturation, default = 0.42
+# r_wp, reference wilting point, default = 0.18
+# ReferenceAdjustment, Calibration factor for a bare-fallow treatment considering a soil thickness of 25 cm, (Uppsala, Sweden), default = 0.10516,
+# r_c, tillage factor, can either be manually inputted or estimated, default = NA, meaning estimated using built-in calculator
+# tillage_soil, soil type to use in considering tillage factor, default = "Brown"
+# 		Brown
+# 		Dark Brown
+# 		Black
+# tillage_type, tillage type to use in considering tillage factor, default = "Intensive Tillage"
+# 		Intensive Tillage
+# 		Reduced Tillage
+# 		No-till
+# irrigation_region, region to use when estimating daily irrigation, default = "Canada"
+# 		Canada
+# 		BC
+# 		AB
+# 		SK
+# 		MB
+# 		ON
+# 		QC
+# 		Atlantic Provinces
+# irrigation_use_estimate, whether the use the built-in irrigation estimation or not (TRUE/FALSE)
+# irrigation, daily irrigation values, default = 0
+#
+#  OUTPUTS:
+#  
+#  a numeric value representing the mean annual r_e value for that year's input
 
+# table definitions ----------------------------------------------------
+
+# Table 47 in the Holos algorithm document
 Irrigation_percentage_monthly <- tibble(
 	`Province/Region` = c("Canada", "BC", "AB", "SK", "MB", "ON", "QC", "Atlantic Provinces"),
 	`Jan` = 0,
@@ -29,12 +75,20 @@ Irrigation_percentage_monthly <- tibble(
 	`Dec` = 0
 )	
 
+# Table 36 in the Holos algorithm document
 Tillage_table <- tibble(`Soil type` = c("Brown", "Dark Brown", "Black"),
 												`Intensive Tillage` = c(1,1,1),
-												`Reduced tillage` = c(0.9, 0.85, 0.8),
+												`Reduced Tillage` = c(0.9, 0.85, 0.8),
 												`No-till` = c(0.8, 0.7, 0.6))
 
-calculate_re <- function(input,
+# calculate_re ----------------------------------------------------------
+calculate_re <- function(YearInputTable,
+												 yield,
+												 perennial,
+												 SoilOrganicC_Percent,
+												 ClayContent,
+												 SandContent,
+												 alfa = 0.7,
 												 SoilTopThickness = 250,
 												 Temp_min = -3.78,
 												 Temp_max = 30,
@@ -49,11 +103,16 @@ calculate_re <- function(input,
 												 irrigation = 0) {
 	
 	# Eq. 2.2.1-1 through Eq. 2.2.1-3
-	GAI_return <- calculateGAI(input)
+	GAI_return <- calculateGAI(JulianDay = YearInputTable$JulianDay,
+														 yield = yield,
+														 perennial = perennial)
 	GAI = GAI_return[["GAI"]]
 	
 	# Eq. 2.2.1-4 through Eq. 2.2.1-10
-	WaterContentReturn <- calculateWaterContent(input)
+	WaterContentReturn <- calculateWaterContent(JulianDay = YearInputTable$JulianDay,
+																							SoilOrganicC_Percent = SoilOrganicC_Percent,
+																							ClayContent = ClayContent,
+																							SandContent = SandContent)
 	WiltingPoint <- WaterContentReturn[["WiltingPoint"]]
 	FieldCapacity <- WaterContentReturn[["FieldCapacity"]]
 	
@@ -63,11 +122,11 @@ calculate_re <- function(input,
 	# Eq. 2.2.1-12
 	LeafAreaIndex <- 0.8*GAI
 	
-	##  Eq. 2.2.1-13 & Eq. 2.2.1-14
-	SurfaceTemp <- ifelse(input$Tavg < 0, 0.20*input$Tavg,
-												input$Tavg*(0.95+0.05*exp(-0.4*(LeafAreaIndex-3))))
+	## Eq. 2.2.1-13 & Eq. 2.2.1-14
+	SurfaceTemp <- ifelse(YearInputTable$Tavg < 0, 0.20*YearInputTable$Tavg,
+												YearInputTable$Tavg*(0.95+0.05*exp(-0.4*(LeafAreaIndex-3))))
 	
-	input_soiltemp <- input %>%
+	input_soiltemp <- YearInputTable %>%
 		full_join(GAI_return, by="JulianDay") %>%
 		full_join(WaterContentReturn, by="JulianDay") %>%
 		bind_cols(SoilTopThickness = SoilTopThickness,
@@ -76,23 +135,22 @@ calculate_re <- function(input,
 							SurfaceTemp = SurfaceTemp)
 	
 	# Eq. 2.2.1-15 & Eq. 2.2.1-16
-	SoilTemp <- calculateSoilTemp(input_soiltemp)
+	SoilTemp <- calculateSoilTemp(SurfaceTemp = SurfaceTemp,
+																GAI = GAI,
+																SoilMeanDepth = SoilMeanDepth)
 	
-	# Eq. 2.2.1-17 & Eq. 2.2.1-18
-	K_c <- 1.3 - (1.3-0.8) * exp(-0.17*GAI_return[["GAI"]]) 
-	ET_0 <- input$PET
-	ET_c <- ET_0 * K_c
+	
 
-	# Eq. 2.2.1-45 & Eq. 2.2.1-46
+	# Eq. 2.2.1-17 & Eq. 2.2.1-18
 	Irrigation = irrigation
 	
-	P <- sum(input$PREC)
-	PE <- sum(input$PET)
+	P <- sum(YearInputTable$PREC)
+	PE <- sum(YearInputTable$PET)
 		
 	
 	if (is.na(irrigation_use_estimate) | !is.logical(irrigation_use_estimate)) {
 		stop(paste0("Specify whether daily irrigation values should be estimated.
-		If irrigation_use_estimate = TRUE, then irrigation is estimated using Eqs. 2.2.1-45 and 2.2.1-46.
+		If irrigation_use_estimate = TRUE, then irrigation is estimated using Eqs. 2.2.1-17 and Eq. 2.2.1-18.
 		If irrigation_use_estimate = FALSE, then irrigation is defaulted to 0, but can be overridden with a numeric vector of length 365 which represents daily irrigation."))
 	}
 	if (PE > P & irrigation_use_estimate == T) {
@@ -101,7 +159,7 @@ calculate_re <- function(input,
 			stop(paste0(irrigation_region, " is not a valid irrigation_region. Valid regions are: ",paste(Irrigation_percentage_monthly$`Province/Region`,collapse=", ")))
 		}
 		
-		Days_month <- lubridate::days_in_month(as.Date(paste(input$Year, input$JulianDay, sep="-"), "%Y-%j"))
+		Days_month <- lubridate::days_in_month(as.Date(paste(YearInputTable$Year, YearInputTable$JulianDay, sep="-"), "%Y-%j"))
 		
 		# Fraction of yearly irrigation for each month
 		Fraction_monthly <- Irrigation_percentage_monthly %>%
@@ -118,28 +176,33 @@ calculate_re <- function(input,
 			unname
 	}
 	
-	# Eq. 2.2.1-19 through Eq. 2.2.1-22
-	Precipitation <- input$PREC
+	# Eq. 2.2.1-19 & Eq. 2.2.1-20
+	K_c <- 1.3 - (1.3-0.8) * exp(-0.17*GAI_return[["GAI"]]) 
+	ET_0 <- YearInputTable$PET
+	ET_c <- ET_0 * K_c
 	
-	#Eq. 2.2.1-19 - Eq. 2.2.1-20
+	
+	Precipitation <- YearInputTable$PREC
+	
+	# Eq. 2.2.1-21 - Eq. 2.2.1-22
 	CropInterception <- ifelse(Precipitation + Irrigation < 0.2*GAI,
 														 Precipitation + Irrigation,
 														 0.2*GAI)
 	
-	#Eq. 2.2.1-21
+	# Eq. 2.2.1-23
 	CropInterception <- ifelse(CropInterception > ET_c, ET_c, CropInterception)
 	
-	#Eq. 2.2.1-22
+	# Eq. 2.2.1-24
 	SoilAvailWater <- Precipitation + Irrigation - CropInterception
 	
-	# Eq. 2.2.1-23 through Eq. 2.2.1-33
-	daily_input_test_waterstorage <- bind_cols(input_soiltemp,
+	# Eq. 2.2.1-25 through Eq. 2.2.1-35
+	input_waterstorage <- bind_cols(input_soiltemp,
 																						 SoilAvailWater = SoilAvailWater,
 																						 ET_c = ET_c)
 	
-	WaterStorage <- calculateWaterStorage(daily_input_test_waterstorage)
+	WaterStorage <- calculateWaterStorage(input_waterstorage)
 
-	# Eq. 2.2.1-34 - Eq. 2.2.1-35
+	# Eq. 2.2.1-36 - Eq. 2.2.1-37
 	SoilTemp_dprev <- lag(SoilTemp, default=0)
 	
 	
@@ -149,35 +212,35 @@ calculate_re <- function(input,
 	WaterStorage_dprev <- lag(WaterStorage, default = FieldCapacity[1]*SoilTopThickness)
 	VolSoilWaterContent <- calculateVolSoilWaterContent(WaterStorage_dprev, SoilTopThickness, WiltingPoint)
 	
-	# Eq. 2.2.1-36
+	# Eq. 2.2.1-38
 	VolSoilWaterContent_sat <- 1.2*FieldCapacity
-	# Eq. 2.2.1-37
+	# Eq. 2.2.1-39
 	VolSoilWaterContent_opt <- 0.9*FieldCapacity
 	
-	# Eq. 2.2.1-38 - Eq. 2.2.1-40
+	# Eq. 2.2.1-40 - Eq. 2.2.1-42
 	re_water <- ifelse(
 		# if...
 		VolSoilWaterContent > VolSoilWaterContent_opt,
 		# then...
-		(1 - r_s)*((VolSoilWaterContent-VolSoilWaterContent_opt)/(VolSoilWaterContent_opt-VolSoilWaterContent_sat)) + 1, # Eq. 2.2.1-38
+		(1 - r_s)*((VolSoilWaterContent-VolSoilWaterContent_opt)/(VolSoilWaterContent_opt-VolSoilWaterContent_sat)) + 1,
 		ifelse(
 			# elseif...
 			VolSoilWaterContent < WiltingPoint,
 			# then...
-			r_wp*((VolSoilWaterContent)/(WiltingPoint)), # Eq. 2.2.1-39
+			r_wp*((VolSoilWaterContent)/(WiltingPoint)),
 			# else...
-			(1-r_wp)*((VolSoilWaterContent-WiltingPoint)/(VolSoilWaterContent_opt-WiltingPoint)) + r_wp)) # Eq. 2.2.1-40
-	
-	# Eq. 2.2.1-41
-	re_water <- pmin(pmax(0,re_water),1)
-
-	# Eq. 2.2.1-42
-	re_x1 <- re_temp*re_water
+			(1-r_wp)*((VolSoilWaterContent-WiltingPoint)/(VolSoilWaterContent_opt-WiltingPoint)) + r_wp))
 	
 	# Eq. 2.2.1-43
+	re_water <- pmin(pmax(0,re_water),1)
+
+	# Eq. 2.2.1-44
+	re_x1 <- re_temp*re_water
+	
+	# Eq. 2.2.1-45
 	re_cropdaily <- re_x1/ReferenceAdjustment
 	
-	# Eq. 2.2.1-44
+	# Eq. 2.2.1-46
 	re_crop <- mean(re_cropdaily)	
 	
 	# Tillage factor (r_c)
@@ -189,7 +252,7 @@ calculate_re <- function(input,
 	}
 	
 	if(any(is.na(r_c))) {
-		warning(paste0("NA values detected in r_c. Estimating r_c based on Tillage_table (Table 6) using tillage_soil = ",tillage_soil,", and tillage_type = ",tillage_type,".\n"))
+		warning(paste0("NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = ",tillage_soil,", and tillage_type = ",tillage_type,".\n"))
 		r_c <- Tillage_table %>%
 			filter(`Soil type` == tillage_soil) %>%
 			`[[`(tillage_type)

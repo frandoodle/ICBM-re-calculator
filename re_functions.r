@@ -1,38 +1,42 @@
 
-calculateGAI <- function(InputTable) {
-	#Input should be a df/tibble with at least the columns JulianDay (int),
-	#Yield (float), and perennial (bool)
+calculateGAI <- function(JulianDay, yield, perennial) {
+	# Inputs:
+	# JulianDay (int)
+	# Yield (float) which represents the total annual yield for the current year
+	# perennial (logical)
 	
-	#Holos V4 constant values for different crop types
-	#(see section 2.2.1.1.1.1, Green area index dynamics)
-	EmergenceDay <- ifelse(InputTable$perennial == TRUE, 75, 141)
-	RipeningDay <- ifelse(InputTable$perennial == TRUE, 300, 197)
-	Variance <- ifelse(InputTable$perennial == TRUE, 1500, 300)
+	# Holos V4 constant values for different crop types
+	# (see section 2.2.1.1.1.1, Green area index dynamics)
+	EmergenceDay <- ifelse(perennial == TRUE, 75, 141)
+	RipeningDay <- ifelse(perennial == TRUE, 300, 197)
+	Variance <- ifelse(perennial == TRUE, 1500, 300)
 	
-	#Eq. 2.2.1-1
-	GAI_max <- 0.0731*(InputTable$Yield/1000)^2 + 0.408*(InputTable$Yield/1000)
+	# Eq. 2.2.1-1
+	GAI_max <- 0.0731*(yield/1000)^2 + 0.408*(yield/1000)
 	
-	#Eq. 2.2.1-2
+	# Eq. 2.2.1-2
 	MidSeason <- EmergenceDay + ((RipeningDay-EmergenceDay)/2)
 	
-	#Eq. 2.2.1-3
-	GAI <- GAI_max*exp(-(((InputTable$JulianDay-MidSeason)^2)/(2*Variance)))
+	# Eq. 2.2.1-3
+	GAI <- GAI_max*exp(-(((JulianDay-MidSeason)^2)/(2*Variance)))
 	
-	return(tibble(JulianDay = InputTable$JulianDay, GAI_max = GAI_max, MidSeason = MidSeason, GAI = GAI))
+	return(tibble(JulianDay = JulianDay, GAI_max = GAI_max, MidSeason = MidSeason, GAI = GAI))
 }
 
-calculateWaterContent <- function(InputTable) {
-	#Input should be a df/tibble with at least the columns
-	#SoilOrganicC_Percent (float), ClayContent (float), and SandContent (float)
+calculateWaterContent <- function(JulianDay, SoilOrganicC_Percent, ClayContent, SandContent) {
+	# Inputs:
+	# SoilOrganicC_Percent (float)
+	# ClayContent (float)
+	# SandContent (float)
 	
-	#Eq. 2.2.1-4
-	OrgCfactor <- -0.837531 + 0.430183*InputTable$SoilOrganicC_Percent
-	#Eq. 2.2.1-5
-	Clayfactor <- -1.40744 + 0.0661969*InputTable$ClayContent*100
-	#Eq. 2.2.1-6
-	Sandfactor <- -1.51866 + 0.0393284*InputTable$SandContent*100
+	# Eq. 2.2.1-4
+	OrgCfactor <- -0.837531 + 0.430183*SoilOrganicC_Percent
+	# Eq. 2.2.1-5
+	Clayfactor <- -1.40744 + 0.0661969*ClayContent*100
+	# Eq. 2.2.1-6
+	Sandfactor <- -1.51866 + 0.0393284*SandContent*100
 	
-	#Eq. 2.2.1-7
+	# Eq. 2.2.1-7
 	WiltingPointPercent <- 14.2568+7.36318*(
 		0.06865
 		+(0.108713*OrgCfactor)
@@ -56,10 +60,10 @@ calculateWaterContent <- function(InputTable) {
 		-(0.0260699*(Sandfactor^3))
 	)
 	
-	#Eq. 2.2.1-8
+	# Eq. 2.2.1-8
 	WiltingPoint <- WiltingPointPercent/100
 	
-	#Eq. 2.2.1-9
+	# Eq. 2.2.1-9
 	FieldCapacityPercent <- 29.7528+10.3544*(
 		0.0461615
 		+0.290955*(OrgCfactor)
@@ -81,10 +85,10 @@ calculateWaterContent <- function(InputTable) {
 		-0.061667*(Sandfactor^3)
 	)
 	
-	#Eq. 2.2.1-10
+	# Eq. 2.2.1-10
 	FieldCapacity <- FieldCapacityPercent/100
 	
-	return(tibble(JulianDay = InputTable$JulianDay,
+	return(tibble(JulianDay = JulianDay,
 								OrgCfactor = OrgCfactor,
 				 Clayfactor = Clayfactor,
 				 Sandfactor = Sandfactor,
@@ -92,30 +96,33 @@ calculateWaterContent <- function(InputTable) {
 				 FieldCapacity = FieldCapacity))
 }
 
-calculateSurfaceTemp <- function(InputTable){
-	#Input should be a df/tibble with the columns JulianDay (int),
-	#Tavg (float), and everything that's required for calculateGAI().
-	LeafAreaIndex <- 0.8*calculateGAI(InputTable)[["GAI"]]
-	SurfaceTemp <- ifelse(InputTable$Tavg < 0, 0.20*InputTable$Tavg, InputTable$Tavg*(0.95+0.05*exp(-0.4*(LeafAreaIndex-3))))
-	return(SurfaceTemp)
-}
+# calculateSurfaceTemp <- function(InputTable){
+# 	# Input should be a table with the columns
+# 	# JulianDay (int)
+# 	# Tavg (float)
+# 	# every column required for calculateGAI().
+# 	LeafAreaIndex <- 0.8*calculateGAI(InputTable)[["GAI"]]
+# 	SurfaceTemp <- ifelse(InputTable$Tavg < 0, 0.20*InputTable$Tavg, InputTable$Tavg*(0.95+0.05*exp(-0.4*(LeafAreaIndex-3))))
+# 	return(SurfaceTemp)
+# }
 
-calculateSoilTemp <- function(InputTable) {
-	#Input should be a df/tibble with the columns
-	#SoilMeanDepth (float)
-	#SurfaceTemp (float)
-	#GAI (float)
-	result <- InputTable %>%
+calculateSoilTemp <- function(SurfaceTemp, GAI, SoilMeanDepth) {
+	# Inputs:
+	# SoilMeanDepth (float)
+	# SurfaceTemp (float)
+	# GAI (float)
+	table <- tibble(SurfaceTemp = SurfaceTemp,
+									GAI = GAI)
+	result <- table %>%
 		mutate(SoilTemp = accumulate(.x = row_number()[-1], .init = 0, .f=function(SoilTemp_dprev, row) {
 			data <- cur_data_all()
 			
-			SoilMeanDepth <- data$SoilMeanDepth[row]
 			SurfaceTemp <- data$SurfaceTemp[row]
 			GAI <- data$GAI[row]
 			
-			#Eq. 2.2.1-16
-			SoilTemp_d <- SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev) * 0.24 * exp(-SoilMeanDepth*0.0174) * exp(-0.15*GAI)
-
+			# Eq. 2.2.1-16
+			SoilTemp_d <- SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev) * 0.24 * exp(-SoilMeanDepth*0.017) * exp(-0.15*GAI)
+			
 			return(SoilTemp_d)
 			
 		}))
@@ -131,16 +138,14 @@ calculateVolSoilWaterContent <- function(WaterStorage_dprev, SoilTopThickness, W
 
 calculateWaterStorage <- function(InputTable) {
 	WaterStorage_dprev_initial <- InputTable$FieldCapacity[1]*InputTable$SoilTopThickness[1]
-	#Input should be a df/tibble with these columns:
-	#SoilTopThickness (float)
-	#WiltingPoint (float)
-	#FieldCapacity (float)
-	#SoilAvailWater (float)
-	#ET_c (float)
-	#alfa (float)
+	# Input should be a table with the columns
+	# SoilTopThickness (float)
+	# WiltingPoint (float)
+	# FieldCapacity (float)
+	# SoilAvailWater (float)
+	# ET_c (float)
+	# alfa (float)
 	result = InputTable %>%
-		#Subtract JulianDay by its first value to get 0.
-		#Since accumulate() takes .init from .x[[1]], this sets the initial value to 0 (Eq. 2.2.1-15).
 		mutate(d = accumulate(.x = row_number()[-1], .init = WaterStorage_dprev_initial, .f=function(WaterStorage_dprev, row) {
 			data <- cur_data_all()
 			
@@ -151,35 +156,35 @@ calculateWaterStorage <- function(InputTable) {
 			ET_c <- data$ET_c[row]
 			alfa <- data$alfa[row]
 			
-			#Calculate volumetric soil water content
-			#Eq. 2.2.1-23 to 2.2.1-24
+			# Calculate volumetric soil water content
+			# Eq. 2.2.1-25 to 2.2.1-26
 			VolSoilWaterContent <- calculateVolSoilWaterContent(WaterStorage_dprev, SoilTopThickness, WiltingPoint)
 			
-			#Calculate actual evapotranspiration
-			#Eq. 2.2.1-25
+			# Calculate actual evapotranspiration
+			# Eq. 2.2.1-27
 			K_r <- (1 - ((0.95 * FieldCapacity - VolSoilWaterContent)/(0.95 * FieldCapacity - alfa*WiltingPoint)))^2
 			
-			#Eq. 2.2.1-26
+			# Eq. 2.2.1-28
 			K_r <- pmin(pmax(0,K_r),1)
 			
-			#Eq. 2.2.1-27
+			# Eq. 2.2.1-29
 			if(VolSoilWaterContent < alfa/100*WiltingPoint) {
 				K_r <- 0
 			}
 			
-			#Eq. 2.2.1-28
+			# Eq. 2.2.1-30
 			ET_a <- ET_c * K_r
 			
-			#Eq. 2.2.1-29 and #Eq. 2.2.1-30 are addressed in the .init parameter of
-			#the "accumulate" function
+			# Eq. 2.2.1-31 and #Eq. 2.2.1-32 are addressed in the .init argument of
+			# the "accumulate" function
 			
-			#Calculate water storage
-			#Eq. 2.2.1-31
+			# Calculate water storage
+			# Eq. 2.2.1-33
 			DeepPerc <- WaterStorage_dprev - FieldCapacity*SoilTopThickness
-			#Eq. 2.2.1-32
+			# Eq. 2.2.1-34
 			DeepPerc <- ifelse(DeepPerc<0,0,DeepPerc)
 			
-			#Eq. 2.2.1-33
+			# Eq. 2.2.1-35
 			WaterStorage_d <- WaterStorage_dprev + SoilAvailWater - ET_a - DeepPerc
 			
 			return(WaterStorage_d)
