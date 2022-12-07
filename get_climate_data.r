@@ -13,7 +13,7 @@ getClimateData <- function(climate_data_folder,
 	files <- list.files(here::here(climate_data_folder), full.names = TRUE, pattern = "csv$")
 	
 	climate_data <- files %>%
-		purrr::map(~readr::read_csv(.)) %>%
+		purrr::map(~readr::read_csv(., col_types = "ciiiiddddddddd")) %>%
 		purrr::map(~filter(., POLYID==site_name)) %>%
 		bind_rows() %>%
 		mutate(PET = calculatePETHolos(meanDailyTemperature=.$Tmean,
