@@ -30,6 +30,7 @@ here::i_am("re_walkthrough.rmd")
 source(here::here("re_script.r"))
 source(here::here("re_functions.r"))
 source(here::here("run_icbm_and_re.r"))
+source(here::here("get_climate_data.r"))
 
 ```
 
@@ -51,6 +52,7 @@ Note: use the `suppressWarnings` function to run a function without any warnings
 # Import climate data
 get_climate_data_example <- getClimateData(
 	climate_data_folder = "climate_data",
+	master_data_folder = "master",
 	site_name = "244014")
 ```
 
