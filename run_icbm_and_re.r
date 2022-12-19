@@ -64,12 +64,7 @@ RunICBMAndRe <- function(DailyClimateTable,
 	#														to use the built-in irrigation equation (TRUE), or
 	#														input your own irrigation values (FALSE)
 	
-	re_input <- DailyClimateTable %>%
-		rename(Tavg = MeanDailyAirTemperature,
-					 PREC = MeanDailyPrecipitation,
-					 PET = MeanDailyPET)
-	
-	re <- re_input %>%
+	re <- DailyClimateTable %>%
 		group_by(Year) %>%
 		group_split() %>%
 		map(~calculate_re(.,
