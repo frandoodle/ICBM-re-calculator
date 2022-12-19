@@ -30,4 +30,3 @@ getSiteData <- function(location_data,
 	return(site_data)
 	}
 
-

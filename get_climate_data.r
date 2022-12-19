@@ -30,4 +30,3 @@ getClimateData <- function(climate_data_folder,
 }
 
 
-
