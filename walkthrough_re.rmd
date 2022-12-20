@@ -1,5 +1,5 @@
 ---
-title: "ICBM r~e~ Calculator Walkthrough & Tests"
+title: "Running ICBM r~e~ Calculator"
 author: "Francis Durnin-Vermette"
 date: "2022/11/22"
 output:
@@ -26,80 +26,11 @@ library(tidyr)
 
 dir.create(tempdir()) #This fixes a bug if the temporary directory is not found
 
-here::i_am("re_walkthrough.rmd")
+here::i_am("walkthrough_re.rmd")
 source(here::here("re_script.r"))
 source(here::here("re_functions.r"))
-source(here::here("run_icbm_and_re.r"))
-source(here::here("get_climate_data.r"))
 
 ```
-
-# Quick Start - ICBM + r~e~ Calculator
-In order to run ICBM simulations that include the calculated r~e~ parameter from climate data, you can use the function `RunICBMAndRe` from the script `run_icbm_and_re.r`. The definitions of every input are given in the header of that script. The function returns the same output as the ICBM function `icbm_holos4_classic_manure`; a table with ICBM C pools for every year, as well as the yearly mean r~e~ value.
-
-## Importing climate data
-Climate data can be manually inputted into the model runs, or the function `getClimateData` can be used to automatically build the climate data input from a folder containing .csv files for each year of daily climate data.
-
-Note that the length of the simulation run in years is determined by the number of years represented in the climate data.
-The climate data should have these mandatory columns: `Year`, `JulianDay`, `Tavg`, which is the mean daily air temperature, `PREC`, which is the mean daily precipitation, and `PET`, which is the mean daily PET.
-
-Note: use the `suppressWarnings` function to run a function without any warnings
-(e.g. `suppressWarnings(run_icbm_and_re.r())`).
-
-### using `getClimateData()`
-
-```{r}
-# Import climate data
-get_climate_data_example <- getClimateData(
-	climate_data_folder = "climate_data",
-	master_data_folder = "master",
-	site_name = "244014")
-```
-
-
-### Using manual input
-
-```{r}
-# Import weather data
-# This is arbitrary weather data from the lat/long 45/45.
-holos_nasa_climate_example <- readr::read_csv(here::here("holos_nasa_climate_example.csv")) %>%
-	filter(Year >= 2000) %>%
-	rename(Tavg = MeanDailyAirTemperature,
-					 PREC = MeanDailyPrecipitation,
-					 PET = MeanDailyPET)
-```
-
-## Running ICBM
-
-```{r}
-# These are arbitrary annual C inputs
-iag <- rep(977,length(unique(get_climate_data_example$Year))) #aboveground young
-ibg <- rep(288,length(unique(get_climate_data_example$Year))) #belowground young
-iman <- rep(88,length(unique(get_climate_data_example$Year))) #manure
-# This is annual yield for an arbitrary crop type
-yield <- 3000
-perennial <- FALSE
-# These are arbitrary soil parameters;
-# not related to an SLC polygon or the location of the climate data
-SoilOrganicC_Percent <- 5
-ClayContent <- 0.05
-SandContent <- 0.2
-
-RunICBMAndRe(yield = yield,
-						 iag = iag,
-						 ibg = ibg,
-						 iman = iman,
-						 ag_init = 0,
-						 bg_init = 0,
-						 o_init = 0,
-						 DailyClimateTable = get_climate_data_example,
-						 perennial = perennial,
-						 SoilOrganicC_Percent = SoilOrganicC_Percent,
-						 ClayContent = ClayContent,
-						 SandContent = SandContent,
-						 irrigation_use_estimate = FALSE)
-```
-
 
 # Quick Start - r~e~ Calculator
 This code chunk represents the necessary input table and function call to use the r~e~ calculator.

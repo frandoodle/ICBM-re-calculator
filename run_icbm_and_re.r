@@ -1,3 +1,5 @@
+# This is a function which runs ICBM on one site/treatment using
+# yearly inputs (a site data table and a daily climate table)
 
 dir.create(tempdir()) # This fixes a bug if the temporary directory is not found
 
@@ -7,7 +9,6 @@ source(here::here("re_script.r"))
 source(here::here("ICBM_Sarah_TimeSeries_Tested_Manure_V1.r"))
 
 # Overall Inputs ------------------------------------------------------------
-
 # SiteDataTable - a table with yearly site data
 # 								Required columns:
 # 											- Yield - the annual crop yield for each year
@@ -56,7 +57,7 @@ RunICBMAndRe <- function(DailyClimateTable,
 												 Temp_max = 30,
 												 r_s = 0.42,
 												 r_wp = 0.18,
-												 ReferenceAdjustment = 0.10516,
+												 ReferenceAdjustment = 0.10516
 												 )
 {
 	simulation_years <- unique(SiteDataTable$year_name)

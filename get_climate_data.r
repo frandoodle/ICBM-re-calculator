@@ -1,3 +1,6 @@
+# This is a function that returns a daily climate data table when given the
+# climate data location and (unique) site name
+
 library(here)
 library(purrr)
 library(readr)

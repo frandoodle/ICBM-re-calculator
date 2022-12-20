@@ -1,3 +1,6 @@
+# This is a functionction which gets the data table for all treatments of 
+# a particular site from the main site database file.
+
 
 getSiteData <- function(location_data,
 												site_name)
