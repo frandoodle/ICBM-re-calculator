@@ -1889,7 +1889,7 @@ build a vector of r<sub>e</sub> values for a multi-year simulation, see
 the code chunks in <a href="#multiyear">this section</a>.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucXVpY2tzdGFydF9pbnB1dCA8LSB0aWJibGUoXG5cdFllYXIgPSAyMDAwLFxuXHRKdWxpYW5EYXkgPSAxOjM2NSxcblx0VGF2ZyA9IHJlcCgwLDM2NSksXG5cdFBSRUMgPSByZXAoMCwzNjUpLFxuXHRQRVQgPSByZXAoMCwzNjUpXG4pXG5cbmNhbGN1bGF0ZV9yZShxdWlja3N0YXJ0X2lucHV0LFxuXHRcdFx0XHRcdFx0IHlpZWxkPTMwMDAsXG5cdFx0XHRcdFx0XHQgcGVyZW5uaWFsPUYsXG5cdFx0XHRcdFx0XHQgU29pbE9yZ2FuaWNDX1BlcmNlbnQgPSA1LFxuXHRcdFx0XHRcdFx0IENsYXlDb250ZW50ID0gMC4wNSxcblx0XHRcdFx0XHRcdCBTYW5kQ29udGVudCA9IDAuMixcblx0XHRcdFx0XHRcdCBTb2lsVG9wVGhpY2tuZXNzID0gMjUwLFxuXHRcdFx0XHRcdFx0IFRlbXBfbWluID0gLTMuNzgsXG5cdFx0XHRcdFx0XHQgVGVtcF9tYXggPSAzMCxcblx0XHRcdFx0XHRcdCByX3MgPSAwLjQyLFxuXHRcdFx0XHRcdFx0IHJfd3AgPSAwLjE4LFxuXHRcdFx0XHRcdFx0IFJlZmVyZW5jZUFkanVzdG1lbnQgPSAwLjEwNTE2LFxuXHRcdFx0XHRcdFx0IHJfYyA9IE5BLFxuXHRcdFx0XHRcdFx0IHRpbGxhZ2Vfc29pbCA9IFwiQnJvd25cIixcblx0XHRcdFx0XHRcdCB0aWxsYWdlX3R5cGUgPSBcIkludGVuc2l2ZSBUaWxsYWdlXCIsXG5cdFx0XHRcdFx0XHQgaXJyaWdhdGlvbl9yZWdpb24gPSBcIkNhbmFkYVwiLFxuXHRcdFx0XHRcdFx0IGlycmlnYXRpb25fdXNlX2VzdGltYXRlID0gVFJVRSxcblx0XHRcdFx0XHRcdCBpcnJpZ2F0aW9uID0gMClcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjpbInF1aWNrc3RhcnRfaW5wdXQgPC0gdGliYmxlKFxuXHRZZWFyID0gMjAwMCxcblx0SnVsaWFuRGF5ID0gMTozNjUsXG5cdFRhdmcgPSByZXAoMCwzNjUpLFxuXHRQUkVDID0gcmVwKDAsMzY1KSxcblx0UEVUID0gcmVwKDAsMzY1KVxuKSIsIiIsImNhbGN1bGF0ZV9yZShxdWlja3N0YXJ0X2lucHV0LFxuXHRcdFx0XHRcdFx0IHlpZWxkPTMwMDAsXG5cdFx0XHRcdFx0XHQgcGVyZW5uaWFsPUYsXG5cdFx0XHRcdFx0XHQgU29pbE9yZ2FuaWNDX1BlcmNlbnQgPSA1LFxuXHRcdFx0XHRcdFx0IENsYXlDb250ZW50ID0gMC4wNSxcblx0XHRcdFx0XHRcdCBTYW5kQ29udGVudCA9IDAuMixcblx0XHRcdFx0XHRcdCBTb2lsVG9wVGhpY2tuZXNzID0gMjUwLFxuXHRcdFx0XHRcdFx0IFRlbXBfbWluID0gLTMuNzgsXG5cdFx0XHRcdFx0XHQgVGVtcF9tYXggPSAzMCxcblx0XHRcdFx0XHRcdCByX3MgPSAwLjQyLFxuXHRcdFx0XHRcdFx0IHJfd3AgPSAwLjE4LFxuXHRcdFx0XHRcdFx0IFJlZmVyZW5jZUFkanVzdG1lbnQgPSAwLjEwNTE2LFxuXHRcdFx0XHRcdFx0IHJfYyA9IE5BLFxuXHRcdFx0XHRcdFx0IHRpbGxhZ2Vfc29pbCA9IFwiQnJvd25cIixcblx0XHRcdFx0XHRcdCB0aWxsYWdlX3R5cGUgPSBcIkludGVuc2l2ZSBUaWxsYWdlXCIsXG5cdFx0XHRcdFx0XHQgaXJyaWdhdGlvbl9yZWdpb24gPSBcIkNhbmFkYVwiLFxuXHRcdFx0XHRcdFx0IGlycmlnYXRpb25fdXNlX2VzdGltYXRlID0gVFJVRSxcblx0XHRcdFx0XHRcdCBpcnJpZ2F0aW9uID0gMCkiXX0= -->
 <pre class="r"><code>quickstart_input &lt;- tibble(
     Year = 2000,
     JulianDay = 1:365,
@@ -1917,6 +1917,12 @@ calculate_re(quickstart_input,
                          irrigation_use_estimate = TRUE,
                          irrigation = 0)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZyBpbiBjYWxjdWxhdGVfcmUocXVpY2tzdGFydF9pbnB1dCwgeWllbGQgPSAzMDAwLCBwZXJlbm5pYWwgPSBGLCBTb2lsT3JnYW5pY0NfUGVyY2VudCA9IDUsIDogTkEgdmFsdWVzIGRldGVjdGVkIGluIHJfYy4gRXN0aW1hdGluZyByX2MgYmFzZWQgb24gVGlsbGFnZV90YWJsZSB1c2luZyB0aWxsYWdlX3NvaWwgPSBCcm93biwgYW5kIHRpbGxhZ2VfdHlwZSA9IEludGVuc2l2ZSBUaWxsYWdlLlxuIn0= -->
+<pre><code>Warning in calculate_re(quickstart_input, yield = 3000, perennial = F, SoilOrganicC_Percent = 5, : NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = Brown, and tillage_type = Intensive Tillage.</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMDk2MDUyMzJcbiJ9 -->
+<pre><code>[1] 0.09605232</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>We discuss irrigation calculations <a href="#irrigationdisc">here</a>.</p>
@@ -1924,9 +1930,104 @@ calculate_re(quickstart_input,
 <p>Here is the full standalone script:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2FsY3VsYXRlX3JlXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiY2FsY3VsYXRlX3JlIn0= -->
 <pre class="r"><code>calculate_re</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiZnVuY3Rpb24gKFllYXJJbnB1dFRhYmxlLCB5aWVsZCwgcGVyZW5uaWFsLCBTb2lsT3JnYW5pY0NfUGVyY2VudCwgXG4gICAgQ2xheUNvbnRlbnQsIFNhbmRDb250ZW50LCBhbGZhID0gMC43LCBTb2lsVG9wVGhpY2tuZXNzID0gMjUwLCBcbiAgICBUZW1wX21pbiA9IC0zLjc4LCBUZW1wX21heCA9IDMwLCByX3MgPSAwLjQyLCByX3dwID0gMC4xOCwgXG4gICAgUmVmZXJlbmNlQWRqdXN0bWVudCA9IDAuMTA1MTYsIHJfYyA9IE5BLCB0aWxsYWdlX3NvaWwgPSBcIkJyb3duXCIsIFxuICAgIHRpbGxhZ2VfdHlwZSA9IFwiSW50ZW5zaXZlIFRpbGxhZ2VcIiwgaXJyaWdhdGlvbl9yZWdpb24gPSBcIkNhbmFkYVwiLCBcbiAgICBpcnJpZ2F0aW9uX3VzZV9lc3RpbWF0ZSA9IEZBTFNFLCBpcnJpZ2F0aW9uID0gMCkgXG57XG4gICAgR0FJX3JldHVybiA8LSBjYWxjdWxhdGVHQUkoSnVsaWFuRGF5ID0gWWVhcklucHV0VGFibGUkSnVsaWFuRGF5LCBcbiAgICAgICAgeWllbGQgPSB5aWVsZCwgcGVyZW5uaWFsID0gcGVyZW5uaWFsKVxuICAgIEdBSSA9IEdBSV9yZXR1cm5bW1wiR0FJXCJdXVxuICAgIFdhdGVyQ29udGVudFJldHVybiA8LSBjYWxjdWxhdGVXYXRlckNvbnRlbnQoU29pbE9yZ2FuaWNDX1BlcmNlbnQgPSBTb2lsT3JnYW5pY0NfUGVyY2VudCwgXG4gICAgICAgIENsYXlDb250ZW50ID0gQ2xheUNvbnRlbnQsIFNhbmRDb250ZW50ID0gU2FuZENvbnRlbnQpXG4gICAgV2lsdGluZ1BvaW50IDwtIFdhdGVyQ29udGVudFJldHVybltbXCJXaWx0aW5nUG9pbnRcIl1dXG4gICAgRmllbGRDYXBhY2l0eSA8LSBXYXRlckNvbnRlbnRSZXR1cm5bW1wiRmllbGRDYXBhY2l0eVwiXV1cbiAgICBTb2lsTWVhbkRlcHRoIDwtIFNvaWxUb3BUaGlja25lc3MvMjBcbiAgICBMZWFmQXJlYUluZGV4IDwtIDAuOCAqIEdBSVxuICAgIFN1cmZhY2VUZW1wIDwtIGlmZWxzZShZZWFySW5wdXRUYWJsZSRUYXZnIDwgMCwgMC4yICogWWVhcklucHV0VGFibGUkVGF2ZywgXG4gICAgICAgIFllYXJJbnB1dFRhYmxlJFRhdmcgKiAoMC45NSArIDAuMDUgKiBleHAoLTAuNCAqIChMZWFmQXJlYUluZGV4IC0gXG4gICAgICAgICAgICAzKSkpKVxuICAgIFNvaWxUZW1wIDwtIGNhbGN1bGF0ZVNvaWxUZW1wKFN1cmZhY2VUZW1wID0gU3VyZmFjZVRlbXAsIFxuICAgICAgICBHQUkgPSBHQUksIFNvaWxNZWFuRGVwdGggPSBTb2lsTWVhbkRlcHRoKVxuICAgIElycmlnYXRpb24gPSBpcnJpZ2F0aW9uXG4gICAgUCA8LSBzdW0oWWVhcklucHV0VGFibGUkUFJFQylcbiAgICBQRSA8LSBzdW0oWWVhcklucHV0VGFibGUkUEVUKVxuICAgIGlmIChpcy5uYShpcnJpZ2F0aW9uX3VzZV9lc3RpbWF0ZSkgfCAhaXMubG9naWNhbChpcnJpZ2F0aW9uX3VzZV9lc3RpbWF0ZSkpIHtcbiAgICAgICAgc3RvcChwYXN0ZTAoXCJTcGVjaWZ5IHdoZXRoZXIgZGFpbHkgaXJyaWdhdGlvbiB2YWx1ZXMgc2hvdWxkIGJlIGVzdGltYXRlZC5cXG5cXHRcXHRJZiBpcnJpZ2F0aW9uX3VzZV9lc3RpbWF0ZSA9IFRSVUUsIHRoZW4gaXJyaWdhdGlvbiBpcyBlc3RpbWF0ZWQgdXNpbmcgRXFzLiAyLjIuMS0xNyBhbmQgRXEuIDIuMi4xLTE4LlxcblxcdFxcdElmIGlycmlnYXRpb25fdXNlX2VzdGltYXRlID0gRkFMU0UsIHRoZW4gaXJyaWdhdGlvbiBpcyBkZWZhdWx0ZWQgdG8gMCwgYnV0IGNhbiBiZSBvdmVycmlkZGVuIHdpdGggYSBudW1lcmljIHZlY3RvciBvZiBsZW5ndGggMzY1IHdoaWNoIHJlcHJlc2VudHMgZGFpbHkgaXJyaWdhdGlvbi5cIikpXG4gICAgfVxuICAgIGlmIChQRSA+IFAgJiBpcnJpZ2F0aW9uX3VzZV9lc3RpbWF0ZSA9PSBUKSB7XG4gICAgICAgIGlmICghaXJyaWdhdGlvbl9yZWdpb24gJWluJSBJcnJpZ2F0aW9uX3BlcmNlbnRhZ2VfbW9udGhseSRgUHJvdmluY2UvUmVnaW9uYCkge1xuICAgICAgICAgICAgc3RvcChwYXN0ZTAoaXJyaWdhdGlvbl9yZWdpb24sIFwiIGlzIG5vdCBhIHZhbGlkIGlycmlnYXRpb25fcmVnaW9uLiBWYWxpZCByZWdpb25zIGFyZTogXCIsIFxuICAgICAgICAgICAgICAgIHBhc3RlKElycmlnYXRpb25fcGVyY2VudGFnZV9tb250aGx5JGBQcm92aW5jZS9SZWdpb25gLCBcbiAgICAgICAgICAgICAgICAgIGNvbGxhcHNlID0gXCIsIFwiKSkpXG4gICAgICAgIH1cbiAgICAgICAgRGF5c19tb250aCA8LSBsdWJyaWRhdGU6OmRheXNfaW5fbW9udGgoYXMuRGF0ZShwYXN0ZShZZWFySW5wdXRUYWJsZSRZZWFyLCBcbiAgICAgICAgICAgIFllYXJJbnB1dFRhYmxlJEp1bGlhbkRheSwgc2VwID0gXCItXCIpLCBcIiVZLSVqXCIpKVxuICAgICAgICBGcmFjdGlvbl9tb250aGx5IDwtIElycmlnYXRpb25fcGVyY2VudGFnZV9tb250aGx5ICU+JSBcbiAgICAgICAgICAgIGZpbHRlcihgUHJvdmluY2UvUmVnaW9uYCA9PSBpcnJpZ2F0aW9uX3JlZ2lvbikgJT4lIFxuICAgICAgICAgICAgbmFtZXMoRGF5c19tb250aClbXSAlPiUgdW5saXN0ICU+JSBgL2AoMTAwKVxuICAgICAgICBJcnJpZ2F0aW9uX2FubnVhbCA8LSBQRSAtIFBcbiAgICAgICAgSXJyaWdhdGlvbiA8LSAoKElycmlnYXRpb25fYW5udWFsICogRnJhY3Rpb25fbW9udGhseSkvRGF5c19tb250aCkgJT4lIFxuICAgICAgICAgICAgdW5uYW1lXG4gICAgfVxuICAgIEtfYyA8LSAxLjMgLSAoMS4zIC0gMC44KSAqIGV4cCgtMC4xNyAqIEdBSV9yZXR1cm5bW1wiR0FJXCJdXSlcbiAgICBFVF8wIDwtIFllYXJJbnB1dFRhYmxlJFBFVFxuICAgIEVUX2MgPC0gRVRfMCAqIEtfY1xuICAgIFByZWNpcGl0YXRpb24gPC0gWWVhcklucHV0VGFibGUkUFJFQ1xuICAgIENyb3BJbnRlcmNlcHRpb24gPC0gaWZlbHNlKFByZWNpcGl0YXRpb24gKyBJcnJpZ2F0aW9uIDwgMC4yICogXG4gICAgICAgIEdBSSwgUHJlY2lwaXRhdGlvbiArIElycmlnYXRpb24sIDAuMiAqIEdBSSlcbiAgICBDcm9wSW50ZXJjZXB0aW9uIDwtIGlmZWxzZShDcm9wSW50ZXJjZXB0aW9uID4gRVRfYywgRVRfYywgXG4gICAgICAgIENyb3BJbnRlcmNlcHRpb24pXG4gICAgU29pbEF2YWlsV2F0ZXIgPC0gUHJlY2lwaXRhdGlvbiArIElycmlnYXRpb24gLSBDcm9wSW50ZXJjZXB0aW9uXG4gICAgV2F0ZXJTdG9yYWdlIDwtIGNhbGN1bGF0ZVdhdGVyU3RvcmFnZShTb2lsQXZhaWxXYXRlciA9IFNvaWxBdmFpbFdhdGVyLCBcbiAgICAgICAgRVRfYyA9IEVUX2MsIGFsZmEgPSBhbGZhLCBTb2lsVG9wVGhpY2tuZXNzID0gU29pbFRvcFRoaWNrbmVzcywgXG4gICAgICAgIFdpbHRpbmdQb2ludCA9IFdpbHRpbmdQb2ludCwgRmllbGRDYXBhY2l0eSA9IEZpZWxkQ2FwYWNpdHkpXG4gICAgU29pbFRlbXBfZHByZXYgPC0gbGFnKFNvaWxUZW1wLCBkZWZhdWx0ID0gMClcbiAgICByZV90ZW1wIDwtIGlmZWxzZShTb2lsVGVtcF9kcHJldiA8IFRlbXBfbWluLCAwLCAoKFNvaWxUZW1wX2RwcmV2IC0gXG4gICAgICAgIFRlbXBfbWluKV4yKS8oKFRlbXBfbWF4IC0gVGVtcF9taW4pXjIpKVxuICAgIFdhdGVyU3RvcmFnZV9kcHJldiA8LSBsYWcoV2F0ZXJTdG9yYWdlLCBkZWZhdWx0ID0gRmllbGRDYXBhY2l0eVsxXSAqIFxuICAgICAgICBTb2lsVG9wVGhpY2tuZXNzKVxuICAgIFZvbFNvaWxXYXRlckNvbnRlbnQgPC0gY2FsY3VsYXRlVm9sU29pbFdhdGVyQ29udGVudChXYXRlclN0b3JhZ2VfZHByZXYgPSBXYXRlclN0b3JhZ2VfZHByZXYsIFxuICAgICAgICBTb2lsVG9wVGhpY2tuZXNzID0gU29pbFRvcFRoaWNrbmVzcywgV2lsdGluZ1BvaW50ID0gV2lsdGluZ1BvaW50KVxuICAgIFZvbFNvaWxXYXRlckNvbnRlbnRfc2F0IDwtIDEuMiAqIEZpZWxkQ2FwYWNpdHlcbiAgICBWb2xTb2lsV2F0ZXJDb250ZW50X29wdCA8LSAwLjkgKiBGaWVsZENhcGFjaXR5XG4gICAgcmVfd2F0ZXIgPC0gaWZlbHNlKFZvbFNvaWxXYXRlckNvbnRlbnQgPiBWb2xTb2lsV2F0ZXJDb250ZW50X29wdCwgXG4gICAgICAgICgxIC0gcl9zKSAqICgoVm9sU29pbFdhdGVyQ29udGVudCAtIFZvbFNvaWxXYXRlckNvbnRlbnRfb3B0KS8oVm9sU29pbFdhdGVyQ29udGVudF9vcHQgLSBcbiAgICAgICAgICAgIFZvbFNvaWxXYXRlckNvbnRlbnRfc2F0KSkgKyAxLCBpZmVsc2UoVm9sU29pbFdhdGVyQ29udGVudCA8IFxuICAgICAgICAgICAgV2lsdGluZ1BvaW50LCByX3dwICogKChWb2xTb2lsV2F0ZXJDb250ZW50KS8oV2lsdGluZ1BvaW50KSksIFxuICAgICAgICAgICAgKDEgLSByX3dwKSAqICgoVm9sU29pbFdhdGVyQ29udGVudCAtIFdpbHRpbmdQb2ludCkvKFZvbFNvaWxXYXRlckNvbnRlbnRfb3B0IC0gXG4gICAgICAgICAgICAgICAgV2lsdGluZ1BvaW50KSkgKyByX3dwKSlcbiAgICByZV93YXRlciA8LSBwbWluKHBtYXgoMCwgcmVfd2F0ZXIpLCAxKVxuICAgIHJlX3gxIDwtIHJlX3RlbXAgKiByZV93YXRlclxuICAgIHJlX2Nyb3BkYWlseSA8LSByZV94MS9SZWZlcmVuY2VBZGp1c3RtZW50XG4gICAgcmVfY3JvcCA8LSBtZWFuKHJlX2Nyb3BkYWlseSlcbiAgICBpZiAoIXRpbGxhZ2Vfc29pbCAlaW4lIFRpbGxhZ2VfdGFibGUkYFNvaWwgdHlwZWApIHtcbiAgICAgICAgc3RvcChwYXN0ZTAodGlsbGFnZV9zb2lsLCBcIiBpcyBub3QgYSB2YWxpZCB0aWxsYWdlX3NvaWwuIFZhbGlkIHNvaWwgdHlwZXMgYXJlOiBcIiwgXG4gICAgICAgICAgICBwYXN0ZShUaWxsYWdlX3RhYmxlJGBTb2lsIHR5cGVgLCBjb2xsYXBzZSA9IFwiLCBcIikpKVxuICAgIH1cbiAgICBpZiAoIXRpbGxhZ2VfdHlwZSAlaW4lIG5hbWVzKFRpbGxhZ2VfdGFibGVbLTFdKSkge1xuICAgICAgICBzdG9wKHBhc3RlMCh0aWxsYWdlX3R5cGUsIFwiIGlzIG5vdCBhIHZhbGlkIHRpbGxhZ2VfdHlwZS4gVmFsaWQgdGlsbGFnZSB0eXBlcyBhcmU6IFwiLCBcbiAgICAgICAgICAgIHBhc3RlKG5hbWVzKFRpbGxhZ2VfdGFibGVbLTFdKSwgY29sbGFwc2UgPSBcIiwgXCIpKSlcbiAgICB9XG4gICAgaWYgKGFueShpcy5uYShyX2MpKSkge1xuICAgICAgICB3YXJuaW5nKHBhc3RlMChcIk5BIHZhbHVlcyBkZXRlY3RlZCBpbiByX2MuIEVzdGltYXRpbmcgcl9jIGJhc2VkIG9uIFRpbGxhZ2VfdGFibGUgdXNpbmcgdGlsbGFnZV9zb2lsID0gXCIsIFxuICAgICAgICAgICAgdGlsbGFnZV9zb2lsLCBcIiwgYW5kIHRpbGxhZ2VfdHlwZSA9IFwiLCB0aWxsYWdlX3R5cGUsIFxuICAgICAgICAgICAgXCIuXFxuXCIpKVxuICAgICAgICByX2MgPC0gVGlsbGFnZV90YWJsZSAlPiUgZmlsdGVyKGBTb2lsIHR5cGVgID09IHRpbGxhZ2Vfc29pbCkgJT4lIFxuICAgICAgICAgICAgdGlsbGFnZV90eXBlW1tdXVxuICAgIH1cbiAgICByX2VkYWlseSA8LSByZV9jcm9wZGFpbHkgKiByX2NcbiAgICByX2UgPC0gbWVhbihyX2VkYWlseSlcbiAgICByZXR1cm4ocl9lKVxufVxuPGJ5dGVjb2RlOiAweDAwMDAwMWVlNTRkZDc2YjA+XG4ifQ== -->
+<pre><code>function (YearInputTable, yield, perennial, SoilOrganicC_Percent, 
+    ClayContent, SandContent, alfa = 0.7, SoilTopThickness = 250, 
+    Temp_min = -3.78, Temp_max = 30, r_s = 0.42, r_wp = 0.18, 
+    ReferenceAdjustment = 0.10516, r_c = NA, tillage_soil = &quot;Brown&quot;, 
+    tillage_type = &quot;Intensive Tillage&quot;, irrigation_region = &quot;Canada&quot;, 
+    irrigation_use_estimate = FALSE, irrigation = 0) 
+{
+    GAI_return &lt;- calculateGAI(JulianDay = YearInputTable$JulianDay, 
+        yield = yield, perennial = perennial)
+    GAI = GAI_return[[&quot;GAI&quot;]]
+    WaterContentReturn &lt;- calculateWaterContent(SoilOrganicC_Percent = SoilOrganicC_Percent, 
+        ClayContent = ClayContent, SandContent = SandContent)
+    WiltingPoint &lt;- WaterContentReturn[[&quot;WiltingPoint&quot;]]
+    FieldCapacity &lt;- WaterContentReturn[[&quot;FieldCapacity&quot;]]
+    SoilMeanDepth &lt;- SoilTopThickness/20
+    LeafAreaIndex &lt;- 0.8 * GAI
+    SurfaceTemp &lt;- ifelse(YearInputTable$Tavg &lt; 0, 0.2 * YearInputTable$Tavg, 
+        YearInputTable$Tavg * (0.95 + 0.05 * exp(-0.4 * (LeafAreaIndex - 
+            3))))
+    SoilTemp &lt;- calculateSoilTemp(SurfaceTemp = SurfaceTemp, 
+        GAI = GAI, SoilMeanDepth = SoilMeanDepth)
+    Irrigation = irrigation
+    P &lt;- sum(YearInputTable$PREC)
+    PE &lt;- sum(YearInputTable$PET)
+    if (is.na(irrigation_use_estimate) | !is.logical(irrigation_use_estimate)) {
+        stop(paste0(&quot;Specify whether daily irrigation values should be estimated.\n\t\tIf irrigation_use_estimate = TRUE, then irrigation is estimated using Eqs. 2.2.1-17 and Eq. 2.2.1-18.\n\t\tIf irrigation_use_estimate = FALSE, then irrigation is defaulted to 0, but can be overridden with a numeric vector of length 365 which represents daily irrigation.&quot;))
+    }
+    if (PE &gt; P &amp; irrigation_use_estimate == T) {
+        if (!irrigation_region %in% Irrigation_percentage_monthly$`Province/Region`) {
+            stop(paste0(irrigation_region, &quot; is not a valid irrigation_region. Valid regions are: &quot;, 
+                paste(Irrigation_percentage_monthly$`Province/Region`, 
+                  collapse = &quot;, &quot;)))
+        }
+        Days_month &lt;- lubridate::days_in_month(as.Date(paste(YearInputTable$Year, 
+            YearInputTable$JulianDay, sep = &quot;-&quot;), &quot;%Y-%j&quot;))
+        Fraction_monthly &lt;- Irrigation_percentage_monthly %&gt;% 
+            filter(`Province/Region` == irrigation_region) %&gt;% 
+            names(Days_month)[] %&gt;% unlist %&gt;% `/`(100)
+        Irrigation_annual &lt;- PE - P
+        Irrigation &lt;- ((Irrigation_annual * Fraction_monthly)/Days_month) %&gt;% 
+            unname
+    }
+    K_c &lt;- 1.3 - (1.3 - 0.8) * exp(-0.17 * GAI_return[[&quot;GAI&quot;]])
+    ET_0 &lt;- YearInputTable$PET
+    ET_c &lt;- ET_0 * K_c
+    Precipitation &lt;- YearInputTable$PREC
+    CropInterception &lt;- ifelse(Precipitation + Irrigation &lt; 0.2 * 
+        GAI, Precipitation + Irrigation, 0.2 * GAI)
+    CropInterception &lt;- ifelse(CropInterception &gt; ET_c, ET_c, 
+        CropInterception)
+    SoilAvailWater &lt;- Precipitation + Irrigation - CropInterception
+    WaterStorage &lt;- calculateWaterStorage(SoilAvailWater = SoilAvailWater, 
+        ET_c = ET_c, alfa = alfa, SoilTopThickness = SoilTopThickness, 
+        WiltingPoint = WiltingPoint, FieldCapacity = FieldCapacity)
+    SoilTemp_dprev &lt;- lag(SoilTemp, default = 0)
+    re_temp &lt;- ifelse(SoilTemp_dprev &lt; Temp_min, 0, ((SoilTemp_dprev - 
+        Temp_min)^2)/((Temp_max - Temp_min)^2))
+    WaterStorage_dprev &lt;- lag(WaterStorage, default = FieldCapacity[1] * 
+        SoilTopThickness)
+    VolSoilWaterContent &lt;- calculateVolSoilWaterContent(WaterStorage_dprev = WaterStorage_dprev, 
+        SoilTopThickness = SoilTopThickness, WiltingPoint = WiltingPoint)
+    VolSoilWaterContent_sat &lt;- 1.2 * FieldCapacity
+    VolSoilWaterContent_opt &lt;- 0.9 * FieldCapacity
+    re_water &lt;- ifelse(VolSoilWaterContent &gt; VolSoilWaterContent_opt, 
+        (1 - r_s) * ((VolSoilWaterContent - VolSoilWaterContent_opt)/(VolSoilWaterContent_opt - 
+            VolSoilWaterContent_sat)) + 1, ifelse(VolSoilWaterContent &lt; 
+            WiltingPoint, r_wp * ((VolSoilWaterContent)/(WiltingPoint)), 
+            (1 - r_wp) * ((VolSoilWaterContent - WiltingPoint)/(VolSoilWaterContent_opt - 
+                WiltingPoint)) + r_wp))
+    re_water &lt;- pmin(pmax(0, re_water), 1)
+    re_x1 &lt;- re_temp * re_water
+    re_cropdaily &lt;- re_x1/ReferenceAdjustment
+    re_crop &lt;- mean(re_cropdaily)
+    if (!tillage_soil %in% Tillage_table$`Soil type`) {
+        stop(paste0(tillage_soil, &quot; is not a valid tillage_soil. Valid soil types are: &quot;, 
+            paste(Tillage_table$`Soil type`, collapse = &quot;, &quot;)))
+    }
+    if (!tillage_type %in% names(Tillage_table[-1])) {
+        stop(paste0(tillage_type, &quot; is not a valid tillage_type. Valid tillage types are: &quot;, 
+            paste(names(Tillage_table[-1]), collapse = &quot;, &quot;)))
+    }
+    if (any(is.na(r_c))) {
+        warning(paste0(&quot;NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = &quot;, 
+            tillage_soil, &quot;, and tillage_type = &quot;, tillage_type, 
+            &quot;.\n&quot;))
+        r_c &lt;- Tillage_table %&gt;% filter(`Soil type` == tillage_soil) %&gt;% 
+            tillage_type[[]]
+    }
+    r_edaily &lt;- re_cropdaily * r_c
+    r_e &lt;- mean(r_edaily)
+    return(r_e)
+}
+&lt;bytecode: 0x000001ee54dd76b0&gt;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1936,7 +2037,7 @@ calculate_re(quickstart_input,
 <h2><span class="header-section-number">2.1</span> Input data</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaG9sb3NfcmVfY2FsY3VsYXRpb24gPC0gcmVhZHI6OnJlYWRfY3N2KGhlcmU6OmhlcmUoXCJob2xvc19yZV9jYWxjdWxhdGlvbi5jc3ZcIikpXG5cbiMgY2xpbWF0ZSBkYXRhXG5kYWlseV9pbnB1dF90ZXN0IDwtIHRpYmJsZShcblx0WWVhciA9IDIwMDAsXG5cdEp1bGlhbkRheSA9IDE6MzY1LFxuXHRUYXZnID0gaG9sb3NfcmVfY2FsY3VsYXRpb24kSW5wdXRUZW1wZXJhdHVyZSxcblx0UFJFQyA9IGhvbG9zX3JlX2NhbGN1bGF0aW9uJElucHV0UHJlY2lwaXRhdGlvbixcblx0UEVUID0gaG9sb3NfcmVfY2FsY3VsYXRpb24kSW5wdXRFdmFwb3RyYW5zcGlyYXRpb24pXG5cbiMgb3RoZXIgdmFsdWVzXG55aWVsZCA9IDMwMDBcbnBlcmVubmlhbCA9IEZBTFNFXG5Tb2lsT3JnYW5pY0NfUGVyY2VudCA9IDJcbkNsYXlDb250ZW50ID0gMC4wNVxuU2FuZENvbnRlbnQgPSAwLjJcbmFsZmEgPSAwLjdcblNvaWxUb3BUaGlja25lc3MgPSAyNTBcblRlbXBfbWluID0gLTMuNzhcblRlbXBfbWF4ID0gMzBcbnJfcyA9IDAuNDJcbnJfd3AgPSAwLjE4XG5SZWZlcmVuY2VBZGp1c3RtZW50ID0gMC4xMDUxNlxucl9jID0gTkFcbnRpbGxhZ2Vfc29pbCA9IFwiQnJvd25cIlxudGlsbGFnZV90eXBlID0gXCJJbnRlbnNpdmUgVGlsbGFnZVwiXG5pcnJpZ2F0aW9uX3JlZ2lvbiA9IFwiQ2FuYWRhXCJcbmlycmlnYXRpb25fdXNlX2VzdGltYXRlID0gRkFMU0VcbmlycmlnYXRpb24gPSAwXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjpbImhvbG9zX3JlX2NhbGN1bGF0aW9uIDwtIHJlYWRyOjpyZWFkX2NzdihoZXJlOjpoZXJlKFwiaG9sb3NfcmVfY2FsY3VsYXRpb24uY3N2XCIpKSIsIiIsIiMgY2xpbWF0ZSBkYXRhIiwiZGFpbHlfaW5wdXRfdGVzdCA8LSB0aWJibGUoXG5cdFllYXIgPSAyMDAwLFxuXHRKdWxpYW5EYXkgPSAxOjM2NSxcblx0VGF2ZyA9IGhvbG9zX3JlX2NhbGN1bGF0aW9uJElucHV0VGVtcGVyYXR1cmUsXG5cdFBSRUMgPSBob2xvc19yZV9jYWxjdWxhdGlvbiRJbnB1dFByZWNpcGl0YXRpb24sXG5cdFBFVCA9IGhvbG9zX3JlX2NhbGN1bGF0aW9uJElucHV0RXZhcG90cmFuc3BpcmF0aW9uKSIsIiIsIiMgb3RoZXIgdmFsdWVzIiwieWllbGQgPSAzMDAwIiwicGVyZW5uaWFsID0gRkFMU0UiLCJTb2lsT3JnYW5pY0NfUGVyY2VudCA9IDIiLCJDbGF5Q29udGVudCA9IDAuMDUiLCJTYW5kQ29udGVudCA9IDAuMiIsImFsZmEgPSAwLjciLCJTb2lsVG9wVGhpY2tuZXNzID0gMjUwIiwiVGVtcF9taW4gPSAtMy43OCIsIlRlbXBfbWF4ID0gMzAiLCJyX3MgPSAwLjQyIiwicl93cCA9IDAuMTgiLCJSZWZlcmVuY2VBZGp1c3RtZW50ID0gMC4xMDUxNiIsInJfYyA9IE5BIiwidGlsbGFnZV9zb2lsID0gXCJCcm93blwiIiwidGlsbGFnZV90eXBlID0gXCJJbnRlbnNpdmUgVGlsbGFnZVwiIiwiaXJyaWdhdGlvbl9yZWdpb24gPSBcIkNhbmFkYVwiIiwiaXJyaWdhdGlvbl91c2VfZXN0aW1hdGUgPSBGQUxTRSIsImlycmlnYXRpb24gPSAwIl19 -->
 <pre class="r"><code>holos_re_calculation &lt;- readr::read_csv(here::here(&quot;holos_re_calculation.csv&quot;))
 
 # climate data
@@ -1982,9 +2083,23 @@ Eq. 2.2.1-3</h3>
 e^{-[\frac{(JulianDay-MidSeason)^{2}}{2*Variance}]}\]</span></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2FsY3VsYXRlR0FJXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiY2FsY3VsYXRlR0FJIn0= -->
 <pre class="r"><code>calculateGAI</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiZnVuY3Rpb24gKEp1bGlhbkRheSwgeWllbGQsIHBlcmVubmlhbCkgXG57XG4gICAgRW1lcmdlbmNlRGF5IDwtIGlmZWxzZShwZXJlbm5pYWwgPT0gVFJVRSwgNzUsIDE0MSlcbiAgICBSaXBlbmluZ0RheSA8LSBpZmVsc2UocGVyZW5uaWFsID09IFRSVUUsIDMwMCwgMTk3KVxuICAgIFZhcmlhbmNlIDwtIGlmZWxzZShwZXJlbm5pYWwgPT0gVFJVRSwgMTUwMCwgMzAwKVxuICAgIEdBSV9tYXggPC0gMC4wNzMxICogKHlpZWxkLzEwMDApXjIgKyAwLjQwOCAqICh5aWVsZC8xMDAwKVxuICAgIE1pZFNlYXNvbiA8LSBFbWVyZ2VuY2VEYXkgKyAoKFJpcGVuaW5nRGF5IC0gRW1lcmdlbmNlRGF5KS8yKVxuICAgIEdBSSA8LSBHQUlfbWF4ICogZXhwKC0oKChKdWxpYW5EYXkgLSBNaWRTZWFzb24pXjIpLygyICogVmFyaWFuY2UpKSlcbiAgICByZXR1cm4odGliYmxlKEp1bGlhbkRheSA9IEp1bGlhbkRheSwgR0FJX21heCA9IEdBSV9tYXgsIE1pZFNlYXNvbiA9IE1pZFNlYXNvbiwgXG4gICAgICAgIEdBSSA9IEdBSSkpXG59XG48Ynl0ZWNvZGU6IDB4MDAwMDAxZWU1Nzg1YTkzOD5cbiJ9 -->
+<pre><code>function (JulianDay, yield, perennial) 
+{
+    EmergenceDay &lt;- ifelse(perennial == TRUE, 75, 141)
+    RipeningDay &lt;- ifelse(perennial == TRUE, 300, 197)
+    Variance &lt;- ifelse(perennial == TRUE, 1500, 300)
+    GAI_max &lt;- 0.0731 * (yield/1000)^2 + 0.408 * (yield/1000)
+    MidSeason &lt;- EmergenceDay + ((RipeningDay - EmergenceDay)/2)
+    GAI &lt;- GAI_max * exp(-(((JulianDay - MidSeason)^2)/(2 * Variance)))
+    return(tibble(JulianDay = JulianDay, GAI_max = GAI_max, MidSeason = MidSeason, 
+        GAI = GAI))
+}
+&lt;bytecode: 0x000001ee5785a938&gt;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Where <code>Yield</code> is the crop yield (kg dry matter ha-1),
@@ -1996,12 +2111,19 @@ amplitude of green area index, <code>GAI</code> is the green area index,
 and <code>Variance</code> is the width of the distribution function</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuR0FJX3JldHVybiA8LSBjYWxjdWxhdGVHQUkoZGFpbHlfaW5wdXRfdGVzdCRKdWxpYW5EYXksXG5cdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdCB5aWVsZCxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0IHBlcmVubmlhbClcbkdBSV9yZXR1cm5cbkdBSSA8LSBHQUlfcmV0dXJuW1tcIkdBSVwiXV1cbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjpbIkdBSV9yZXR1cm4gPC0gY2FsY3VsYXRlR0FJKGRhaWx5X2lucHV0X3Rlc3QkSnVsaWFuRGF5LFxuXHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHQgeWllbGQsXG5cdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdCBwZXJlbm5pYWwpIiwiR0FJX3JldHVybiJdfQ== -->
 <pre class="r"><code>GAI_return &lt;- calculateGAI(daily_input_test$JulianDay,
                                                      yield,
                                                      perennial)
-GAI_return
-GAI &lt;- GAI_return[[&quot;GAI&quot;]]</code></pre>
+GAI_return</code></pre>
+<!-- rnb-source-end -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["JulianDay"],"name":[1],"type":["int"],"align":["right"]},{"label":["GAI_max"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["MidSeason"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["GAI"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"1.8819","3":"169","4":"7.004612e-21"},{"1":"2","2":"1.8819","3":"169","4":"1.224236e-20"},{"1":"3","2":"1.8819","3":"169","4":"2.132547e-20"},{"1":"4","2":"1.8819","3":"169","4":"3.702409e-20"},{"1":"5","2":"1.8819","3":"169","4":"6.406526e-20"},{"1":"6","2":"1.8819","3":"169","4":"1.104875e-19"},{"1":"7","2":"1.8819","3":"169","4":"1.899135e-19"},{"1":"8","2":"1.8819","3":"169","4":"3.253502e-19"},{"1":"9","2":"1.8819","3":"169","4":"5.555187e-19"},{"1":"10","2":"1.8819","3":"169","4":"9.453629e-19"},{"1":"11","2":"1.8819","3":"169","4":"1.603433e-18"},{"1":"12","2":"1.8819","3":"169","4":"2.710537e-18"},{"1":"13","2":"1.8819","3":"169","4":"4.566804e-18"},{"1":"14","2":"1.8819","3":"169","4":"7.668698e-18"},{"1":"15","2":"1.8819","3":"169","4":"1.283463e-17"},{"1":"16","2":"1.8819","3":"169","4":"2.140905e-17"},{"1":"17","2":"1.8819","3":"169","4":"3.559293e-17"},{"1":"18","2":"1.8819","3":"169","4":"5.897696e-17"},{"1":"19","2":"1.8819","3":"169","4":"9.739877e-17"},{"1":"20","2":"1.8819","3":"169","4":"1.603160e-16"},{"1":"21","2":"1.8819","3":"169","4":"2.629981e-16"},{"1":"22","2":"1.8819","3":"169","4":"4.300122e-16"},{"1":"23","2":"1.8819","3":"169","4":"7.007470e-16"},{"1":"24","2":"1.8819","3":"169","4":"1.138136e-15"},{"1":"25","2":"1.8819","3":"169","4":"1.842380e-15"},{"1":"26","2":"1.8819","3":"169","4":"2.972465e-15"},{"1":"27","2":"1.8819","3":"169","4":"4.779766e-15"},{"1":"28","2":"1.8819","3":"169","4":"7.660355e-15"},{"1":"29","2":"1.8819","3":"169","4":"1.223611e-14"},{"1":"30","2":"1.8819","3":"169","4":"1.948006e-14"},{"1":"31","2":"1.8819","3":"169","4":"3.090934e-14"},{"1":"32","2":"1.8819","3":"169","4":"4.888114e-14"},{"1":"33","2":"1.8819","3":"169","4":"7.704515e-14"},{"1":"34","2":"1.8819","3":"169","4":"1.210324e-13"},{"1":"35","2":"1.8819","3":"169","4":"1.895005e-13"},{"1":"36","2":"1.8819","3":"169","4":"2.957137e-13"},{"1":"37","2":"1.8819","3":"169","4":"4.599226e-13"},{"1":"38","2":"1.8819","3":"169","4":"7.129360e-13"},{"1":"39","2":"1.8819","3":"169","4":"1.101460e-12"},{"1":"40","2":"1.8819","3":"169","4":"1.696052e-12"},{"1":"41","2":"1.8819","3":"169","4":"2.602926e-12"},{"1":"42","2":"1.8819","3":"169","4":"3.981411e-12"},{"1":"43","2":"1.8819","3":"169","4":"6.069663e-12"},{"1":"44","2":"1.8819","3":"169","4":"9.222410e-12"},{"1":"45","2":"1.8819","3":"169","4":"1.396615e-11"},{"1":"46","2":"1.8819","3":"169","4":"2.107954e-11"},{"1":"47","2":"1.8819","3":"169","4":"3.171014e-11"},{"1":"48","2":"1.8819","3":"169","4":"4.754309e-11"},{"1":"49","2":"1.8819","3":"169","4":"7.104426e-11"},{"1":"50","2":"1.8819","3":"169","4":"1.058091e-10"},{"1":"51","2":"1.8819","3":"169","4":"1.570613e-10"},{"1":"52","2":"1.8819","3":"169","4":"2.323635e-10"},{"1":"53","2":"1.8819","3":"169","4":"3.426249e-10"},{"1":"54","2":"1.8819","3":"169","4":"5.035265e-10"},{"1":"55","2":"1.8819","3":"169","4":"7.375272e-10"},{"1":"56","2":"1.8819","3":"169","4":"1.076679e-09"},{"1":"57","2":"1.8819","3":"169","4":"1.566558e-09"},{"1":"58","2":"1.8819","3":"169","4":"2.271744e-09"},{"1":"59","2":"1.8819","3":"169","4":"3.283405e-09"},{"1":"60","2":"1.8819","3":"169","4":"4.729791e-09"},{"1":"61","2":"1.8819","3":"169","4":"6.790657e-09"},{"1":"62","2":"1.8819","3":"169","4":"9.717040e-09"},{"1":"63","2":"1.8819","3":"169","4":"1.385825e-08"},{"1":"64","2":"1.8819","3":"169","4":"1.969860e-08"},{"1":"65","2":"1.8819","3":"169","4":"2.790710e-08"},{"1":"66","2":"1.8819","3":"169","4":"3.940454e-08"},{"1":"67","2":"1.8819","3":"169","4":"5.545366e-08"},{"1":"68","2":"1.8819","3":"169","4":"7.777975e-08"},{"1":"69","2":"1.8819","3":"169","4":"1.087314e-07"},{"1":"70","2":"1.8819","3":"169","4":"1.514943e-07"},{"1":"71","2":"1.8819","3":"169","4":"2.103728e-07"},{"1":"72","2":"1.8819","3":"169","4":"2.911624e-07"},{"1":"73","2":"1.8819","3":"169","4":"4.016366e-07"},{"1":"74","2":"1.8819","3":"169","4":"5.521839e-07"},{"1":"75","2":"1.8819","3":"169","4":"7.566351e-07"},{"1":"76","2":"1.8819","3":"169","4":"1.033336e-06"},{"1":"77","2":"1.8819","3":"169","4":"1.406530e-06"},{"1":"78","2":"1.8819","3":"169","4":"1.908134e-06"},{"1":"79","2":"1.8819","3":"169","4":"2.580008e-06"},{"1":"80","2":"1.8819","3":"169","4":"3.476847e-06"},{"1":"81","2":"1.8819","3":"169","4":"4.669845e-06"},{"1":"82","2":"1.8819","3":"169","4":"6.251319e-06"},{"1":"83","2":"1.8819","3":"169","4":"8.340522e-06"},{"1":"84","2":"1.8819","3":"169","4":"1.109091e-05"},{"1":"85","2":"1.8819","3":"169","4":"1.469919e-05"},{"1":"86","2":"1.8819","3":"169","4":"1.941655e-05"},{"1":"87","2":"1.8819","3":"169","4":"2.556248e-05"},{"1":"88","2":"1.8819","3":"169","4":"3.354180e-05"},{"1":"89","2":"1.8819","3":"169","4":"4.386540e-05"},{"1":"90","2":"1.8819","3":"169","4":"5.717552e-05"},{"1":"91","2":"1.8819","3":"169","4":"7.427634e-05"},{"1":"92","2":"1.8819","3":"169","4":"9.617080e-05"},{"1":"93","2":"1.8819","3":"169","4":"1.241047e-04"},{"1":"94","2":"1.8819","3":"169","4":"1.596194e-04"},{"1":"95","2":"1.8819","3":"169","4":"2.046141e-04"},{"1":"96","2":"1.8819","3":"169","4":"2.614193e-04"},{"1":"97","2":"1.8819","3":"169","4":"3.328835e-04"},{"1":"98","2":"1.8819","3":"169","4":"4.224731e-04"},{"1":"99","2":"1.8819","3":"169","4":"5.343899e-04"},{"1":"100","2":"1.8819","3":"169","4":"6.737051e-04"},{"1":"101","2":"1.8819","3":"169","4":"8.465132e-04"},{"1":"102","2":"1.8819","3":"169","4":"1.060108e-03"},{"1":"103","2":"1.8819","3":"169","4":"1.323179e-03"},{"1":"104","2":"1.8819","3":"169","4":"1.646037e-03"},{"1":"105","2":"1.8819","3":"169","4":"2.040858e-03"},{"1":"106","2":"1.8819","3":"169","4":"2.521962e-03"},{"1":"107","2":"1.8819","3":"169","4":"3.106108e-03"},{"1":"108","2":"1.8819","3":"169","4":"3.812826e-03"},{"1":"109","2":"1.8819","3":"169","4":"4.664764e-03"},{"1":"110","2":"1.8819","3":"169","4":"5.688067e-03"},{"1":"111","2":"1.8819","3":"169","4":"6.912771e-03"},{"1":"112","2":"1.8819","3":"169","4":"8.373209e-03"},{"1":"113","2":"1.8819","3":"169","4":"1.010844e-02"},{"1":"114","2":"1.8819","3":"169","4":"1.216266e-02"},{"1":"115","2":"1.8819","3":"169","4":"1.458564e-02"},{"1":"116","2":"1.8819","3":"169","4":"1.743310e-02"},{"1":"117","2":"1.8819","3":"169","4":"2.076711e-02"},{"1":"118","2":"1.8819","3":"169","4":"2.465642e-02"},{"1":"119","2":"1.8819","3":"169","4":"2.917670e-02"},{"1":"120","2":"1.8819","3":"169","4":"3.441080e-02"},{"1":"121","2":"1.8819","3":"169","4":"4.044881e-02"},{"1":"122","2":"1.8819","3":"169","4":"4.738807e-02"},{"1":"123","2":"1.8819","3":"169","4":"5.533306e-02"},{"1":"124","2":"1.8819","3":"169","4":"6.439508e-02"},{"1":"125","2":"1.8819","3":"169","4":"7.469182e-02"},{"1":"126","2":"1.8819","3":"169","4":"8.634669e-02"},{"1":"127","2":"1.8819","3":"169","4":"9.948801e-02"},{"1":"128","2":"1.8819","3":"169","4":"1.142479e-01"},{"1":"129","2":"1.8819","3":"169","4":"1.307609e-01"},{"1":"130","2":"1.8819","3":"169","4":"1.491626e-01"},{"1":"131","2":"1.8819","3":"169","4":"1.695878e-01"},{"1":"132","2":"1.8819","3":"169","4":"1.921681e-01"},{"1":"133","2":"1.8819","3":"169","4":"2.170303e-01"},{"1":"134","2":"1.8819","3":"169","4":"2.442935e-01"},{"1":"135","2":"1.8819","3":"169","4":"2.740664e-01"},{"1":"136","2":"1.8819","3":"169","4":"3.064447e-01"},{"1":"137","2":"1.8819","3":"169","4":"3.415078e-01"},{"1":"138","2":"1.8819","3":"169","4":"3.793163e-01"},{"1":"139","2":"1.8819","3":"169","4":"4.199086e-01"},{"1":"140","2":"1.8819","3":"169","4":"4.632980e-01"},{"1":"141","2":"1.8819","3":"169","4":"5.094698e-01"},{"1":"142","2":"1.8819","3":"169","4":"5.583786e-01"},{"1":"143","2":"1.8819","3":"169","4":"6.099461e-01"},{"1":"144","2":"1.8819","3":"169","4":"6.640587e-01"},{"1":"145","2":"1.8819","3":"169","4":"7.205661e-01"},{"1":"146","2":"1.8819","3":"169","4":"7.792801e-01"},{"1":"147","2":"1.8819","3":"169","4":"8.399736e-01"},{"1":"148","2":"1.8819","3":"169","4":"9.023813e-01"},{"1":"149","2":"1.8819","3":"169","4":"9.661997e-01"},{"1":"150","2":"1.8819","3":"169","4":"1.031089e+00"},{"1":"151","2":"1.8819","3":"169","4":"1.096674e+00"},{"1":"152","2":"1.8819","3":"169","4":"1.162549e+00"},{"1":"153","2":"1.8819","3":"169","4":"1.228281e+00"},{"1":"154","2":"1.8819","3":"169","4":"1.293410e+00"},{"1":"155","2":"1.8819","3":"169","4":"1.357460e+00"},{"1":"156","2":"1.8819","3":"169","4":"1.419941e+00"},{"1":"157","2":"1.8819","3":"169","4":"1.480355e+00"},{"1":"158","2":"1.8819","3":"169","4":"1.538204e+00"},{"1":"159","2":"1.8819","3":"169","4":"1.592994e+00"},{"1":"160","2":"1.8819","3":"169","4":"1.644246e+00"},{"1":"161","2":"1.8819","3":"169","4":"1.691499e+00"},{"1":"162","2":"1.8819","3":"169","4":"1.734320e+00"},{"1":"163","2":"1.8819","3":"169","4":"1.772307e+00"},{"1":"164","2":"1.8819","3":"169","4":"1.805099e+00"},{"1":"165","2":"1.8819","3":"169","4":"1.832379e+00"},{"1":"166","2":"1.8819","3":"169","4":"1.853882e+00"},{"1":"167","2":"1.8819","3":"169","4":"1.869396e+00"},{"1":"168","2":"1.8819","3":"169","4":"1.878766e+00"},{"1":"169","2":"1.8819","3":"169","4":"1.881900e+00"},{"1":"170","2":"1.8819","3":"169","4":"1.878766e+00"},{"1":"171","2":"1.8819","3":"169","4":"1.869396e+00"},{"1":"172","2":"1.8819","3":"169","4":"1.853882e+00"},{"1":"173","2":"1.8819","3":"169","4":"1.832379e+00"},{"1":"174","2":"1.8819","3":"169","4":"1.805099e+00"},{"1":"175","2":"1.8819","3":"169","4":"1.772307e+00"},{"1":"176","2":"1.8819","3":"169","4":"1.734320e+00"},{"1":"177","2":"1.8819","3":"169","4":"1.691499e+00"},{"1":"178","2":"1.8819","3":"169","4":"1.644246e+00"},{"1":"179","2":"1.8819","3":"169","4":"1.592994e+00"},{"1":"180","2":"1.8819","3":"169","4":"1.538204e+00"},{"1":"181","2":"1.8819","3":"169","4":"1.480355e+00"},{"1":"182","2":"1.8819","3":"169","4":"1.419941e+00"},{"1":"183","2":"1.8819","3":"169","4":"1.357460e+00"},{"1":"184","2":"1.8819","3":"169","4":"1.293410e+00"},{"1":"185","2":"1.8819","3":"169","4":"1.228281e+00"},{"1":"186","2":"1.8819","3":"169","4":"1.162549e+00"},{"1":"187","2":"1.8819","3":"169","4":"1.096674e+00"},{"1":"188","2":"1.8819","3":"169","4":"1.031089e+00"},{"1":"189","2":"1.8819","3":"169","4":"9.661997e-01"},{"1":"190","2":"1.8819","3":"169","4":"9.023813e-01"},{"1":"191","2":"1.8819","3":"169","4":"8.399736e-01"},{"1":"192","2":"1.8819","3":"169","4":"7.792801e-01"},{"1":"193","2":"1.8819","3":"169","4":"7.205661e-01"},{"1":"194","2":"1.8819","3":"169","4":"6.640587e-01"},{"1":"195","2":"1.8819","3":"169","4":"6.099461e-01"},{"1":"196","2":"1.8819","3":"169","4":"5.583786e-01"},{"1":"197","2":"1.8819","3":"169","4":"5.094698e-01"},{"1":"198","2":"1.8819","3":"169","4":"4.632980e-01"},{"1":"199","2":"1.8819","3":"169","4":"4.199086e-01"},{"1":"200","2":"1.8819","3":"169","4":"3.793163e-01"},{"1":"201","2":"1.8819","3":"169","4":"3.415078e-01"},{"1":"202","2":"1.8819","3":"169","4":"3.064447e-01"},{"1":"203","2":"1.8819","3":"169","4":"2.740664e-01"},{"1":"204","2":"1.8819","3":"169","4":"2.442935e-01"},{"1":"205","2":"1.8819","3":"169","4":"2.170303e-01"},{"1":"206","2":"1.8819","3":"169","4":"1.921681e-01"},{"1":"207","2":"1.8819","3":"169","4":"1.695878e-01"},{"1":"208","2":"1.8819","3":"169","4":"1.491626e-01"},{"1":"209","2":"1.8819","3":"169","4":"1.307609e-01"},{"1":"210","2":"1.8819","3":"169","4":"1.142479e-01"},{"1":"211","2":"1.8819","3":"169","4":"9.948801e-02"},{"1":"212","2":"1.8819","3":"169","4":"8.634669e-02"},{"1":"213","2":"1.8819","3":"169","4":"7.469182e-02"},{"1":"214","2":"1.8819","3":"169","4":"6.439508e-02"},{"1":"215","2":"1.8819","3":"169","4":"5.533306e-02"},{"1":"216","2":"1.8819","3":"169","4":"4.738807e-02"},{"1":"217","2":"1.8819","3":"169","4":"4.044881e-02"},{"1":"218","2":"1.8819","3":"169","4":"3.441080e-02"},{"1":"219","2":"1.8819","3":"169","4":"2.917670e-02"},{"1":"220","2":"1.8819","3":"169","4":"2.465642e-02"},{"1":"221","2":"1.8819","3":"169","4":"2.076711e-02"},{"1":"222","2":"1.8819","3":"169","4":"1.743310e-02"},{"1":"223","2":"1.8819","3":"169","4":"1.458564e-02"},{"1":"224","2":"1.8819","3":"169","4":"1.216266e-02"},{"1":"225","2":"1.8819","3":"169","4":"1.010844e-02"},{"1":"226","2":"1.8819","3":"169","4":"8.373209e-03"},{"1":"227","2":"1.8819","3":"169","4":"6.912771e-03"},{"1":"228","2":"1.8819","3":"169","4":"5.688067e-03"},{"1":"229","2":"1.8819","3":"169","4":"4.664764e-03"},{"1":"230","2":"1.8819","3":"169","4":"3.812826e-03"},{"1":"231","2":"1.8819","3":"169","4":"3.106108e-03"},{"1":"232","2":"1.8819","3":"169","4":"2.521962e-03"},{"1":"233","2":"1.8819","3":"169","4":"2.040858e-03"},{"1":"234","2":"1.8819","3":"169","4":"1.646037e-03"},{"1":"235","2":"1.8819","3":"169","4":"1.323179e-03"},{"1":"236","2":"1.8819","3":"169","4":"1.060108e-03"},{"1":"237","2":"1.8819","3":"169","4":"8.465132e-04"},{"1":"238","2":"1.8819","3":"169","4":"6.737051e-04"},{"1":"239","2":"1.8819","3":"169","4":"5.343899e-04"},{"1":"240","2":"1.8819","3":"169","4":"4.224731e-04"},{"1":"241","2":"1.8819","3":"169","4":"3.328835e-04"},{"1":"242","2":"1.8819","3":"169","4":"2.614193e-04"},{"1":"243","2":"1.8819","3":"169","4":"2.046141e-04"},{"1":"244","2":"1.8819","3":"169","4":"1.596194e-04"},{"1":"245","2":"1.8819","3":"169","4":"1.241047e-04"},{"1":"246","2":"1.8819","3":"169","4":"9.617080e-05"},{"1":"247","2":"1.8819","3":"169","4":"7.427634e-05"},{"1":"248","2":"1.8819","3":"169","4":"5.717552e-05"},{"1":"249","2":"1.8819","3":"169","4":"4.386540e-05"},{"1":"250","2":"1.8819","3":"169","4":"3.354180e-05"},{"1":"251","2":"1.8819","3":"169","4":"2.556248e-05"},{"1":"252","2":"1.8819","3":"169","4":"1.941655e-05"},{"1":"253","2":"1.8819","3":"169","4":"1.469919e-05"},{"1":"254","2":"1.8819","3":"169","4":"1.109091e-05"},{"1":"255","2":"1.8819","3":"169","4":"8.340522e-06"},{"1":"256","2":"1.8819","3":"169","4":"6.251319e-06"},{"1":"257","2":"1.8819","3":"169","4":"4.669845e-06"},{"1":"258","2":"1.8819","3":"169","4":"3.476847e-06"},{"1":"259","2":"1.8819","3":"169","4":"2.580008e-06"},{"1":"260","2":"1.8819","3":"169","4":"1.908134e-06"},{"1":"261","2":"1.8819","3":"169","4":"1.406530e-06"},{"1":"262","2":"1.8819","3":"169","4":"1.033336e-06"},{"1":"263","2":"1.8819","3":"169","4":"7.566351e-07"},{"1":"264","2":"1.8819","3":"169","4":"5.521839e-07"},{"1":"265","2":"1.8819","3":"169","4":"4.016366e-07"},{"1":"266","2":"1.8819","3":"169","4":"2.911624e-07"},{"1":"267","2":"1.8819","3":"169","4":"2.103728e-07"},{"1":"268","2":"1.8819","3":"169","4":"1.514943e-07"},{"1":"269","2":"1.8819","3":"169","4":"1.087314e-07"},{"1":"270","2":"1.8819","3":"169","4":"7.777975e-08"},{"1":"271","2":"1.8819","3":"169","4":"5.545366e-08"},{"1":"272","2":"1.8819","3":"169","4":"3.940454e-08"},{"1":"273","2":"1.8819","3":"169","4":"2.790710e-08"},{"1":"274","2":"1.8819","3":"169","4":"1.969860e-08"},{"1":"275","2":"1.8819","3":"169","4":"1.385825e-08"},{"1":"276","2":"1.8819","3":"169","4":"9.717040e-09"},{"1":"277","2":"1.8819","3":"169","4":"6.790657e-09"},{"1":"278","2":"1.8819","3":"169","4":"4.729791e-09"},{"1":"279","2":"1.8819","3":"169","4":"3.283405e-09"},{"1":"280","2":"1.8819","3":"169","4":"2.271744e-09"},{"1":"281","2":"1.8819","3":"169","4":"1.566558e-09"},{"1":"282","2":"1.8819","3":"169","4":"1.076679e-09"},{"1":"283","2":"1.8819","3":"169","4":"7.375272e-10"},{"1":"284","2":"1.8819","3":"169","4":"5.035265e-10"},{"1":"285","2":"1.8819","3":"169","4":"3.426249e-10"},{"1":"286","2":"1.8819","3":"169","4":"2.323635e-10"},{"1":"287","2":"1.8819","3":"169","4":"1.570613e-10"},{"1":"288","2":"1.8819","3":"169","4":"1.058091e-10"},{"1":"289","2":"1.8819","3":"169","4":"7.104426e-11"},{"1":"290","2":"1.8819","3":"169","4":"4.754309e-11"},{"1":"291","2":"1.8819","3":"169","4":"3.171014e-11"},{"1":"292","2":"1.8819","3":"169","4":"2.107954e-11"},{"1":"293","2":"1.8819","3":"169","4":"1.396615e-11"},{"1":"294","2":"1.8819","3":"169","4":"9.222410e-12"},{"1":"295","2":"1.8819","3":"169","4":"6.069663e-12"},{"1":"296","2":"1.8819","3":"169","4":"3.981411e-12"},{"1":"297","2":"1.8819","3":"169","4":"2.602926e-12"},{"1":"298","2":"1.8819","3":"169","4":"1.696052e-12"},{"1":"299","2":"1.8819","3":"169","4":"1.101460e-12"},{"1":"300","2":"1.8819","3":"169","4":"7.129360e-13"},{"1":"301","2":"1.8819","3":"169","4":"4.599226e-13"},{"1":"302","2":"1.8819","3":"169","4":"2.957137e-13"},{"1":"303","2":"1.8819","3":"169","4":"1.895005e-13"},{"1":"304","2":"1.8819","3":"169","4":"1.210324e-13"},{"1":"305","2":"1.8819","3":"169","4":"7.704515e-14"},{"1":"306","2":"1.8819","3":"169","4":"4.888114e-14"},{"1":"307","2":"1.8819","3":"169","4":"3.090934e-14"},{"1":"308","2":"1.8819","3":"169","4":"1.948006e-14"},{"1":"309","2":"1.8819","3":"169","4":"1.223611e-14"},{"1":"310","2":"1.8819","3":"169","4":"7.660355e-15"},{"1":"311","2":"1.8819","3":"169","4":"4.779766e-15"},{"1":"312","2":"1.8819","3":"169","4":"2.972465e-15"},{"1":"313","2":"1.8819","3":"169","4":"1.842380e-15"},{"1":"314","2":"1.8819","3":"169","4":"1.138136e-15"},{"1":"315","2":"1.8819","3":"169","4":"7.007470e-16"},{"1":"316","2":"1.8819","3":"169","4":"4.300122e-16"},{"1":"317","2":"1.8819","3":"169","4":"2.629981e-16"},{"1":"318","2":"1.8819","3":"169","4":"1.603160e-16"},{"1":"319","2":"1.8819","3":"169","4":"9.739877e-17"},{"1":"320","2":"1.8819","3":"169","4":"5.897696e-17"},{"1":"321","2":"1.8819","3":"169","4":"3.559293e-17"},{"1":"322","2":"1.8819","3":"169","4":"2.140905e-17"},{"1":"323","2":"1.8819","3":"169","4":"1.283463e-17"},{"1":"324","2":"1.8819","3":"169","4":"7.668698e-18"},{"1":"325","2":"1.8819","3":"169","4":"4.566804e-18"},{"1":"326","2":"1.8819","3":"169","4":"2.710537e-18"},{"1":"327","2":"1.8819","3":"169","4":"1.603433e-18"},{"1":"328","2":"1.8819","3":"169","4":"9.453629e-19"},{"1":"329","2":"1.8819","3":"169","4":"5.555187e-19"},{"1":"330","2":"1.8819","3":"169","4":"3.253502e-19"},{"1":"331","2":"1.8819","3":"169","4":"1.899135e-19"},{"1":"332","2":"1.8819","3":"169","4":"1.104875e-19"},{"1":"333","2":"1.8819","3":"169","4":"6.406526e-20"},{"1":"334","2":"1.8819","3":"169","4":"3.702409e-20"},{"1":"335","2":"1.8819","3":"169","4":"2.132547e-20"},{"1":"336","2":"1.8819","3":"169","4":"1.224236e-20"},{"1":"337","2":"1.8819","3":"169","4":"7.004612e-21"},{"1":"338","2":"1.8819","3":"169","4":"3.994435e-21"},{"1":"339","2":"1.8819","3":"169","4":"2.270278e-21"},{"1":"340","2":"1.8819","3":"169","4":"1.286041e-21"},{"1":"341","2":"1.8819","3":"169","4":"7.260780e-22"},{"1":"342","2":"1.8819","3":"169","4":"4.085676e-22"},{"1":"343","2":"1.8819","3":"169","4":"2.291379e-22"},{"1":"344","2":"1.8819","3":"169","4":"1.280803e-22"},{"1":"345","2":"1.8819","3":"169","4":"7.135429e-23"},{"1":"346","2":"1.8819","3":"169","4":"3.961961e-23"},{"1":"347","2":"1.8819","3":"169","4":"2.192566e-23"},{"1":"348","2":"1.8819","3":"169","4":"1.209337e-23"},{"1":"349","2":"1.8819","3":"169","4":"6.648054e-24"},{"1":"350","2":"1.8819","3":"169","4":"3.642453e-24"},{"1":"351","2":"1.8819","3":"169","4":"1.989051e-24"},{"1":"352","2":"1.8819","3":"169","4":"1.082555e-24"},{"1":"353","2":"1.8819","3":"169","4":"5.872278e-25"},{"1":"354","2":"1.8819","3":"169","4":"3.174793e-25"},{"1":"355","2":"1.8819","3":"169","4":"1.710711e-25"},{"1":"356","2":"1.8819","3":"169","4":"9.187351e-26"},{"1":"357","2":"1.8819","3":"169","4":"4.917635e-26"},{"1":"358","2":"1.8819","3":"169","4":"2.623461e-26"},{"1":"359","2":"1.8819","3":"169","4":"1.394907e-26"},{"1":"360","2":"1.8819","3":"169","4":"7.392107e-27"},{"1":"361","2":"1.8819","3":"169","4":"3.904304e-27"},{"1":"362","2":"1.8819","3":"169","4":"2.055281e-27"},{"1":"363","2":"1.8819","3":"169","4":"1.078329e-27"},{"1":"364","2":"1.8819","3":"169","4":"5.638762e-28"},{"1":"365","2":"1.8819","3":"169","4":"2.938790e-28"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-source-begin eyJkYXRhIjoiR0FJIDwtIEdBSV9yZXR1cm5bW1wiR0FJXCJdXSJ9 -->
+<pre class="r"><code>GAI &lt;- GAI_return[[&quot;GAI&quot;]]</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -2025,9 +2147,48 @@ SandContent\times100\]</span></p>
 <span class="math display">\[FieldCapacity=\frac{FieldCapacity_{Percent}}{100}\]</span></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2FsY3VsYXRlV2F0ZXJDb250ZW50XG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiY2FsY3VsYXRlV2F0ZXJDb250ZW50In0= -->
 <pre class="r"><code>calculateWaterContent</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiZnVuY3Rpb24gKFNvaWxPcmdhbmljQ19QZXJjZW50LCBDbGF5Q29udGVudCwgU2FuZENvbnRlbnQpIFxue1xuICAgIE9yZ0NmYWN0b3IgPC0gLTAuODM3NTMxICsgMC40MzAxODMgKiBTb2lsT3JnYW5pY0NfUGVyY2VudFxuICAgIENsYXlmYWN0b3IgPC0gLTEuNDA3NDQgKyAwLjA2NjE5NjkgKiBDbGF5Q29udGVudCAqIDEwMFxuICAgIFNhbmRmYWN0b3IgPC0gLTEuNTE4NjYgKyAwLjAzOTMyODQgKiBTYW5kQ29udGVudCAqIDEwMFxuICAgIFdpbHRpbmdQb2ludFBlcmNlbnQgPC0gMTQuMjU2OCArIDcuMzYzMTggKiAoMC4wNjg2NSArICgwLjEwODcxMyAqIFxuICAgICAgICBPcmdDZmFjdG9yKSAtICgwLjAxNTcyMjUgKiBPcmdDZmFjdG9yXjIpICsgKDAuMDAxMDI4MDUgKiBcbiAgICAgICAgT3JnQ2ZhY3Rvcl4zKSArICgwLjg4NjU2OSAqIENsYXlmYWN0b3IpIC0gKDAuMjIzNTgxICogXG4gICAgICAgIE9yZ0NmYWN0b3IgKiBDbGF5ZmFjdG9yKSArICgwLjAxMjYzNzkgKiAoT3JnQ2ZhY3Rvcl4yKSAqIFxuICAgICAgICBDbGF5ZmFjdG9yKSAtICgwLjAxNzA1OSAqIChDbGF5ZmFjdG9yXjIpKSArICgwLjAxMzUyNjYgKiBcbiAgICAgICAgKE9yZ0NmYWN0b3IgKiAoQ2xheWZhY3Rvcl4yKSkpIC0gKDAuMDMzNDQzNCAqIChDbGF5ZmFjdG9yXjMpKSAtIFxuICAgICAgICAoMC4wNTM1MTgyICogKFNhbmRmYWN0b3IpKSAtICgwLjAzNTQyNzEgKiAoT3JnQ2ZhY3RvciAqIFxuICAgICAgICBTYW5kZmFjdG9yKSkgLSAoMC4wMDI2MTMxMyAqIChPcmdDZmFjdG9yXjIpICogU2FuZGZhY3RvcikgLSBcbiAgICAgICAgKDAuMTU0NTYzICogKENsYXlmYWN0b3IpICogKFNhbmRmYWN0b3IpKSAtICgwLjAxNjAyMTkgKiBcbiAgICAgICAgKE9yZ0NmYWN0b3IpICogKENsYXlmYWN0b3IpICogKFNhbmRmYWN0b3IpKSAtICgwLjA0MDA2MDYgKiBcbiAgICAgICAgKENsYXlmYWN0b3JeMikgKiAoU2FuZGZhY3RvcikpIC0gKDAuMTA0ODc1ICogKFNhbmRmYWN0b3JeMikpICsgXG4gICAgICAgICgwLjAxNTk4NTcgKiAoT3JnQ2ZhY3RvcikgKiAoU2FuZGZhY3Rvcl4yKSkgLSAoMC4wNjcxNjU2ICogXG4gICAgICAgIChDbGF5ZmFjdG9yKSAqIChTYW5kZmFjdG9yXjIpKSAtICgwLjAyNjA2OTkgKiAoU2FuZGZhY3Rvcl4zKSkpXG4gICAgV2lsdGluZ1BvaW50IDwtIFdpbHRpbmdQb2ludFBlcmNlbnQvMTAwXG4gICAgRmllbGRDYXBhY2l0eVBlcmNlbnQgPC0gMjkuNzUyOCArIDEwLjM1NDQgKiAoMC4wNDYxNjE1ICsgXG4gICAgICAgIDAuMjkwOTU1ICogKE9yZ0NmYWN0b3IpIC0gMC4wNDk2ODQ1ICogKE9yZ0NmYWN0b3JeMikgKyBcbiAgICAgICAgMC4wMDcwNDgwMiAqIChPcmdDZmFjdG9yXjMpICsgMC4yNjkxMDEgKiAoQ2xheWZhY3RvcikgLSBcbiAgICAgICAgMC4xNzY1MjggKiAoT3JnQ2ZhY3RvcikgKiAoQ2xheWZhY3RvcikgKyAwLjA1NDMxMzggKiBcbiAgICAgICAgKE9yZ0NmYWN0b3JeMikgKiAoQ2xheWZhY3RvcikgKyAwLjE5ODIgKiAoQ2xheWZhY3Rvcl4yKSAtIFxuICAgICAgICAwLjA2MDY5OSAqIChDbGF5ZmFjdG9yXjMpIC0gMC4zMjAyNDkgKiAoU2FuZGZhY3RvcikgLSBcbiAgICAgICAgMC4wMTExNjkzICogKE9yZ0NmYWN0b3JeMikgKiAoU2FuZGZhY3RvcikgKyAwLjE0MTA0ICogXG4gICAgICAgIChDbGF5ZmFjdG9yKSAqIChTYW5kZmFjdG9yKSArIDAuMDY1NzM0NSAqIChPcmdDZmFjdG9yKSAqIFxuICAgICAgICAoQ2xheWZhY3RvcikgKiAoU2FuZGZhY3RvcikgLSAwLjEwMjAyNiAqIChDbGF5ZmFjdG9yXjIpICogXG4gICAgICAgIChTYW5kZmFjdG9yKSAtIDAuMDQwMTIgKiAoU2FuZGZhY3Rvcl4yKSArIDAuMTYwODM4ICogXG4gICAgICAgIChPcmdDZmFjdG9yKSAqIChTYW5kZmFjdG9yXjIpIC0gMC4xMjEzOTIgKiAoQ2xheWZhY3RvcikgKiBcbiAgICAgICAgKFNhbmRmYWN0b3JeMikgLSAwLjA2MTY2NyAqIChTYW5kZmFjdG9yXjMpKVxuICAgIEZpZWxkQ2FwYWNpdHkgPC0gRmllbGRDYXBhY2l0eVBlcmNlbnQvMTAwXG4gICAgcmV0dXJuKGMoT3JnQ2ZhY3RvciA9IE9yZ0NmYWN0b3IsIENsYXlmYWN0b3IgPSBDbGF5ZmFjdG9yLCBcbiAgICAgICAgU2FuZGZhY3RvciA9IFNhbmRmYWN0b3IsIFdpbHRpbmdQb2ludCA9IFdpbHRpbmdQb2ludCwgXG4gICAgICAgIEZpZWxkQ2FwYWNpdHkgPSBGaWVsZENhcGFjaXR5KSlcbn1cbjxieXRlY29kZTogMHgwMDAwMDFlZTU4OGU2MDY4PlxuIn0= -->
+<pre><code>function (SoilOrganicC_Percent, ClayContent, SandContent) 
+{
+    OrgCfactor &lt;- -0.837531 + 0.430183 * SoilOrganicC_Percent
+    Clayfactor &lt;- -1.40744 + 0.0661969 * ClayContent * 100
+    Sandfactor &lt;- -1.51866 + 0.0393284 * SandContent * 100
+    WiltingPointPercent &lt;- 14.2568 + 7.36318 * (0.06865 + (0.108713 * 
+        OrgCfactor) - (0.0157225 * OrgCfactor^2) + (0.00102805 * 
+        OrgCfactor^3) + (0.886569 * Clayfactor) - (0.223581 * 
+        OrgCfactor * Clayfactor) + (0.0126379 * (OrgCfactor^2) * 
+        Clayfactor) - (0.017059 * (Clayfactor^2)) + (0.0135266 * 
+        (OrgCfactor * (Clayfactor^2))) - (0.0334434 * (Clayfactor^3)) - 
+        (0.0535182 * (Sandfactor)) - (0.0354271 * (OrgCfactor * 
+        Sandfactor)) - (0.00261313 * (OrgCfactor^2) * Sandfactor) - 
+        (0.154563 * (Clayfactor) * (Sandfactor)) - (0.0160219 * 
+        (OrgCfactor) * (Clayfactor) * (Sandfactor)) - (0.0400606 * 
+        (Clayfactor^2) * (Sandfactor)) - (0.104875 * (Sandfactor^2)) + 
+        (0.0159857 * (OrgCfactor) * (Sandfactor^2)) - (0.0671656 * 
+        (Clayfactor) * (Sandfactor^2)) - (0.0260699 * (Sandfactor^3)))
+    WiltingPoint &lt;- WiltingPointPercent/100
+    FieldCapacityPercent &lt;- 29.7528 + 10.3544 * (0.0461615 + 
+        0.290955 * (OrgCfactor) - 0.0496845 * (OrgCfactor^2) + 
+        0.00704802 * (OrgCfactor^3) + 0.269101 * (Clayfactor) - 
+        0.176528 * (OrgCfactor) * (Clayfactor) + 0.0543138 * 
+        (OrgCfactor^2) * (Clayfactor) + 0.1982 * (Clayfactor^2) - 
+        0.060699 * (Clayfactor^3) - 0.320249 * (Sandfactor) - 
+        0.0111693 * (OrgCfactor^2) * (Sandfactor) + 0.14104 * 
+        (Clayfactor) * (Sandfactor) + 0.0657345 * (OrgCfactor) * 
+        (Clayfactor) * (Sandfactor) - 0.102026 * (Clayfactor^2) * 
+        (Sandfactor) - 0.04012 * (Sandfactor^2) + 0.160838 * 
+        (OrgCfactor) * (Sandfactor^2) - 0.121392 * (Clayfactor) * 
+        (Sandfactor^2) - 0.061667 * (Sandfactor^3))
+    FieldCapacity &lt;- FieldCapacityPercent/100
+    return(c(OrgCfactor = OrgCfactor, Clayfactor = Clayfactor, 
+        Sandfactor = Sandfactor, WiltingPoint = WiltingPoint, 
+        FieldCapacity = FieldCapacity))
+}
+&lt;bytecode: 0x000001ee588e6068&gt;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Where <code>OrgCfactor</code> is the organic carbon factor,
@@ -2044,12 +2205,18 @@ at wilting point (mm<sup>3</sup> mm<sup>-3</sup>),
 capacity (mm<sup>3</sup> mm<sup>-3</sup>).</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuV2F0ZXJDb250ZW50X3JldHVybiA8LSBjYWxjdWxhdGVXYXRlckNvbnRlbnQoU29pbE9yZ2FuaWNDX1BlcmNlbnQgPSBTb2lsT3JnYW5pY0NfUGVyY2VudCxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0IENsYXlDb250ZW50ID0gQ2xheUNvbnRlbnQsXG5cdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdCBTYW5kQ29udGVudCA9IFNhbmRDb250ZW50KVxuV2F0ZXJDb250ZW50X3JldHVyblxuV2lsdGluZ1BvaW50IDwtIFdhdGVyQ29udGVudF9yZXR1cm5bW1wiV2lsdGluZ1BvaW50XCJdXVxuRmllbGRDYXBhY2l0eSA8LSBXYXRlckNvbnRlbnRfcmV0dXJuW1tcIkZpZWxkQ2FwYWNpdHlcIl1dXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjpbIldhdGVyQ29udGVudF9yZXR1cm4gPC0gY2FsY3VsYXRlV2F0ZXJDb250ZW50KFNvaWxPcmdhbmljQ19QZXJjZW50ID0gU29pbE9yZ2FuaWNDX1BlcmNlbnQsXG5cdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdCBDbGF5Q29udGVudCA9IENsYXlDb250ZW50LFxuXHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSBTYW5kQ29udGVudCkiLCJXYXRlckNvbnRlbnRfcmV0dXJuIl19 -->
 <pre class="r"><code>WaterContent_return &lt;- calculateWaterContent(SoilOrganicC_Percent = SoilOrganicC_Percent,
                                                                                          ClayContent = ClayContent,
                                                                                          SandContent = SandContent)
-WaterContent_return
-WiltingPoint &lt;- WaterContent_return[[&quot;WiltingPoint&quot;]]
+WaterContent_return</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgT3JnQ2ZhY3RvciAgICBDbGF5ZmFjdG9yICAgIFNhbmRmYWN0b3IgIFdpbHRpbmdQb2ludCBGaWVsZENhcGFjaXR5IFxuICAgMC4wMjI4MzUwMCAgIC0xLjA3NjQ1NTUwICAgLTAuNzMyMDkyMDAgICAgMC4wNzU1MDM5NSAgICAwLjM1NzY2OTE0IFxuIn0= -->
+<pre><code>   OrgCfactor    Clayfactor    Sandfactor  WiltingPoint FieldCapacity 
+   0.02283500   -1.07645550   -0.73209200    0.07550395    0.35766914 </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjpbIldpbHRpbmdQb2ludCA8LSBXYXRlckNvbnRlbnRfcmV0dXJuW1tcIldpbHRpbmdQb2ludFwiXV0iLCJGaWVsZENhcGFjaXR5IDwtIFdhdGVyQ29udGVudF9yZXR1cm5bW1wiRmllbGRDYXBhY2l0eVwiXV0iXX0= -->
+<pre class="r"><code>WiltingPoint &lt;- WaterContent_return[[&quot;WiltingPoint&quot;]]
 FieldCapacity &lt;- WaterContent_return[[&quot;FieldCapacity&quot;]]</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
@@ -2065,7 +2232,7 @@ Eq. 2.2.1-12</h3>
 <span class="math display">\[LeafAreaIndex=0.8\times GAI\]</span></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuU29pbFRvcFRoaWNrbmVzcyA8LSAyNTBcblNvaWxNZWFuRGVwdGggPC0gU29pbFRvcFRoaWNrbmVzcy8yMFxuTGVhZkFyZWFJbmRleCA8LSAwLjgqR0FJXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjpbIlNvaWxUb3BUaGlja25lc3MgPC0gMjUwIiwiU29pbE1lYW5EZXB0aCA8LSBTb2lsVG9wVGhpY2tuZXNzLzIwIiwiTGVhZkFyZWFJbmRleCA8LSAwLjgqR0FJIl19 -->
 <pre class="r"><code>SoilTopThickness &lt;- 250
 SoilMeanDepth &lt;- SoilTopThickness/20
 LeafAreaIndex &lt;- 0.8*GAI</code></pre>
@@ -2082,7 +2249,7 @@ LeafAreaIndex &lt;- 0.8*GAI</code></pre>
 temperature</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuVGVtcGVyYXR1cmUgPC0gZGFpbHlfaW5wdXRfdGVzdCRUYXZnXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiVGVtcGVyYXR1cmUgPC0gZGFpbHlfaW5wdXRfdGVzdCRUYXZnIn0= -->
 <pre class="r"><code>Temperature &lt;- daily_input_test$Tavg</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
@@ -2096,7 +2263,7 @@ If Temperature &gt;= 0<span class="math inline">\(^\circ\)</span>C <span class="
 e^{-0.4\times(LeafAreaIndex-3)})\]</span></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuU3VyZmFjZVRlbXAgPC0gaWZlbHNlKFRlbXBlcmF0dXJlIDwgMCwgMC4yMCpUZW1wZXJhdHVyZSxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRUZW1wZXJhdHVyZSooMC45NSswLjA1KmV4cCgtMC40KihMZWFmQXJlYUluZGV4LTMpKSkpXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiU3VyZmFjZVRlbXAgPC0gaWZlbHNlKFRlbXBlcmF0dXJlIDwgMCwgMC4yMCpUZW1wZXJhdHVyZSxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRUZW1wZXJhdHVyZSooMC45NSswLjA1KmV4cCgtMC40KihMZWFmQXJlYUluZGV4LTMpKSkpIn0= -->
 <pre class="r"><code>SurfaceTemp &lt;- ifelse(Temperature &lt; 0, 0.20*Temperature,
                                             Temperature*(0.95+0.05*exp(-0.4*(LeafAreaIndex-3))))</code></pre>
 <!-- rnb-source-end -->
@@ -2125,7 +2292,7 @@ accumulating.</p>
 vectorized.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2lkZW5vdGUxIDwtIHRpYmJsZSh0aW1lID0gMTo1KSAlPiVcblx0bXV0YXRlKFxuXHRcdGMgPSBhY2N1bXVsYXRlKC54PXRpbWUsIC5mPWZ1bmN0aW9uKGFjYywgcm93KSB7XG5cdFx0XHRkYiA9IGN1cl9kYXRhX2FsbCgpXG5cdFx0XHR0aW1lID0gZGIkdGltZVtyb3ddXG5cdFx0XHRhY2MqdGltZVxuXHRcdFx0fSkgJT4lIHVubGlzdCgpXG5cdClcbnNpZGVub3RlMVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjpbInNpZGVub3RlMSA8LSB0aWJibGUodGltZSA9IDE6NSkgJT4lXG5cdG11dGF0ZShcblx0XHRjID0gYWNjdW11bGF0ZSgueD10aW1lLCAuZj1mdW5jdGlvbihhY2MsIHJvdykge1xuXHRcdFx0ZGIgPSBjdXJfZGF0YV9hbGwoKVxuXHRcdFx0dGltZSA9IGRiJHRpbWVbcm93XVxuXHRcdFx0YWNjKnRpbWVcblx0XHRcdH0pICU+JSB1bmxpc3QoKVxuXHQpIiwic2lkZW5vdGUxIl19 -->
 <pre class="r"><code>sidenote1 &lt;- tibble(time = 1:5) %&gt;%
     mutate(
         c = accumulate(.x=time, .f=function(acc, row) {
@@ -2136,6 +2303,11 @@ vectorized.</p>
     )
 sidenote1</code></pre>
 <!-- rnb-source-end -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["time"],"name":[1],"type":["int"],"align":["right"]},{"label":["c"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"1","2":"1"},{"1":"2","2":"2"},{"1":"3","2":"6"},{"1":"4","2":"24"},{"1":"5","2":"120"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -2158,9 +2330,27 @@ that you specify.</p>
 <code>SoilTemp_d = SoilTemp_dprev + (SurfaceTemp-SoilTemp_dprev) * 0.24 * exp(-SoilMeanDepth*0.017) * exp(-0.15*GAI)</code></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2FsY3VsYXRlU29pbFRlbXBcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiY2FsY3VsYXRlU29pbFRlbXAifQ== -->
 <pre class="r"><code>calculateSoilTemp</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiZnVuY3Rpb24gKFN1cmZhY2VUZW1wLCBHQUksIFNvaWxNZWFuRGVwdGgpIFxue1xuICAgIHRhYmxlIDwtIHRpYmJsZShTdXJmYWNlVGVtcCA9IFN1cmZhY2VUZW1wLCBHQUkgPSBHQUkpXG4gICAgcmVzdWx0IDwtIHRhYmxlICU+JSBtdXRhdGUoU29pbFRlbXAgPSBhY2N1bXVsYXRlKC54ID0gcm93X251bWJlcigpWy0xXSwgXG4gICAgICAgIC5pbml0ID0gMCwgLmYgPSBmdW5jdGlvbihTb2lsVGVtcF9kcHJldiwgcm93KSB7XG4gICAgICAgICAgICBkYXRhIDwtIGN1cl9kYXRhX2FsbCgpXG4gICAgICAgICAgICBTdXJmYWNlVGVtcCA8LSBkYXRhJFN1cmZhY2VUZW1wW3Jvd11cbiAgICAgICAgICAgIEdBSSA8LSBkYXRhJEdBSVtyb3ddXG4gICAgICAgICAgICBTb2lsVGVtcF9kIDwtIFNvaWxUZW1wX2RwcmV2ICsgKFN1cmZhY2VUZW1wIC0gU29pbFRlbXBfZHByZXYpICogXG4gICAgICAgICAgICAgICAgMC4yNCAqIGV4cCgtU29pbE1lYW5EZXB0aCAqIDAuMDE3KSAqIGV4cCgtMC4xNSAqIFxuICAgICAgICAgICAgICAgIEdBSSlcbiAgICAgICAgICAgIHJldHVybihTb2lsVGVtcF9kKVxuICAgICAgICB9KSlcbiAgICByZXR1cm4ocmVzdWx0JFNvaWxUZW1wKVxufVxuPGJ5dGVjb2RlOiAweDAwMDAwMWVlNTkwNWE1YTg+XG4ifQ== -->
+<pre><code>function (SurfaceTemp, GAI, SoilMeanDepth) 
+{
+    table &lt;- tibble(SurfaceTemp = SurfaceTemp, GAI = GAI)
+    result &lt;- table %&gt;% mutate(SoilTemp = accumulate(.x = row_number()[-1], 
+        .init = 0, .f = function(SoilTemp_dprev, row) {
+            data &lt;- cur_data_all()
+            SurfaceTemp &lt;- data$SurfaceTemp[row]
+            GAI &lt;- data$GAI[row]
+            SoilTemp_d &lt;- SoilTemp_dprev + (SurfaceTemp - SoilTemp_dprev) * 
+                0.24 * exp(-SoilMeanDepth * 0.017) * exp(-0.15 * 
+                GAI)
+            return(SoilTemp_d)
+        }))
+    return(result$SoilTemp)
+}
+&lt;bytecode: 0x000001ee5905a5a8&gt;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Where <code>SoilTemp</code> is the soil temperature (˚C), and
@@ -2168,7 +2358,7 @@ that you specify.</p>
 (˚C)</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuU29pbFRlbXAgPC0gY2FsY3VsYXRlU29pbFRlbXAoU3VyZmFjZVRlbXAgPSBTdXJmYWNlVGVtcCxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdEdBSSA9IEdBSSxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFNvaWxNZWFuRGVwdGggPSBTb2lsTWVhbkRlcHRoKVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiU29pbFRlbXAgPC0gY2FsY3VsYXRlU29pbFRlbXAoU3VyZmFjZVRlbXAgPSBTdXJmYWNlVGVtcCxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdEdBSSA9IEdBSSxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFNvaWxNZWFuRGVwdGggPSBTb2lsTWVhbkRlcHRoKSJ9 -->
 <pre class="r"><code>SoilTemp &lt;- calculateSoilTemp(SurfaceTemp = SurfaceTemp,
                                                             GAI = GAI,
                                                             SoilMeanDepth = SoilMeanDepth)</code></pre>
@@ -2193,7 +2383,7 @@ Use Survey for 2010 and 2012 <span class="citation">(<span>“Agricultural
 2012”</span> 2013)</span>”.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuSXJyaWdhdGlvbl9wZXJjZW50YWdlX21vbnRobHkgPC0gdGliYmxlKFxuXHRgUHJvdmluY2UvUmVnaW9uYCA9IGMoXCJDYW5hZGFcIiwgXCJCQ1wiLCBcIkFCXCIsIFwiU0tcIiwgXCJNQlwiLCBcIk9OXCIsIFwiUUNcIiwgXCJBdGxhbnRpYyBQcm92aW5jZXNcIiksXG5cdGBKYW5gID0gMCxcblx0YEZlYmAgPSAwLFxuXHRgTWFyYCA9IDAsXG5cdGBBcHJgID0gYyg0LjY5LCA4LjAwLCAzLjA2LCAxNS4wOCwgMC4yMiwgMy44MSwgMTAuNTQsIDcuMzApLFxuXHRgTWF5YCA9IGMoNC42OSwgOC4wMCwgMy4wNiwgMTUuMDgsIDAuMjIsIDMuODEsIDEwLjU0LCA3LjMwKSxcblx0YEp1bmAgPSBjKDE1LjY0LCAxOS41NCwgMTMuOTIsIDE0LjgwLCAxMS4zMCwgMTguMzUsIDE5LjU0LCAxMC42MiksXG5cdGBKdWxgID0gYygzOC45NiwgMjcuNzcsIDQyLjY1LCAyOS41OCwgNDguMTUsIDQxLjQ2LCAzMi4yNCwgMjcuOTcpLFxuXHRgQXVnYCA9IGMoMjYuOTIsIDI1LjY2LCAyOC4wNCwgMTkuNDAsIDM0Ljg4LCAyNi43NCwgMjUuOTcsIDM0LjA2KSxcblx0YFNlcGAgPSBjKDQuNTYsIDUuNTEsIDQuNjMsIDMuMDMsIDIuNjEsIDIuOTEsIDIuNzEsIDUuNjMpLFxuXHRgT2N0YCA9IGMoNC41NiwgNS41MSwgNC42MywgMy4wMywgMi42MSwgMi45MSwgMi43MSwgNS42MyksXG5cdGBOb3ZgID0gMCxcblx0YERlY2AgPSAwXG4pICU+JVxuXHRtdXRhdGUoVG90YWwgPSBzZWxlY3QoLiwgd2hlcmUoaXMubnVtZXJpYykpICU+JSByb3dTdW1zKCkpXG5JcnJpZ2F0aW9uX3BlcmNlbnRhZ2VfbW9udGhseSAlPiVcblx0a2FibGUoY2FwdGlvbiA9IFwiUGVyY2VudGFnZSBvZiB0b3RhbCBhbm51YWwgaXJyaWdhdGlvbiB3YXRlciBhcHBsaWVkIGJ5IG1vbnRoIGZvciBlYWNoIHByb3ZpbmNlL3JlZ2lvbiBpbiBDYW5hZGEgdXNpbmcgYXZlcmFnZSB2YWx1ZXMgYWNyb3NzIDIwMTAgYW5kIDIwMTIgKEFkYXB0ZWQgZnJvbSB0aGUgSG9sb3MgYWxnb3JpdGhtIGRvY3VtZW50LCBUYWJsZSA0NykuXCIpXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjpbIklycmlnYXRpb25fcGVyY2VudGFnZV9tb250aGx5IDwtIHRpYmJsZShcblx0YFByb3ZpbmNlL1JlZ2lvbmAgPSBjKFwiQ2FuYWRhXCIsIFwiQkNcIiwgXCJBQlwiLCBcIlNLXCIsIFwiTUJcIiwgXCJPTlwiLCBcIlFDXCIsIFwiQXRsYW50aWMgUHJvdmluY2VzXCIpLFxuXHRgSmFuYCA9IDAsXG5cdGBGZWJgID0gMCxcblx0YE1hcmAgPSAwLFxuXHRgQXByYCA9IGMoNC42OSwgOC4wMCwgMy4wNiwgMTUuMDgsIDAuMjIsIDMuODEsIDEwLjU0LCA3LjMwKSxcblx0YE1heWAgPSBjKDQuNjksIDguMDAsIDMuMDYsIDE1LjA4LCAwLjIyLCAzLjgxLCAxMC41NCwgNy4zMCksXG5cdGBKdW5gID0gYygxNS42NCwgMTkuNTQsIDEzLjkyLCAxNC44MCwgMTEuMzAsIDE4LjM1LCAxOS41NCwgMTAuNjIpLFxuXHRgSnVsYCA9IGMoMzguOTYsIDI3Ljc3LCA0Mi42NSwgMjkuNTgsIDQ4LjE1LCA0MS40NiwgMzIuMjQsIDI3Ljk3KSxcblx0YEF1Z2AgPSBjKDI2LjkyLCAyNS42NiwgMjguMDQsIDE5LjQwLCAzNC44OCwgMjYuNzQsIDI1Ljk3LCAzNC4wNiksXG5cdGBTZXBgID0gYyg0LjU2LCA1LjUxLCA0LjYzLCAzLjAzLCAyLjYxLCAyLjkxLCAyLjcxLCA1LjYzKSxcblx0YE9jdGAgPSBjKDQuNTYsIDUuNTEsIDQuNjMsIDMuMDMsIDIuNjEsIDIuOTEsIDIuNzEsIDUuNjMpLFxuXHRgTm92YCA9IDAsXG5cdGBEZWNgID0gMFxuKSAlPiVcblx0bXV0YXRlKFRvdGFsID0gc2VsZWN0KC4sIHdoZXJlKGlzLm51bWVyaWMpKSAlPiUgcm93U3VtcygpKSIsIklycmlnYXRpb25fcGVyY2VudGFnZV9tb250aGx5ICU+JVxuXHRrYWJsZShjYXB0aW9uID0gXCJQZXJjZW50YWdlIG9mIHRvdGFsIGFubnVhbCBpcnJpZ2F0aW9uIHdhdGVyIGFwcGxpZWQgYnkgbW9udGggZm9yIGVhY2ggcHJvdmluY2UvcmVnaW9uIGluIENhbmFkYSB1c2luZyBhdmVyYWdlIHZhbHVlcyBhY3Jvc3MgMjAxMCBhbmQgMjAxMiAoQWRhcHRlZCBmcm9tIHRoZSBIb2xvcyBhbGdvcml0aG0gZG9jdW1lbnQsIFRhYmxlIDQ3KS5cIikiXX0= -->
 <pre class="r"><code>Irrigation_percentage_monthly &lt;- tibble(
     `Province/Region` = c(&quot;Canada&quot;, &quot;BC&quot;, &quot;AB&quot;, &quot;SK&quot;, &quot;MB&quot;, &quot;ON&quot;, &quot;QC&quot;, &quot;Atlantic Provinces&quot;),
     `Jan` = 0,
@@ -2213,6 +2403,175 @@ Use Survey for 2010 and 2012 <span class="citation">(<span>“Agricultural
 Irrigation_percentage_monthly %&gt;%
     kable(caption = &quot;Percentage of total annual irrigation water applied by month for each province/region in Canada using average values across 2010 and 2012 (Adapted from the Holos algorithm document, Table 47).&quot;)</code></pre>
 <!-- rnb-source-end -->
+<table>
+<caption>Percentage of total annual irrigation water applied by month
+for each province/region in Canada using average values across 2010 and
+2012 (Adapted from the Holos algorithm document, Table 47).</caption>
+<colgroup>
+<col width="22%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="5%" />
+<col width="5%" />
+<col width="4%" />
+<col width="4%" />
+<col width="8%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Province/Region</th>
+<th align="right">Jan</th>
+<th align="right">Feb</th>
+<th align="right">Mar</th>
+<th align="right">Apr</th>
+<th align="right">May</th>
+<th align="right">Jun</th>
+<th align="right">Jul</th>
+<th align="right">Aug</th>
+<th align="right">Sep</th>
+<th align="right">Oct</th>
+<th align="right">Nov</th>
+<th align="right">Dec</th>
+<th align="right">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Canada</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">4.69</td>
+<td align="right">4.69</td>
+<td align="right">15.64</td>
+<td align="right">38.96</td>
+<td align="right">26.92</td>
+<td align="right">4.56</td>
+<td align="right">4.56</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">100.02</td>
+</tr>
+<tr class="even">
+<td align="left">BC</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">8.00</td>
+<td align="right">8.00</td>
+<td align="right">19.54</td>
+<td align="right">27.77</td>
+<td align="right">25.66</td>
+<td align="right">5.51</td>
+<td align="right">5.51</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">99.99</td>
+</tr>
+<tr class="odd">
+<td align="left">AB</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">3.06</td>
+<td align="right">3.06</td>
+<td align="right">13.92</td>
+<td align="right">42.65</td>
+<td align="right">28.04</td>
+<td align="right">4.63</td>
+<td align="right">4.63</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">99.99</td>
+</tr>
+<tr class="even">
+<td align="left">SK</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">15.08</td>
+<td align="right">15.08</td>
+<td align="right">14.80</td>
+<td align="right">29.58</td>
+<td align="right">19.40</td>
+<td align="right">3.03</td>
+<td align="right">3.03</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">100.00</td>
+</tr>
+<tr class="odd">
+<td align="left">MB</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.22</td>
+<td align="right">0.22</td>
+<td align="right">11.30</td>
+<td align="right">48.15</td>
+<td align="right">34.88</td>
+<td align="right">2.61</td>
+<td align="right">2.61</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">99.99</td>
+</tr>
+<tr class="even">
+<td align="left">ON</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">3.81</td>
+<td align="right">3.81</td>
+<td align="right">18.35</td>
+<td align="right">41.46</td>
+<td align="right">26.74</td>
+<td align="right">2.91</td>
+<td align="right">2.91</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">99.99</td>
+</tr>
+<tr class="odd">
+<td align="left">QC</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">10.54</td>
+<td align="right">10.54</td>
+<td align="right">19.54</td>
+<td align="right">32.24</td>
+<td align="right">25.97</td>
+<td align="right">2.71</td>
+<td align="right">2.71</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">104.25</td>
+</tr>
+<tr class="even">
+<td align="left">Atlantic Provinces</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">7.30</td>
+<td align="right">7.30</td>
+<td align="right">10.62</td>
+<td align="right">27.97</td>
+<td align="right">34.06</td>
+<td align="right">5.63</td>
+<td align="right">5.63</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">98.51</td>
+</tr>
+</tbody>
+</table>
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>The order of the equations has been changed from the original Holos
@@ -2227,7 +2586,7 @@ Eq. 2.2.1-18</h3>
 Fraction_{monthly}}{Days_{month}})\]</span></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuUCA8LSBzdW0oZGFpbHlfaW5wdXRfdGVzdCRQUkVDKVxuUEUgPC0gc3VtKGRhaWx5X2lucHV0X3Rlc3QkUEVUKVxuUmVnaW9uIDwtIFwiUUNcIlxuXG5EYXlzX21vbnRoIDwtIGx1YnJpZGF0ZTo6ZGF5c19pbl9tb250aChhcy5EYXRlKHBhc3RlKGRhaWx5X2lucHV0X3Rlc3QkWWVhciwgZGFpbHlfaW5wdXRfdGVzdCRKdWxpYW5EYXksIHNlcD1cIi1cIiksIFwiJVktJWpcIikpXG5cbkZyYWN0aW9uX21vbnRobHkgPC0gSXJyaWdhdGlvbl9wZXJjZW50YWdlX21vbnRobHkgJT4lXG5cdGZpbHRlcihgUHJvdmluY2UvUmVnaW9uYCA9PSBSZWdpb24pICU+JVxuXHRgW2AobmFtZXMoRGF5c19tb250aCkpICU+JVxuXHR1bmxpc3QgJT4lXG5cdGAvYCgxMDApXG5cbmlmIChQRSA+IFApIHtcblx0d2FybmluZyhcIlVzaW5nIEVxcy4gMi4yLjEtMTcgYW5kIDIuMi4xLTE4IHRvIGNhbGN1bGF0ZSBkZWZhdWx0IGlycmlnYXRpb24gdmFsdWVzXCIpXG5cdElycmlnYXRpb25fYW5udWFsIDwtIFBFIC0gUFxuXHRcblx0SXJyaWdhdGlvbiA8LSAoKElycmlnYXRpb25fYW5udWFsICogRnJhY3Rpb25fbW9udGhseSkvRGF5c19tb250aCkgJT4lXG5cdFx0dW5uYW1lXG59IGVsc2Uge1xuXHRJcnJpZ2F0aW9uIDwtIDBcbn1cblxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjpbIlAgPC0gc3VtKGRhaWx5X2lucHV0X3Rlc3QkUFJFQykiLCJQRSA8LSBzdW0oZGFpbHlfaW5wdXRfdGVzdCRQRVQpIiwiUmVnaW9uIDwtIFwiUUNcIiIsIiIsIkRheXNfbW9udGggPC0gbHVicmlkYXRlOjpkYXlzX2luX21vbnRoKGFzLkRhdGUocGFzdGUoZGFpbHlfaW5wdXRfdGVzdCRZZWFyLCBkYWlseV9pbnB1dF90ZXN0JEp1bGlhbkRheSwgc2VwPVwiLVwiKSwgXCIlWS0lalwiKSkiLCIiLCJGcmFjdGlvbl9tb250aGx5IDwtIElycmlnYXRpb25fcGVyY2VudGFnZV9tb250aGx5ICU+JVxuXHRmaWx0ZXIoYFByb3ZpbmNlL1JlZ2lvbmAgPT0gUmVnaW9uKSAlPiVcblx0YFtgKG5hbWVzKERheXNfbW9udGgpKSAlPiVcblx0dW5saXN0ICU+JVxuXHRgL2AoMTAwKSIsIiIsImlmIChQRSA+IFApIHtcblx0d2FybmluZyhcIlVzaW5nIEVxcy4gMi4yLjEtMTcgYW5kIDIuMi4xLTE4IHRvIGNhbGN1bGF0ZSBkZWZhdWx0IGlycmlnYXRpb24gdmFsdWVzXCIpXG5cdElycmlnYXRpb25fYW5udWFsIDwtIFBFIC0gUFxuXHRcblx0SXJyaWdhdGlvbiA8LSAoKElycmlnYXRpb25fYW5udWFsICogRnJhY3Rpb25fbW9udGhseSkvRGF5c19tb250aCkgJT4lXG5cdFx0dW5uYW1lXG59IGVsc2Uge1xuXHRJcnJpZ2F0aW9uIDwtIDBcbn0iXX0= -->
 <pre class="r"><code>P &lt;- sum(daily_input_test$PREC)
 PE &lt;- sum(daily_input_test$PET)
 Region &lt;- &quot;QC&quot;
@@ -2248,9 +2607,11 @@ if (PE &gt; P) {
         unname
 } else {
     Irrigation &lt;- 0
-}
-</code></pre>
+}</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZzogVXNpbmcgRXFzLiAyLjIuMS0xNyBhbmQgMi4yLjEtMTggdG8gY2FsY3VsYXRlIGRlZmF1bHQgaXJyaWdhdGlvbiB2YWx1ZXNcbiJ9 -->
+<pre><code>Warning: Using Eqs. 2.2.1-17 and 2.2.1-18 to calculate default irrigation values</code></pre>
+<!-- rnb-warning-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Where <code>PE</code> is the annual evapotranspiration (mm yr-1),
@@ -2267,7 +2628,7 @@ different result from the Holos version if we include irrigation. For
 the sake of this test, we remove the influence of irrigation.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuSXJyaWdhdGlvbiA8LSAwXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiSXJyaWdhdGlvbiA8LSAwIn0= -->
 <pre class="r"><code>Irrigation &lt;- 0</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
@@ -2285,7 +2646,7 @@ GAI}\]</span> <span class="math display">\[ET_{c}=ET_{0}\times
 K_{c}\]</span></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI0VxLiAyLjIuMS0xOVxuS19jIDwtIDEuMyAtICgxLjMtMC44KSAqIGV4cCgtMC4xNypHQUkpXG5FVF8wIDwtIGRhaWx5X2lucHV0X3Rlc3QkUEVUXG4jRXEuIDIuMi4xLTIwXG5FVF9jIDwtIEVUXzAgKiBLX2NcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjpbIiNFcS4gMi4yLjEtMTkiLCJLX2MgPC0gMS4zIC0gKDEuMy0wLjgpICogZXhwKC0wLjE3KkdBSSkiLCJFVF8wIDwtIGRhaWx5X2lucHV0X3Rlc3QkUEVUIiwiI0VxLiAyLjIuMS0yMCIsIkVUX2MgPC0gRVRfMCAqIEtfYyJdfQ== -->
 <pre class="r"><code>#Eq. 2.2.1-19
 K_c &lt;- 1.3 - (1.3-0.8) * exp(-0.17*GAI)
 ET_0 &lt;- daily_input_test$PET
@@ -2314,7 +2675,7 @@ CropInterception &gt; ET<sub>c</sub> <span class="math display">\[CropIntercepti
 <p><span class="math display">\[SoilAvailWater=Daily_{PrecipTotal}-CropInterception\]</span></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuUHJlY2lwaXRhdGlvbiA8LSBkYWlseV9pbnB1dF90ZXN0JFBSRUNcblxuI0VxLiAyLjIuMS0yMSAtIEVxLiAyLjIuMS0yMlxuQ3JvcEludGVyY2VwdGlvbiA8LSBpZmVsc2UoUHJlY2lwaXRhdGlvbiArIElycmlnYXRpb24gPCAwLjIqR0FJLFxuXHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRQcmVjaXBpdGF0aW9uICsgSXJyaWdhdGlvbixcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0MC4yKkdBSSlcblxuI0VxLiAyLjIuMS0yM1xuQ3JvcEludGVyY2VwdGlvbiA8LSBpZmVsc2UoQ3JvcEludGVyY2VwdGlvbiA+IEVUX2MsIEVUX2MsIENyb3BJbnRlcmNlcHRpb24pXG5cbiNFcS4gMi4yLjEtMjRcblNvaWxBdmFpbFdhdGVyIDwtIFByZWNpcGl0YXRpb24gKyBJcnJpZ2F0aW9uIC0gQ3JvcEludGVyY2VwdGlvblxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjpbIlByZWNpcGl0YXRpb24gPC0gZGFpbHlfaW5wdXRfdGVzdCRQUkVDIiwiIiwiI0VxLiAyLjIuMS0yMSAtIEVxLiAyLjIuMS0yMiIsIkNyb3BJbnRlcmNlcHRpb24gPC0gaWZlbHNlKFByZWNpcGl0YXRpb24gKyBJcnJpZ2F0aW9uIDwgMC4yKkdBSSxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0UHJlY2lwaXRhdGlvbiArIElycmlnYXRpb24sXG5cdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdDAuMipHQUkpIiwiIiwiI0VxLiAyLjIuMS0yMyIsIkNyb3BJbnRlcmNlcHRpb24gPC0gaWZlbHNlKENyb3BJbnRlcmNlcHRpb24gPiBFVF9jLCBFVF9jLCBDcm9wSW50ZXJjZXB0aW9uKSIsIiIsIiNFcS4gMi4yLjEtMjQiLCJTb2lsQXZhaWxXYXRlciA8LSBQcmVjaXBpdGF0aW9uICsgSXJyaWdhdGlvbiAtIENyb3BJbnRlcmNlcHRpb24iXX0= -->
 <pre class="r"><code>Precipitation &lt;- daily_input_test$PREC
 
 #Eq. 2.2.1-21 - Eq. 2.2.1-22
@@ -2358,9 +2719,41 @@ balance calculations.</p>
 <p>In order to calculate water storage, we use this function:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2FsY3VsYXRlV2F0ZXJTdG9yYWdlXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiY2FsY3VsYXRlV2F0ZXJTdG9yYWdlIn0= -->
 <pre class="r"><code>calculateWaterStorage</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiZnVuY3Rpb24gKFNvaWxBdmFpbFdhdGVyLCBFVF9jLCBhbGZhID0gMC43LCBTb2lsVG9wVGhpY2tuZXNzLCBcbiAgICBXaWx0aW5nUG9pbnQsIEZpZWxkQ2FwYWNpdHkpIFxue1xuICAgIFdhdGVyU3RvcmFnZV9kcHJldl9pbml0aWFsIDwtIEZpZWxkQ2FwYWNpdHkgKiBTb2lsVG9wVGhpY2tuZXNzXG4gICAgdGFibGUgPC0gdGliYmxlKFNvaWxBdmFpbFdhdGVyID0gU29pbEF2YWlsV2F0ZXIsIEVUX2MgPSBFVF9jKVxuICAgIHJlc3VsdCA9IHRhYmxlICU+JSBtdXRhdGUoZCA9IGFjY3VtdWxhdGUoLnggPSByb3dfbnVtYmVyKClbLTFdLCBcbiAgICAgICAgLmluaXQgPSBXYXRlclN0b3JhZ2VfZHByZXZfaW5pdGlhbCwgLmYgPSBmdW5jdGlvbihXYXRlclN0b3JhZ2VfZHByZXYsIFxuICAgICAgICAgICAgcm93KSB7XG4gICAgICAgICAgICBkYXRhIDwtIGN1cl9kYXRhX2FsbCgpXG4gICAgICAgICAgICBTb2lsQXZhaWxXYXRlciA8LSBkYXRhJFNvaWxBdmFpbFdhdGVyW3Jvd11cbiAgICAgICAgICAgIEVUX2MgPC0gZGF0YSRFVF9jW3Jvd11cbiAgICAgICAgICAgIFZvbFNvaWxXYXRlckNvbnRlbnQgPC0gY2FsY3VsYXRlVm9sU29pbFdhdGVyQ29udGVudChXYXRlclN0b3JhZ2VfZHByZXYsIFxuICAgICAgICAgICAgICAgIFNvaWxUb3BUaGlja25lc3MsIFdpbHRpbmdQb2ludClcbiAgICAgICAgICAgIEtfciA8LSAoMSAtICgoMC45NSAqIEZpZWxkQ2FwYWNpdHkgLSBWb2xTb2lsV2F0ZXJDb250ZW50KS8oMC45NSAqIFxuICAgICAgICAgICAgICAgIEZpZWxkQ2FwYWNpdHkgLSBhbGZhICogV2lsdGluZ1BvaW50KSkpXjJcbiAgICAgICAgICAgIEtfciA8LSBwbWluKHBtYXgoMCwgS19yKSwgMSlcbiAgICAgICAgICAgIGlmIChWb2xTb2lsV2F0ZXJDb250ZW50IDwgYWxmYS8xMDAgKiBXaWx0aW5nUG9pbnQpIHtcbiAgICAgICAgICAgICAgICBLX3IgPC0gMFxuICAgICAgICAgICAgfVxuICAgICAgICAgICAgRVRfYSA8LSBFVF9jICogS19yXG4gICAgICAgICAgICBEZWVwUGVyYyA8LSBXYXRlclN0b3JhZ2VfZHByZXYgLSBGaWVsZENhcGFjaXR5ICogXG4gICAgICAgICAgICAgICAgU29pbFRvcFRoaWNrbmVzc1xuICAgICAgICAgICAgRGVlcFBlcmMgPC0gaWZlbHNlKERlZXBQZXJjIDwgMCwgMCwgRGVlcFBlcmMpXG4gICAgICAgICAgICBXYXRlclN0b3JhZ2VfZCA8LSBXYXRlclN0b3JhZ2VfZHByZXYgKyBTb2lsQXZhaWxXYXRlciAtIFxuICAgICAgICAgICAgICAgIEVUX2EgLSBEZWVwUGVyY1xuICAgICAgICAgICAgcmV0dXJuKFdhdGVyU3RvcmFnZV9kKVxuICAgICAgICB9KSlcbiAgICByZXR1cm4ocmVzdWx0JGQpXG59XG48Ynl0ZWNvZGU6IDB4MDAwMDAxZWU1YWI5YWU5MD5cbiJ9 -->
+<pre><code>function (SoilAvailWater, ET_c, alfa = 0.7, SoilTopThickness, 
+    WiltingPoint, FieldCapacity) 
+{
+    WaterStorage_dprev_initial &lt;- FieldCapacity * SoilTopThickness
+    table &lt;- tibble(SoilAvailWater = SoilAvailWater, ET_c = ET_c)
+    result = table %&gt;% mutate(d = accumulate(.x = row_number()[-1], 
+        .init = WaterStorage_dprev_initial, .f = function(WaterStorage_dprev, 
+            row) {
+            data &lt;- cur_data_all()
+            SoilAvailWater &lt;- data$SoilAvailWater[row]
+            ET_c &lt;- data$ET_c[row]
+            VolSoilWaterContent &lt;- calculateVolSoilWaterContent(WaterStorage_dprev, 
+                SoilTopThickness, WiltingPoint)
+            K_r &lt;- (1 - ((0.95 * FieldCapacity - VolSoilWaterContent)/(0.95 * 
+                FieldCapacity - alfa * WiltingPoint)))^2
+            K_r &lt;- pmin(pmax(0, K_r), 1)
+            if (VolSoilWaterContent &lt; alfa/100 * WiltingPoint) {
+                K_r &lt;- 0
+            }
+            ET_a &lt;- ET_c * K_r
+            DeepPerc &lt;- WaterStorage_dprev - FieldCapacity * 
+                SoilTopThickness
+            DeepPerc &lt;- ifelse(DeepPerc &lt; 0, 0, DeepPerc)
+            WaterStorage_d &lt;- WaterStorage_dprev + SoilAvailWater - 
+                ET_a - DeepPerc
+            return(WaterStorage_d)
+        }))
+    return(result$d)
+}
+&lt;bytecode: 0x000001ee5ab9ae90&gt;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Where <code>VolSoilWaterContent</code> is the volumetric soil water
@@ -2374,7 +2767,7 @@ topsoil (mm day<sup>-1</sup>), and <code>DeepPerc</code> is the water
 lost to percolation down the soil profile (mm day<sup>-1</sup>)</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuV2F0ZXJTdG9yYWdlIDwtIGNhbGN1bGF0ZVdhdGVyU3RvcmFnZShTb2lsQXZhaWxXYXRlciA9IFNvaWxBdmFpbFdhdGVyLFxuXHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRFVF9jID0gRVRfYyxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0YWxmYSA9IDAuNyxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0U29pbFRvcFRoaWNrbmVzcyA9IFNvaWxUb3BUaGlja25lc3MsXG5cdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFdpbHRpbmdQb2ludCA9IFdpbHRpbmdQb2ludCxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0RmllbGRDYXBhY2l0eSA9IEZpZWxkQ2FwYWNpdHkpXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiV2F0ZXJTdG9yYWdlIDwtIGNhbGN1bGF0ZVdhdGVyU3RvcmFnZShTb2lsQXZhaWxXYXRlciA9IFNvaWxBdmFpbFdhdGVyLFxuXHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRFVF9jID0gRVRfYyxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0YWxmYSA9IDAuNyxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0U29pbFRvcFRoaWNrbmVzcyA9IFNvaWxUb3BUaGlja25lc3MsXG5cdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFdpbHRpbmdQb2ludCA9IFdpbHRpbmdQb2ludCxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0RmllbGRDYXBhY2l0eSA9IEZpZWxkQ2FwYWNpdHkpIn0= -->
 <pre class="r"><code>WaterStorage &lt;- calculateWaterStorage(SoilAvailWater = SoilAvailWater,
                                                                             ET_c = ET_c,
                                                                             alfa = 0.7,
@@ -2399,7 +2792,7 @@ Eq. 2.2.1-37</h3>
 If SoilTemp<sub>d-1</sub> &lt; -3.78<span class="math inline">\(^\circ\)</span>C <span class="math display">\[r_{e\_temp}=0\]</span></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuU29pbFRlbXBfZHByZXYgPC0gbGFnKFNvaWxUZW1wLCBkZWZhdWx0PTApXG5UZW1wX21pbiA8LSAtMy43OFxuVGVtcF9tYXggPC0gMzBcblxuIyBFcS4gMi4yLjEtMzYgLSBFcS4gMi4yLjEtMzdcbnJlX3RlbXAgPC0gaWZlbHNlKFNvaWxUZW1wX2RwcmV2IDwgLTMuNzgsIDAsICgoU29pbFRlbXBfZHByZXYgLSBUZW1wX21pbileMikvKChUZW1wX21heC1UZW1wX21pbileMikpXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjpbIlNvaWxUZW1wX2RwcmV2IDwtIGxhZyhTb2lsVGVtcCwgZGVmYXVsdD0wKSIsIlRlbXBfbWluIDwtIC0zLjc4IiwiVGVtcF9tYXggPC0gMzAiLCIiLCIjIEVxLiAyLjIuMS0zNiAtIEVxLiAyLjIuMS0zNyIsInJlX3RlbXAgPC0gaWZlbHNlKFNvaWxUZW1wX2RwcmV2IDwgLTMuNzgsIDAsICgoU29pbFRlbXBfZHByZXYgLSBUZW1wX21pbileMikvKChUZW1wX21heC1UZW1wX21pbileMikpIl19 -->
 <pre class="r"><code>SoilTemp_dprev &lt;- lag(SoilTemp, default=0)
 Temp_min &lt;- -3.78
 Temp_max &lt;- 30
@@ -2433,7 +2826,7 @@ WiltingPoint}{VolSoilWaterContent_{opt}-WiltingPoint}+r_{wp}\]</span>
 <span class="math display">\[r_{e\_water}=max(min(1,r_{e\_water}),0)\]</span></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuV2F0ZXJTdG9yYWdlX2RwcmV2IDwtIGxhZyhXYXRlclN0b3JhZ2UsIGRlZmF1bHQgPSBGaWVsZENhcGFjaXR5WzFdKlNvaWxUb3BUaGlja25lc3MpXG5Wb2xTb2lsV2F0ZXJDb250ZW50IDwtIGNhbGN1bGF0ZVZvbFNvaWxXYXRlckNvbnRlbnQoV2F0ZXJTdG9yYWdlX2RwcmV2LCBTb2lsVG9wVGhpY2tuZXNzLCBXaWx0aW5nUG9pbnQpXG5cbnJfcyA8LSAwLjQyXG5yX3dwIDwtIDAuMThcblxuIyBFcS4gMi4yLjEtMzhcblZvbFNvaWxXYXRlckNvbnRlbnRfc2F0IDwtIDEuMipGaWVsZENhcGFjaXR5XG4jIEVxLiAyLjIuMS0zOVxuVm9sU29pbFdhdGVyQ29udGVudF9vcHQgPC0gMC45KkZpZWxkQ2FwYWNpdHlcblxuIyBFcS4gMi4yLjEtNDAgLSBFcS4gMi4yLjEtNDJcbnJlX3dhdGVyIDwtIGlmZWxzZShcblx0IyBpZi4uLlxuXHRWb2xTb2lsV2F0ZXJDb250ZW50ID4gVm9sU29pbFdhdGVyQ29udGVudF9vcHQsXG5cdCMgdGhlbi4uLlxuXHQoMSAtIHJfcykqKChWb2xTb2lsV2F0ZXJDb250ZW50LVZvbFNvaWxXYXRlckNvbnRlbnRfb3B0KS8oVm9sU29pbFdhdGVyQ29udGVudF9vcHQtVm9sU29pbFdhdGVyQ29udGVudF9zYXQpKSArIDEsICMgRXEuIDIuMi4xLTQwXG5cdGlmZWxzZShcblx0XHQjIGVsc2VpZi4uLlxuXHRcdFZvbFNvaWxXYXRlckNvbnRlbnQgPCBXaWx0aW5nUG9pbnQsXG5cdFx0IyB0aGVuLi4uXG5cdFx0cl93cCooKFZvbFNvaWxXYXRlckNvbnRlbnQpLyhXaWx0aW5nUG9pbnQpKSwgIyBFcS4gMi4yLjEtNDFcblx0XHQjIGVsc2UuLi5cblx0XHQoMS1yX3dwKSooKFZvbFNvaWxXYXRlckNvbnRlbnQtV2lsdGluZ1BvaW50KS8oVm9sU29pbFdhdGVyQ29udGVudF9vcHQtV2lsdGluZ1BvaW50KSkgKyByX3dwKSkgIyBFcS4gMi4yLjEtNDJcblxuIyBFcS4gMi4yLjEtNDNcbnJlX3dhdGVyIDwtIHBtaW4ocG1heCgwLHJlX3dhdGVyKSwxKVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjpbIldhdGVyU3RvcmFnZV9kcHJldiA8LSBsYWcoV2F0ZXJTdG9yYWdlLCBkZWZhdWx0ID0gRmllbGRDYXBhY2l0eVsxXSpTb2lsVG9wVGhpY2tuZXNzKSIsIlZvbFNvaWxXYXRlckNvbnRlbnQgPC0gY2FsY3VsYXRlVm9sU29pbFdhdGVyQ29udGVudChXYXRlclN0b3JhZ2VfZHByZXYsIFNvaWxUb3BUaGlja25lc3MsIFdpbHRpbmdQb2ludCkiLCIiLCJyX3MgPC0gMC40MiIsInJfd3AgPC0gMC4xOCIsIiIsIiMgRXEuIDIuMi4xLTM4IiwiVm9sU29pbFdhdGVyQ29udGVudF9zYXQgPC0gMS4yKkZpZWxkQ2FwYWNpdHkiLCIjIEVxLiAyLjIuMS0zOSIsIlZvbFNvaWxXYXRlckNvbnRlbnRfb3B0IDwtIDAuOSpGaWVsZENhcGFjaXR5IiwiIiwiIyBFcS4gMi4yLjEtNDAgLSBFcS4gMi4yLjEtNDIiLCJyZV93YXRlciA8LSBpZmVsc2UoXG5cdCMgaWYuLi5cblx0Vm9sU29pbFdhdGVyQ29udGVudCA+IFZvbFNvaWxXYXRlckNvbnRlbnRfb3B0LFxuXHQjIHRoZW4uLi5cblx0KDEgLSByX3MpKigoVm9sU29pbFdhdGVyQ29udGVudC1Wb2xTb2lsV2F0ZXJDb250ZW50X29wdCkvKFZvbFNvaWxXYXRlckNvbnRlbnRfb3B0LVZvbFNvaWxXYXRlckNvbnRlbnRfc2F0KSkgKyAxLCAjIEVxLiAyLjIuMS00MFxuXHRpZmVsc2UoXG5cdFx0IyBlbHNlaWYuLi5cblx0XHRWb2xTb2lsV2F0ZXJDb250ZW50IDwgV2lsdGluZ1BvaW50LFxuXHRcdCMgdGhlbi4uLlxuXHRcdHJfd3AqKChWb2xTb2lsV2F0ZXJDb250ZW50KS8oV2lsdGluZ1BvaW50KSksICMgRXEuIDIuMi4xLTQxXG5cdFx0IyBlbHNlLi4uXG5cdFx0KDEtcl93cCkqKChWb2xTb2lsV2F0ZXJDb250ZW50LVdpbHRpbmdQb2ludCkvKFZvbFNvaWxXYXRlckNvbnRlbnRfb3B0LVdpbHRpbmdQb2ludCkpICsgcl93cCkpICMgRXEuIDIuMi4xLTQyIiwiIiwiIyBFcS4gMi4yLjEtNDMiLCJyZV93YXRlciA8LSBwbWluKHBtYXgoMCxyZV93YXRlciksMSkiXX0= -->
 <pre class="r"><code>WaterStorage_dprev &lt;- lag(WaterStorage, default = FieldCapacity[1]*SoilTopThickness)
 VolSoilWaterContent &lt;- calculateVolSoilWaterContent(WaterStorage_dprev, SoilTopThickness, WiltingPoint)
 
@@ -2487,7 +2880,7 @@ r_{e\_water}\]</span> <span class="math display">\[r_{e\_crop\_daily}=\frac{r_{e
 annually.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuUmVmZXJlbmNlQWRqdXN0bWVudCA9IDAuMTA1MTZcblxuIyBFcS4gMi4yLjEtNDRcbnJlX3gxIDwtIHJlX3RlbXAqcmVfd2F0ZXJcblxuIyBFcS4gMi4yLjEtNDVcbnJlX2Nyb3BkYWlseSA8LSByZV94MS9SZWZlcmVuY2VBZGp1c3RtZW50XG5cbiMgRXEuIDIuMi4xLTQ2XG5yZV9jcm9wIDwtIG1lYW4ocmVfY3JvcGRhaWx5KVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjpbIlJlZmVyZW5jZUFkanVzdG1lbnQgPSAwLjEwNTE2IiwiIiwiIyBFcS4gMi4yLjEtNDQiLCJyZV94MSA8LSByZV90ZW1wKnJlX3dhdGVyIiwiIiwiIyBFcS4gMi4yLjEtNDUiLCJyZV9jcm9wZGFpbHkgPC0gcmVfeDEvUmVmZXJlbmNlQWRqdXN0bWVudCIsIiIsIiMgRXEuIDIuMi4xLTQ2IiwicmVfY3JvcCA8LSBtZWFuKHJlX2Nyb3BkYWlseSkiXX0= -->
 <pre class="r"><code>ReferenceAdjustment = 0.10516
 
 # Eq. 2.2.1-44
@@ -2521,18 +2914,50 @@ factor is used for subsequent years, for root crops in every province
 and soil zone, <code>r_c = 1.13</code>.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGliYmxlKGBTb2lsIHR5cGVgID0gYyhcIkJyb3duXCIsIFwiRGFyayBCcm93blwiLCBcIkJsYWNrXCIpLFxuXHRcdFx0IGBJbnRlbnNpdmUgVGlsbGFnZWAgPSBjKDEsMSwxKSxcblx0XHRcdCBgUmVkdWNlZCB0aWxsYWdlYCA9IGMoMC45LCAwLjg1LCAwLjgpLFxuXHRcdFx0IGBOby10aWxsYCA9IGMoMC44LCAwLjcsIDAuNikpICU+JVxuXHRrYWJsZShjYXB0aW9uPVwicl9jIGZhY3RvciBmb3IgQWxiZXJ0YSwgU2Fza2F0Y2hld2FuLCBhbmQgTWFuaXRvYmEgb25seSAoYWRhcHRlZCBmcm9tIEhvbG9zIGFsZ29yaXRobSBkb2N1bWVudClcIilcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoidGliYmxlKGBTb2lsIHR5cGVgID0gYyhcIkJyb3duXCIsIFwiRGFyayBCcm93blwiLCBcIkJsYWNrXCIpLFxuXHRcdFx0IGBJbnRlbnNpdmUgVGlsbGFnZWAgPSBjKDEsMSwxKSxcblx0XHRcdCBgUmVkdWNlZCB0aWxsYWdlYCA9IGMoMC45LCAwLjg1LCAwLjgpLFxuXHRcdFx0IGBOby10aWxsYCA9IGMoMC44LCAwLjcsIDAuNikpICU+JVxuXHRrYWJsZShjYXB0aW9uPVwicl9jIGZhY3RvciBmb3IgQWxiZXJ0YSwgU2Fza2F0Y2hld2FuLCBhbmQgTWFuaXRvYmEgb25seSAoYWRhcHRlZCBmcm9tIEhvbG9zIGFsZ29yaXRobSBkb2N1bWVudClcIikifQ== -->
 <pre class="r"><code>tibble(`Soil type` = c(&quot;Brown&quot;, &quot;Dark Brown&quot;, &quot;Black&quot;),
              `Intensive Tillage` = c(1,1,1),
              `Reduced tillage` = c(0.9, 0.85, 0.8),
              `No-till` = c(0.8, 0.7, 0.6)) %&gt;%
     kable(caption=&quot;r_c factor for Alberta, Saskatchewan, and Manitoba only (adapted from Holos algorithm document)&quot;)</code></pre>
 <!-- rnb-source-end -->
+<table>
+<caption>r_c factor for Alberta, Saskatchewan, and Manitoba only
+(adapted from Holos algorithm document)</caption>
+<thead>
+<tr class="header">
+<th align="left">Soil type</th>
+<th align="right">Intensive Tillage</th>
+<th align="right">Reduced tillage</th>
+<th align="right">No-till</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Brown</td>
+<td align="right">1</td>
+<td align="right">0.90</td>
+<td align="right">0.8</td>
+</tr>
+<tr class="even">
+<td align="left">Dark Brown</td>
+<td align="right">1</td>
+<td align="right">0.85</td>
+<td align="right">0.7</td>
+</tr>
+<tr class="odd">
+<td align="left">Black</td>
+<td align="right">1</td>
+<td align="right">0.80</td>
+<td align="right">0.6</td>
+</tr>
+</tbody>
+</table>
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucl9jIDwtIDFcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoicl9jIDwtIDEifQ== -->
 <pre class="r"><code>r_c &lt;- 1</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
@@ -2547,11 +2972,14 @@ Factor (r<sub>e</sub>)</h2>
 r_{e\_crop}\]</span></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucl9lZGFpbHkgPC0gcmVfY3JvcGRhaWx5KnJfY1xucl9lIDwtIG1lYW4ocl9lZGFpbHkpXG5yX2VcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjpbInJfZWRhaWx5IDwtIHJlX2Nyb3BkYWlseSpyX2MiLCJyX2UgPC0gbWVhbihyX2VkYWlseSkiLCJyX2UiXX0= -->
 <pre class="r"><code>r_edaily &lt;- re_cropdaily*r_c
 r_e &lt;- mean(r_edaily)
 r_e</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIuMjgzNDIyXG4ifQ== -->
+<pre><code>[1] 2.283422</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Where <code>r_c</code> is the tillage factor, and
@@ -2572,7 +3000,7 @@ vs. Holos</h2>
 <p>r<sub>e</sub> value from this notebook:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGVzdF9yZSA8LSBkYWlseV9pbnB1dF90ZXN0X2FsbCAlPiVcblx0c3VtbWFyaXNlKHJfZSA9IG1lYW4ocl9lKSkgJT4lXG5cdHVubGlzdFxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoidGVzdF9yZSA8LSBkYWlseV9pbnB1dF90ZXN0X2FsbCAlPiVcblx0c3VtbWFyaXNlKHJfZSA9IG1lYW4ocl9lKSkgJT4lXG5cdHVubGlzdCJ9 -->
 <pre class="r"><code>test_re &lt;- daily_input_test_all %&gt;%
     summarise(r_e = mean(r_e)) %&gt;%
     unlist</code></pre>
@@ -2582,7 +3010,7 @@ vs. Holos</h2>
 <p>r<sub>e</sub> value from Holos:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaG9sb3NfcmUgPC0gaG9sb3NfcmVfY2FsY3VsYXRpb24gJT4lXG5cdG11dGF0ZShyX2UgPSBtZWFuKENsaW1hdGVQYXJhbWV0ZXIpKSAlPiVcblx0c3VtbWFyaXNlKHJfZSA9IG1lYW4oQ2xpbWF0ZVBhcmFtZXRlcikpICU+JVxuXHR1bmxpc3RcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiaG9sb3NfcmUgPC0gaG9sb3NfcmVfY2FsY3VsYXRpb24gJT4lXG5cdG11dGF0ZShyX2UgPSBtZWFuKENsaW1hdGVQYXJhbWV0ZXIpKSAlPiVcblx0c3VtbWFyaXNlKHJfZSA9IG1lYW4oQ2xpbWF0ZVBhcmFtZXRlcikpICU+JVxuXHR1bmxpc3QifQ== -->
 <pre class="r"><code>holos_re &lt;- holos_re_calculation %&gt;%
     mutate(r_e = mean(ClimateParameter)) %&gt;%
     summarise(r_e = mean(ClimateParameter)) %&gt;%
@@ -2593,11 +3021,15 @@ vs. Holos</h2>
 <p>Percentage difference between the two implementations:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuUGVyY2VudGFnZURpZmZlcmVuY2UgPSAxMDAqKGhvbG9zX3JlIC0gdGVzdF9yZSkvaG9sb3NfcmVcblxuUGVyY2VudGFnZURpZmZlcmVuY2VcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjpbIlBlcmNlbnRhZ2VEaWZmZXJlbmNlID0gMTAwKihob2xvc19yZSAtIHRlc3RfcmUpL2hvbG9zX3JlIiwiIiwiUGVyY2VudGFnZURpZmZlcmVuY2UiXX0= -->
 <pre class="r"><code>PercentageDifference = 100*(holos_re - test_re)/holos_re
 
 PercentageDifference</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgcl9lIFxuOS42MzM4NDVlLTA1IFxuIn0= -->
+<pre><code>         r_e 
+9.633845e-05 </code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>This means our R implementation of r<sub>e</sub> is only
@@ -2613,19 +3045,27 @@ well:</p>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2NyaXB0X3JlIDwtIGNhbGN1bGF0ZV9yZShkYWlseV9pbnB1dF90ZXN0LFxuXHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHR5aWVsZD0zMDAwLFxuXHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRwZXJlbm5pYWw9Rixcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0U29pbE9yZ2FuaWNDX1BlcmNlbnQ9Mixcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0Q2xheUNvbnRlbnQ9MC4wNSxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0U2FuZENvbnRlbnQ9MC4yLFxuXHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRpcnJpZ2F0aW9uX3VzZV9lc3RpbWF0ZSA9IEZBTFNFKVxuXG5QZXJjZW50YWdlRGlmZmVyZW5jZSA9IDEwMCooaG9sb3NfcmUgLSBzY3JpcHRfcmUpL2hvbG9zX3JlXG5cblBlcmNlbnRhZ2VEaWZmZXJlbmNlXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoic2NyaXB0X3JlIDwtIGNhbGN1bGF0ZV9yZShkYWlseV9pbnB1dF90ZXN0LFxuXHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHR5aWVsZD0zMDAwLFxuXHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRwZXJlbm5pYWw9Rixcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0U29pbE9yZ2FuaWNDX1BlcmNlbnQ9Mixcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0Q2xheUNvbnRlbnQ9MC4wNSxcblx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0U2FuZENvbnRlbnQ9MC4yLFxuXHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRpcnJpZ2F0aW9uX3VzZV9lc3RpbWF0ZSA9IEZBTFNFKSJ9 -->
 <pre class="r"><code>script_re &lt;- calculate_re(daily_input_test,
                                                     yield=3000,
                                                     perennial=F,
                                                     SoilOrganicC_Percent=2,
                                                     ClayContent=0.05,
                                                     SandContent=0.2,
-                                                    irrigation_use_estimate = FALSE)
-
-PercentageDifference = 100*(holos_re - script_re)/holos_re
+                                                    irrigation_use_estimate = FALSE)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZyBpbiBjYWxjdWxhdGVfcmUoZGFpbHlfaW5wdXRfdGVzdCwgeWllbGQgPSAzMDAwLCBwZXJlbm5pYWwgPSBGLCBTb2lsT3JnYW5pY0NfUGVyY2VudCA9IDIsIDogTkEgdmFsdWVzIGRldGVjdGVkIGluIHJfYy4gRXN0aW1hdGluZyByX2MgYmFzZWQgb24gVGlsbGFnZV90YWJsZSB1c2luZyB0aWxsYWdlX3NvaWwgPSBCcm93biwgYW5kIHRpbGxhZ2VfdHlwZSA9IEludGVuc2l2ZSBUaWxsYWdlLlxuIn0= -->
+<pre><code>Warning in calculate_re(daily_input_test, yield = 3000, perennial = F, SoilOrganicC_Percent = 2, : NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = Brown, and tillage_type = Intensive Tillage.</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-source-begin eyJkYXRhIjpbIlBlcmNlbnRhZ2VEaWZmZXJlbmNlID0gMTAwKihob2xvc19yZSAtIHNjcmlwdF9yZSkvaG9sb3NfcmUiLCIiLCJQZXJjZW50YWdlRGlmZmVyZW5jZSJdfQ== -->
+<pre class="r"><code>PercentageDifference = 100*(holos_re - script_re)/holos_re
 
 PercentageDifference</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgcl9lIFxuOS42MzM4NDVlLTA1IFxuIn0= -->
+<pre><code>         r_e 
+9.633845e-05 </code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>The error value from <code>script_re</code> (the r<sub>e</sub>
@@ -2645,7 +3085,7 @@ whether we want to put in our own daily irrigation values.</p>
 <code>irrigation_region</code>:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2FsY3VsYXRlX3JlKGRhaWx5X2lucHV0X3Rlc3QsXG5cdFx0XHRcdFx0XHQgeWllbGQgPSAzMDAwLFxuXHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0IFNvaWxPcmdhbmljQ19QZXJjZW50ID0gMixcblx0XHRcdFx0XHRcdCBDbGF5Q29udGVudCA9IDAuMDUsXG5cdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHQgXG5cdFx0XHRcdFx0XHQgaXJyaWdhdGlvbl91c2VfZXN0aW1hdGUgPSBUUlVFLFxuXHRcdFx0XHRcdFx0IGlycmlnYXRpb25fcmVnaW9uID0gXCJDYW5hZGFcIilcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiY2FsY3VsYXRlX3JlKGRhaWx5X2lucHV0X3Rlc3QsXG5cdFx0XHRcdFx0XHQgeWllbGQgPSAzMDAwLFxuXHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0IFNvaWxPcmdhbmljQ19QZXJjZW50ID0gMixcblx0XHRcdFx0XHRcdCBDbGF5Q29udGVudCA9IDAuMDUsXG5cdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHQgXG5cdFx0XHRcdFx0XHQgaXJyaWdhdGlvbl91c2VfZXN0aW1hdGUgPSBUUlVFLFxuXHRcdFx0XHRcdFx0IGlycmlnYXRpb25fcmVnaW9uID0gXCJDYW5hZGFcIikifQ== -->
 <pre class="r"><code>calculate_re(daily_input_test,
                          yield = 3000,
                          perennial = FALSE,
@@ -2656,6 +3096,12 @@ whether we want to put in our own daily irrigation values.</p>
                          irrigation_use_estimate = TRUE,
                          irrigation_region = &quot;Canada&quot;)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZyBpbiBjYWxjdWxhdGVfcmUoZGFpbHlfaW5wdXRfdGVzdCwgeWllbGQgPSAzMDAwLCBwZXJlbm5pYWwgPSBGQUxTRSwgOiBOQSB2YWx1ZXMgZGV0ZWN0ZWQgaW4gcl9jLiBFc3RpbWF0aW5nIHJfYyBiYXNlZCBvbiBUaWxsYWdlX3RhYmxlIHVzaW5nIHRpbGxhZ2Vfc29pbCA9IEJyb3duLCBhbmQgdGlsbGFnZV90eXBlID0gSW50ZW5zaXZlIFRpbGxhZ2UuXG4ifQ== -->
+<pre><code>Warning in calculate_re(daily_input_test, yield = 3000, perennial = FALSE, : NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = Brown, and tillage_type = Intensive Tillage.</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIuOTE4MjczXG4ifQ== -->
+<pre><code>[1] 2.918273</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>If you do <em>not</em> want to use the built-in daily irrigation
@@ -2664,7 +3110,7 @@ passed into the <code>irrigation</code> parameter directly with
 <code>irrigation_use_estimate</code> set to <code>FALSE</code>:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2FsY3VsYXRlX3JlKGRhaWx5X2lucHV0X3Rlc3QsXG5cdFx0XHRcdFx0XHQgeWllbGQgPSAzMDAwLFxuXHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0IFNvaWxPcmdhbmljQ19QZXJjZW50ID0gMixcblx0XHRcdFx0XHRcdCBDbGF5Q29udGVudCA9IDAuMDUsXG5cdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHQgXG5cdFx0XHRcdFx0XHQgaXJyaWdhdGlvbl91c2VfZXN0aW1hdGUgPSBGQUxTRSxcblx0XHRcdFx0XHRcdCBpcnJpZ2F0aW9uID0gcmVwKDIwLDM2NSkpXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiY2FsY3VsYXRlX3JlKGRhaWx5X2lucHV0X3Rlc3QsXG5cdFx0XHRcdFx0XHQgeWllbGQgPSAzMDAwLFxuXHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0IFNvaWxPcmdhbmljQ19QZXJjZW50ID0gMixcblx0XHRcdFx0XHRcdCBDbGF5Q29udGVudCA9IDAuMDUsXG5cdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHQgXG5cdFx0XHRcdFx0XHQgaXJyaWdhdGlvbl91c2VfZXN0aW1hdGUgPSBGQUxTRSxcblx0XHRcdFx0XHRcdCBpcnJpZ2F0aW9uID0gcmVwKDIwLDM2NSkpIn0= -->
 <pre class="r"><code>calculate_re(daily_input_test,
                          yield = 3000,
                          perennial = FALSE,
@@ -2675,6 +3121,12 @@ passed into the <code>irrigation</code> parameter directly with
                          irrigation_use_estimate = FALSE,
                          irrigation = rep(20,365))</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZyBpbiBjYWxjdWxhdGVfcmUoZGFpbHlfaW5wdXRfdGVzdCwgeWllbGQgPSAzMDAwLCBwZXJlbm5pYWwgPSBGQUxTRSwgOiBOQSB2YWx1ZXMgZGV0ZWN0ZWQgaW4gcl9jLiBFc3RpbWF0aW5nIHJfYyBiYXNlZCBvbiBUaWxsYWdlX3RhYmxlIHVzaW5nIHRpbGxhZ2Vfc29pbCA9IEJyb3duLCBhbmQgdGlsbGFnZV90eXBlID0gSW50ZW5zaXZlIFRpbGxhZ2UuXG4ifQ== -->
+<pre><code>Warning in calculate_re(daily_input_test, yield = 3000, perennial = FALSE, : NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = Brown, and tillage_type = Intensive Tillage.</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEuNTExMDk5XG4ifQ== -->
+<pre><code>[1] 1.511099</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p><code>irrigation_use_estimate</code> can only take values of either
@@ -2682,7 +3134,7 @@ passed into the <code>irrigation</code> parameter directly with
 returned:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudHJ5KGNhbGN1bGF0ZV9yZShkYWlseV9pbnB1dF90ZXN0LFxuXHRcdFx0XHRcdFx0XHRcdCB5aWVsZCA9IDMwMDAsXG5cdFx0XHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0XHRcdCBTb2lsT3JnYW5pY0NfUGVyY2VudCA9IDIsXG5cdFx0XHRcdFx0XHRcdFx0IENsYXlDb250ZW50ID0gMC4wNSxcblx0XHRcdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHQgXG5cdFx0XHRcdFx0XHRcdFx0IGlycmlnYXRpb25fdXNlX2VzdGltYXRlID0gTkEpKVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoidHJ5KGNhbGN1bGF0ZV9yZShkYWlseV9pbnB1dF90ZXN0LFxuXHRcdFx0XHRcdFx0XHRcdCB5aWVsZCA9IDMwMDAsXG5cdFx0XHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0XHRcdCBTb2lsT3JnYW5pY0NfUGVyY2VudCA9IDIsXG5cdFx0XHRcdFx0XHRcdFx0IENsYXlDb250ZW50ID0gMC4wNSxcblx0XHRcdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHQgXG5cdFx0XHRcdFx0XHRcdFx0IGlycmlnYXRpb25fdXNlX2VzdGltYXRlID0gTkEpKSJ9 -->
 <pre class="r"><code>try(calculate_re(daily_input_test,
                                  yield = 3000,
                                  perennial = FALSE,
@@ -2692,13 +3144,19 @@ returned:</p>
                          
                                  irrigation_use_estimate = NA))</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gY2FsY3VsYXRlX3JlKGRhaWx5X2lucHV0X3Rlc3QsIHlpZWxkID0gMzAwMCwgcGVyZW5uaWFsID0gRkFMU0UsICA6IFxuICBTcGVjaWZ5IHdoZXRoZXIgZGFpbHkgaXJyaWdhdGlvbiB2YWx1ZXMgc2hvdWxkIGJlIGVzdGltYXRlZC5cblx0XHRJZiBpcnJpZ2F0aW9uX3VzZV9lc3RpbWF0ZSA9IFRSVUUsIHRoZW4gaXJyaWdhdGlvbiBpcyBlc3RpbWF0ZWQgdXNpbmcgRXFzLiAyLjIuMS0xNyBhbmQgRXEuIDIuMi4xLTE4LlxuXHRcdElmIGlycmlnYXRpb25fdXNlX2VzdGltYXRlID0gRkFMU0UsIHRoZW4gaXJyaWdhdGlvbiBpcyBkZWZhdWx0ZWQgdG8gMCwgYnV0IGNhbiBiZSBvdmVycmlkZGVuIHdpdGggYSBudW1lcmljIHZlY3RvciBvZiBsZW5ndGggMzY1IHdoaWNoIHJlcHJlc2VudHMgZGFpbHkgaXJyaWdhdGlvbi5cbiJ9 -->
+<pre><code>Error in calculate_re(daily_input_test, yield = 3000, perennial = FALSE,  : 
+  Specify whether daily irrigation values should be estimated.
+        If irrigation_use_estimate = TRUE, then irrigation is estimated using Eqs. 2.2.1-17 and Eq. 2.2.1-18.
+        If irrigation_use_estimate = FALSE, then irrigation is defaulted to 0, but can be overridden with a numeric vector of length 365 which represents daily irrigation.</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>An error is returned if <code>irrigation_region</code> is not passed
 a valid argument:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudHJ5KGNhbGN1bGF0ZV9yZShkYWlseV9pbnB1dF90ZXN0LFxuXHRcdFx0XHRcdFx0XHRcdCB5aWVsZCA9IDMwMDAsXG5cdFx0XHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0XHRcdCBTb2lsT3JnYW5pY0NfUGVyY2VudCA9IDIsXG5cdFx0XHRcdFx0XHRcdFx0IENsYXlDb250ZW50ID0gMC4wNSxcblx0XHRcdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHRcdFx0IFxuXHRcdFx0XHRcdFx0XHRcdCBpcnJpZ2F0aW9uX3JlZ2lvbiA9IFwiTmVicmFza2FcIixcblx0XHRcdFx0XHRcdFx0XHQgaXJyaWdhdGlvbl91c2VfZXN0aW1hdGUgPSBUUlVFKSlcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoidHJ5KGNhbGN1bGF0ZV9yZShkYWlseV9pbnB1dF90ZXN0LFxuXHRcdFx0XHRcdFx0XHRcdCB5aWVsZCA9IDMwMDAsXG5cdFx0XHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0XHRcdCBTb2lsT3JnYW5pY0NfUGVyY2VudCA9IDIsXG5cdFx0XHRcdFx0XHRcdFx0IENsYXlDb250ZW50ID0gMC4wNSxcblx0XHRcdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHRcdFx0IFxuXHRcdFx0XHRcdFx0XHRcdCBpcnJpZ2F0aW9uX3JlZ2lvbiA9IFwiTmVicmFza2FcIixcblx0XHRcdFx0XHRcdFx0XHQgaXJyaWdhdGlvbl91c2VfZXN0aW1hdGUgPSBUUlVFKSkifQ== -->
 <pre class="r"><code>try(calculate_re(daily_input_test,
                                  yield = 3000,
                                  perennial = FALSE,
@@ -2709,6 +3167,10 @@ a valid argument:</p>
                                  irrigation_region = &quot;Nebraska&quot;,
                                  irrigation_use_estimate = TRUE))</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gY2FsY3VsYXRlX3JlKGRhaWx5X2lucHV0X3Rlc3QsIHlpZWxkID0gMzAwMCwgcGVyZW5uaWFsID0gRkFMU0UsICA6IFxuICBOZWJyYXNrYSBpcyBub3QgYSB2YWxpZCBpcnJpZ2F0aW9uX3JlZ2lvbi4gVmFsaWQgcmVnaW9ucyBhcmU6IENhbmFkYSwgQkMsIEFCLCBTSywgTUIsIE9OLCBRQywgQXRsYW50aWMgUHJvdmluY2VzXG4ifQ== -->
+<pre><code>Error in calculate_re(daily_input_test, yield = 3000, perennial = FALSE,  : 
+  Nebraska is not a valid irrigation_region. Valid regions are: Canada, BC, AB, SK, MB, ON, QC, Atlantic Provinces</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -2721,7 +3183,7 @@ changed based on the tillage table by specifying a
 supplying a vector of <code>r_c</code> values of length 365.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2FsY3VsYXRlX3JlKGRhaWx5X2lucHV0X3Rlc3QsXG5cdFx0XHRcdFx0XHQgeWllbGQgPSAzMDAwLFxuXHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0IFNvaWxPcmdhbmljQ19QZXJjZW50ID0gMixcblx0XHRcdFx0XHRcdCBDbGF5Q29udGVudCA9IDAuMDUsXG5cdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHQgXG5cdFx0XHRcdFx0XHQgdGlsbGFnZV90eXBlID0gXCJSZWR1Y2VkIFRpbGxhZ2VcIixcblx0XHRcdFx0XHRcdCB0aWxsYWdlX3NvaWwgPSBcIkJyb3duXCIpXG5cbmNhbGN1bGF0ZV9yZShkYWlseV9pbnB1dF90ZXN0LFxuXHRcdFx0XHRcdFx0IHlpZWxkID0gMzAwMCxcblx0XHRcdFx0XHRcdCBwZXJlbm5pYWwgPSBGQUxTRSxcblx0XHRcdFx0XHRcdCBTb2lsT3JnYW5pY0NfUGVyY2VudCA9IDIsXG5cdFx0XHRcdFx0XHQgQ2xheUNvbnRlbnQgPSAwLjA1LFxuXHRcdFx0XHRcdFx0IFNhbmRDb250ZW50ID0gMC4yLFxuXHRcdFx0XHRcdFx0IFxuXHRcdFx0XHRcdFx0IHRpbGxhZ2VfdHlwZSA9IFwiTm8tdGlsbFwiLFxuXHRcdFx0XHRcdFx0IHRpbGxhZ2Vfc29pbCA9IFwiQnJvd25cIilcblxuY2FsY3VsYXRlX3JlKGRhaWx5X2lucHV0X3Rlc3QsXG5cdFx0XHRcdFx0XHQgeWllbGQgPSAzMDAwLFxuXHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0IFNvaWxPcmdhbmljQ19QZXJjZW50ID0gMixcblx0XHRcdFx0XHRcdCBDbGF5Q29udGVudCA9IDAuMDUsXG5cdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHQgXG5cdFx0XHRcdFx0XHQgdGlsbGFnZV90eXBlID0gXCJOby10aWxsXCIsXG5cdFx0XHRcdFx0XHQgdGlsbGFnZV9zb2lsID0gXCJCbGFja1wiKVxuXG5jYWxjdWxhdGVfcmUoZGFpbHlfaW5wdXRfdGVzdCxcblx0XHRcdFx0XHRcdCB5aWVsZCA9IDMwMDAsXG5cdFx0XHRcdFx0XHQgcGVyZW5uaWFsID0gRkFMU0UsXG5cdFx0XHRcdFx0XHQgU29pbE9yZ2FuaWNDX1BlcmNlbnQgPSAyLFxuXHRcdFx0XHRcdFx0IENsYXlDb250ZW50ID0gMC4wNSxcblx0XHRcdFx0XHRcdCBTYW5kQ29udGVudCA9IDAuMixcblx0XHRcdFx0XHRcdCBcblx0XHRcdFx0XHRcdCByX2MgPSByZXAoMC4wNSwzNjUpKVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiY2FsY3VsYXRlX3JlKGRhaWx5X2lucHV0X3Rlc3QsXG5cdFx0XHRcdFx0XHQgeWllbGQgPSAzMDAwLFxuXHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0IFNvaWxPcmdhbmljQ19QZXJjZW50ID0gMixcblx0XHRcdFx0XHRcdCBDbGF5Q29udGVudCA9IDAuMDUsXG5cdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHQgXG5cdFx0XHRcdFx0XHQgdGlsbGFnZV90eXBlID0gXCJSZWR1Y2VkIFRpbGxhZ2VcIixcblx0XHRcdFx0XHRcdCB0aWxsYWdlX3NvaWwgPSBcIkJyb3duXCIpIn0= -->
 <pre class="r"><code>calculate_re(daily_input_test,
                          yield = 3000,
                          perennial = FALSE,
@@ -2730,9 +3192,16 @@ supplying a vector of <code>r_c</code> values of length 365.</p>
                          SandContent = 0.2,
                          
                          tillage_type = &quot;Reduced Tillage&quot;,
-                         tillage_soil = &quot;Brown&quot;)
-
-calculate_re(daily_input_test,
+                         tillage_soil = &quot;Brown&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZyBpbiBjYWxjdWxhdGVfcmUoZGFpbHlfaW5wdXRfdGVzdCwgeWllbGQgPSAzMDAwLCBwZXJlbm5pYWwgPSBGQUxTRSwgOiBOQSB2YWx1ZXMgZGV0ZWN0ZWQgaW4gcl9jLiBFc3RpbWF0aW5nIHJfYyBiYXNlZCBvbiBUaWxsYWdlX3RhYmxlIHVzaW5nIHRpbGxhZ2Vfc29pbCA9IEJyb3duLCBhbmQgdGlsbGFnZV90eXBlID0gUmVkdWNlZCBUaWxsYWdlLlxuIn0= -->
+<pre><code>Warning in calculate_re(daily_input_test, yield = 3000, perennial = FALSE, : NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = Brown, and tillage_type = Reduced Tillage.</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIuMDU1MDc5XG4ifQ== -->
+<pre><code>[1] 2.055079</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiY2FsY3VsYXRlX3JlKGRhaWx5X2lucHV0X3Rlc3QsXG5cdFx0XHRcdFx0XHQgeWllbGQgPSAzMDAwLFxuXHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0IFNvaWxPcmdhbmljQ19QZXJjZW50ID0gMixcblx0XHRcdFx0XHRcdCBDbGF5Q29udGVudCA9IDAuMDUsXG5cdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHQgXG5cdFx0XHRcdFx0XHQgdGlsbGFnZV90eXBlID0gXCJOby10aWxsXCIsXG5cdFx0XHRcdFx0XHQgdGlsbGFnZV9zb2lsID0gXCJCcm93blwiKSJ9 -->
+<pre class="r"><code>calculate_re(daily_input_test,
                          yield = 3000,
                          perennial = FALSE,
                          SoilOrganicC_Percent = 2,
@@ -2740,9 +3209,16 @@ calculate_re(daily_input_test,
                          SandContent = 0.2,
                          
                          tillage_type = &quot;No-till&quot;,
-                         tillage_soil = &quot;Brown&quot;)
-
-calculate_re(daily_input_test,
+                         tillage_soil = &quot;Brown&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZyBpbiBjYWxjdWxhdGVfcmUoZGFpbHlfaW5wdXRfdGVzdCwgeWllbGQgPSAzMDAwLCBwZXJlbm5pYWwgPSBGQUxTRSwgOiBOQSB2YWx1ZXMgZGV0ZWN0ZWQgaW4gcl9jLiBFc3RpbWF0aW5nIHJfYyBiYXNlZCBvbiBUaWxsYWdlX3RhYmxlIHVzaW5nIHRpbGxhZ2Vfc29pbCA9IEJyb3duLCBhbmQgdGlsbGFnZV90eXBlID0gTm8tdGlsbC5cbiJ9 -->
+<pre><code>Warning in calculate_re(daily_input_test, yield = 3000, perennial = FALSE, : NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = Brown, and tillage_type = No-till.</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEuODI2NzM3XG4ifQ== -->
+<pre><code>[1] 1.826737</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiY2FsY3VsYXRlX3JlKGRhaWx5X2lucHV0X3Rlc3QsXG5cdFx0XHRcdFx0XHQgeWllbGQgPSAzMDAwLFxuXHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0IFNvaWxPcmdhbmljQ19QZXJjZW50ID0gMixcblx0XHRcdFx0XHRcdCBDbGF5Q29udGVudCA9IDAuMDUsXG5cdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHQgXG5cdFx0XHRcdFx0XHQgdGlsbGFnZV90eXBlID0gXCJOby10aWxsXCIsXG5cdFx0XHRcdFx0XHQgdGlsbGFnZV9zb2lsID0gXCJCbGFja1wiKSJ9 -->
+<pre class="r"><code>calculate_re(daily_input_test,
                          yield = 3000,
                          perennial = FALSE,
                          SoilOrganicC_Percent = 2,
@@ -2750,9 +3226,16 @@ calculate_re(daily_input_test,
                          SandContent = 0.2,
                          
                          tillage_type = &quot;No-till&quot;,
-                         tillage_soil = &quot;Black&quot;)
-
-calculate_re(daily_input_test,
+                         tillage_soil = &quot;Black&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZyBpbiBjYWxjdWxhdGVfcmUoZGFpbHlfaW5wdXRfdGVzdCwgeWllbGQgPSAzMDAwLCBwZXJlbm5pYWwgPSBGQUxTRSwgOiBOQSB2YWx1ZXMgZGV0ZWN0ZWQgaW4gcl9jLiBFc3RpbWF0aW5nIHJfYyBiYXNlZCBvbiBUaWxsYWdlX3RhYmxlIHVzaW5nIHRpbGxhZ2Vfc29pbCA9IEJsYWNrLCBhbmQgdGlsbGFnZV90eXBlID0gTm8tdGlsbC5cbiJ9 -->
+<pre><code>Warning in calculate_re(daily_input_test, yield = 3000, perennial = FALSE, : NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = Black, and tillage_type = No-till.</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEuMzcwMDUzXG4ifQ== -->
+<pre><code>[1] 1.370053</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiY2FsY3VsYXRlX3JlKGRhaWx5X2lucHV0X3Rlc3QsXG5cdFx0XHRcdFx0XHQgeWllbGQgPSAzMDAwLFxuXHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0IFNvaWxPcmdhbmljQ19QZXJjZW50ID0gMixcblx0XHRcdFx0XHRcdCBDbGF5Q29udGVudCA9IDAuMDUsXG5cdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHQgXG5cdFx0XHRcdFx0XHQgcl9jID0gcmVwKDAuMDUsMzY1KSkifQ== -->
+<pre class="r"><code>calculate_re(daily_input_test,
                          yield = 3000,
                          perennial = FALSE,
                          SoilOrganicC_Percent = 2,
@@ -2761,13 +3244,16 @@ calculate_re(daily_input_test,
                          
                          r_c = rep(0.05,365))</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMTE0MTcxMVxuIn0= -->
+<pre><code>[1] 0.1141711</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>An error is returned if either <code>tillage_type</code> or
 <code>tillage_soil</code> are not passed valid arguments:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudHJ5KGNhbGN1bGF0ZV9yZShkYWlseV9pbnB1dF90ZXN0LFxuXHRcdFx0XHRcdFx0XHRcdCB5aWVsZCA9IDMwMDAsXG5cdFx0XHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0XHRcdCBTb2lsT3JnYW5pY0NfUGVyY2VudCA9IDIsXG5cdFx0XHRcdFx0XHRcdFx0IENsYXlDb250ZW50ID0gMC4wNSxcblx0XHRcdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHRcdFx0IFxuXHRcdFx0XHRcdFx0XHRcdCB0aWxsYWdlX3R5cGUgPSBcIlF1YWRydXBsZSB0aWxsYWdlXCIsXG5cdFx0XHRcdFx0XHRcdFx0IHRpbGxhZ2Vfc29pbCA9IFwiQnJvd25cIikpXG5cbnRyeShjYWxjdWxhdGVfcmUoZGFpbHlfaW5wdXRfdGVzdCxcblx0XHRcdFx0XHRcdFx0XHQgeWllbGQgPSAzMDAwLFxuXHRcdFx0XHRcdFx0XHRcdCBwZXJlbm5pYWwgPSBGQUxTRSxcblx0XHRcdFx0XHRcdFx0XHQgU29pbE9yZ2FuaWNDX1BlcmNlbnQgPSAyLFxuXHRcdFx0XHRcdFx0XHRcdCBDbGF5Q29udGVudCA9IDAuMDUsXG5cdFx0XHRcdFx0XHRcdFx0IFNhbmRDb250ZW50ID0gMC4yLFxuXHRcdFx0XHRcdFx0XHRcdCBcblx0XHRcdFx0XHRcdFx0XHQgdGlsbGFnZV90eXBlID0gXCJSZWR1Y2VkIHRpbGxhZ2VcIixcblx0XHRcdFx0XHRcdFx0XHQgdGlsbGFnZV9zb2lsID0gXCJHcmVlblwiKSlcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoidHJ5KGNhbGN1bGF0ZV9yZShkYWlseV9pbnB1dF90ZXN0LFxuXHRcdFx0XHRcdFx0XHRcdCB5aWVsZCA9IDMwMDAsXG5cdFx0XHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0XHRcdCBTb2lsT3JnYW5pY0NfUGVyY2VudCA9IDIsXG5cdFx0XHRcdFx0XHRcdFx0IENsYXlDb250ZW50ID0gMC4wNSxcblx0XHRcdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHRcdFx0IFxuXHRcdFx0XHRcdFx0XHRcdCB0aWxsYWdlX3R5cGUgPSBcIlF1YWRydXBsZSB0aWxsYWdlXCIsXG5cdFx0XHRcdFx0XHRcdFx0IHRpbGxhZ2Vfc29pbCA9IFwiQnJvd25cIikpIn0= -->
 <pre class="r"><code>try(calculate_re(daily_input_test,
                                  yield = 3000,
                                  perennial = FALSE,
@@ -2776,9 +3262,14 @@ calculate_re(daily_input_test,
                                  SandContent = 0.2,
                                  
                                  tillage_type = &quot;Quadruple tillage&quot;,
-                                 tillage_soil = &quot;Brown&quot;))
-
-try(calculate_re(daily_input_test,
+                                 tillage_soil = &quot;Brown&quot;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gY2FsY3VsYXRlX3JlKGRhaWx5X2lucHV0X3Rlc3QsIHlpZWxkID0gMzAwMCwgcGVyZW5uaWFsID0gRkFMU0UsICA6IFxuICBRdWFkcnVwbGUgdGlsbGFnZSBpcyBub3QgYSB2YWxpZCB0aWxsYWdlX3R5cGUuIFZhbGlkIHRpbGxhZ2UgdHlwZXMgYXJlOiBJbnRlbnNpdmUgVGlsbGFnZSwgUmVkdWNlZCBUaWxsYWdlLCBOby10aWxsXG4ifQ== -->
+<pre><code>Error in calculate_re(daily_input_test, yield = 3000, perennial = FALSE,  : 
+  Quadruple tillage is not a valid tillage_type. Valid tillage types are: Intensive Tillage, Reduced Tillage, No-till</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoidHJ5KGNhbGN1bGF0ZV9yZShkYWlseV9pbnB1dF90ZXN0LFxuXHRcdFx0XHRcdFx0XHRcdCB5aWVsZCA9IDMwMDAsXG5cdFx0XHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0XHRcdCBTb2lsT3JnYW5pY0NfUGVyY2VudCA9IDIsXG5cdFx0XHRcdFx0XHRcdFx0IENsYXlDb250ZW50ID0gMC4wNSxcblx0XHRcdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHRcdFx0IFxuXHRcdFx0XHRcdFx0XHRcdCB0aWxsYWdlX3R5cGUgPSBcIlJlZHVjZWQgdGlsbGFnZVwiLFxuXHRcdFx0XHRcdFx0XHRcdCB0aWxsYWdlX3NvaWwgPSBcIkdyZWVuXCIpKSJ9 -->
+<pre class="r"><code>try(calculate_re(daily_input_test,
                                  yield = 3000,
                                  perennial = FALSE,
                                  SoilOrganicC_Percent = 2,
@@ -2788,13 +3279,17 @@ try(calculate_re(daily_input_test,
                                  tillage_type = &quot;Reduced tillage&quot;,
                                  tillage_soil = &quot;Green&quot;))</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gY2FsY3VsYXRlX3JlKGRhaWx5X2lucHV0X3Rlc3QsIHlpZWxkID0gMzAwMCwgcGVyZW5uaWFsID0gRkFMU0UsICA6IFxuICBHcmVlbiBpcyBub3QgYSB2YWxpZCB0aWxsYWdlX3NvaWwuIFZhbGlkIHNvaWwgdHlwZXMgYXJlOiBCcm93biwgRGFyayBCcm93biwgQmxhY2tcbiJ9 -->
+<pre><code>Error in calculate_re(daily_input_test, yield = 3000, perennial = FALSE,  : 
+  Green is not a valid tillage_soil. Valid soil types are: Brown, Dark Brown, Black</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>If there is even one NA value in <code>r_c</code>, it is estimated
 using the tillage table.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudHJ5KGNhbGN1bGF0ZV9yZShkYWlseV9pbnB1dF90ZXN0LFxuXHRcdFx0XHRcdFx0XHRcdCB5aWVsZCA9IDMwMDAsXG5cdFx0XHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0XHRcdCBTb2lsT3JnYW5pY0NfUGVyY2VudCA9IDIsXG5cdFx0XHRcdFx0XHRcdFx0IENsYXlDb250ZW50ID0gMC4wNSxcblx0XHRcdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHRcdFx0IFxuXHRcdFx0XHRcdFx0XHRcdCByX2MgPSBjKE5BLHJlcCgwLjA1LDM2NCkpKSlcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoidHJ5KGNhbGN1bGF0ZV9yZShkYWlseV9pbnB1dF90ZXN0LFxuXHRcdFx0XHRcdFx0XHRcdCB5aWVsZCA9IDMwMDAsXG5cdFx0XHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0XHRcdCBTb2lsT3JnYW5pY0NfUGVyY2VudCA9IDIsXG5cdFx0XHRcdFx0XHRcdFx0IENsYXlDb250ZW50ID0gMC4wNSxcblx0XHRcdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIsXG5cdFx0XHRcdFx0XHRcdFx0IFxuXHRcdFx0XHRcdFx0XHRcdCByX2MgPSBjKE5BLHJlcCgwLjA1LDM2NCkpKSkifQ== -->
 <pre class="r"><code>try(calculate_re(daily_input_test,
                                  yield = 3000,
                                  perennial = FALSE,
@@ -2804,6 +3299,12 @@ using the tillage table.</p>
                                  
                                  r_c = c(NA,rep(0.05,364))))</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZyBpbiBjYWxjdWxhdGVfcmUoZGFpbHlfaW5wdXRfdGVzdCwgeWllbGQgPSAzMDAwLCBwZXJlbm5pYWwgPSBGQUxTRSwgOiBOQSB2YWx1ZXMgZGV0ZWN0ZWQgaW4gcl9jLiBFc3RpbWF0aW5nIHJfYyBiYXNlZCBvbiBUaWxsYWdlX3RhYmxlIHVzaW5nIHRpbGxhZ2Vfc29pbCA9IEJyb3duLCBhbmQgdGlsbGFnZV90eXBlID0gSW50ZW5zaXZlIFRpbGxhZ2UuXG4ifQ== -->
+<pre><code>Warning in calculate_re(daily_input_test, yield = 3000, perennial = FALSE, : NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = Brown, and tillage_type = Intensive Tillage.</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIuMjgzNDIyXG4ifQ== -->
+<pre><code>[1] 2.283422</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -2818,7 +3319,7 @@ separately. This creates a vector of r<sub>e</sub> values the same
 length as the number of years in the input data.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubXVsdGlfeWVhcl9pbnB1dCA8LSBcbmJpbmRfcm93cyhtdXRhdGUoZGFpbHlfaW5wdXRfdGVzdCwgWWVhciA9IDIwMjApLFxuXHRcdFx0XHRcdG11dGF0ZShkYWlseV9pbnB1dF90ZXN0LCBZZWFyID0gMjAyMSksXG5cdFx0XHRcdFx0bXV0YXRlKGRhaWx5X2lucHV0X3Rlc3QsIFllYXIgPSAyMDIyKVxuKVxubXVsdGlfeWVhcl9pbnB1dFxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjpbIm11bHRpX3llYXJfaW5wdXQgPC0gXG5iaW5kX3Jvd3MobXV0YXRlKGRhaWx5X2lucHV0X3Rlc3QsIFllYXIgPSAyMDIwKSxcblx0XHRcdFx0XHRtdXRhdGUoZGFpbHlfaW5wdXRfdGVzdCwgWWVhciA9IDIwMjEpLFxuXHRcdFx0XHRcdG11dGF0ZShkYWlseV9pbnB1dF90ZXN0LCBZZWFyID0gMjAyMilcbikiLCJtdWx0aV95ZWFyX2lucHV0Il19 -->
 <pre class="r"><code>multi_year_input &lt;- 
 bind_rows(mutate(daily_input_test, Year = 2020),
                     mutate(daily_input_test, Year = 2021),
@@ -2826,11 +3327,16 @@ bind_rows(mutate(daily_input_test, Year = 2020),
 )
 multi_year_input</code></pre>
 <!-- rnb-source-end -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Year"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["JulianDay"],"name":[2],"type":["int"],"align":["right"]},{"label":["Tavg"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["PREC"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["PET"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"2020","2":"1","3":"2.05","4":"0.07","5":"0.172981827"},{"1":"2020","2":"2","3":"4.85","4":"0.02","5":"0.658788658"},{"1":"2020","2":"3","3":"2.87","4":"1.06","5":"0.201638774"},{"1":"2020","2":"4","3":"0.01","4":"4.04","5":"0.001599795"},{"1":"2020","2":"5","3":"-1.00","4":"1.97","5":"0.000000000"},{"1":"2020","2":"6","3":"-0.50","4":"2.32","5":"0.000000000"},{"1":"2020","2":"7","3":"-1.12","4":"0.53","5":"0.000000000"},{"1":"2020","2":"8","3":"-1.20","4":"0.21","5":"0.000000000"},{"1":"2020","2":"9","3":"-1.10","4":"0.14","5":"0.000000000"},{"1":"2020","2":"10","3":"-0.27","4":"1.07","5":"0.000000000"},{"1":"2020","2":"11","3":"0.84","4":"2.04","5":"0.156487113"},{"1":"2020","2":"12","3":"0.54","4":"1.55","5":"0.074594769"},{"1":"2020","2":"13","3":"-0.49","4":"1.80","5":"0.000000000"},{"1":"2020","2":"14","3":"-1.16","4":"0.05","5":"0.000000000"},{"1":"2020","2":"15","3":"-0.10","4":"0.21","5":"0.000000000"},{"1":"2020","2":"16","3":"-0.50","4":"0.12","5":"0.000000000"},{"1":"2020","2":"17","3":"-0.74","4":"0.58","5":"0.000000000"},{"1":"2020","2":"18","3":"0.63","4":"0.04","5":"0.118066109"},{"1":"2020","2":"19","3":"-0.82","4":"0.01","5":"0.000000000"},{"1":"2020","2":"20","3":"-1.00","4":"2.11","5":"0.000000000"},{"1":"2020","2":"21","3":"-2.43","4":"0.05","5":"0.000000000"},{"1":"2020","2":"22","3":"0.05","4":"0.06","5":"0.007389701"},{"1":"2020","2":"23","3":"-3.38","4":"0.07","5":"0.000000000"},{"1":"2020","2":"24","3":"-1.53","4":"0.01","5":"0.000000000"},{"1":"2020","2":"25","3":"1.58","4":"0.03","5":"0.160774315"},{"1":"2020","2":"26","3":"-5.00","4":"0.61","5":"0.000000000"},{"1":"2020","2":"27","3":"-5.62","4":"0.18","5":"0.000000000"},{"1":"2020","2":"28","3":"-2.90","4":"0.03","5":"0.000000000"},{"1":"2020","2":"29","3":"0.76","4":"0.01","5":"0.150837438"},{"1":"2020","2":"30","3":"0.53","4":"0.00","5":"0.105263541"},{"1":"2020","2":"31","3":"2.12","4":"0.00","5":"0.396176249"},{"1":"2020","2":"32","3":"1.67","4":"0.28","5":"0.212564920"},{"1":"2020","2":"33","3":"-0.99","4":"0.30","5":"0.000000000"},{"1":"2020","2":"34","3":"2.74","4":"0.01","5":"0.440428859"},{"1":"2020","2":"35","3":"1.83","4":"0.13","5":"0.223963306"},{"1":"2020","2":"36","3":"-0.84","4":"0.03","5":"0.000000000"},{"1":"2020","2":"37","3":"0.22","4":"0.20","5":"0.037358005"},{"1":"2020","2":"38","3":"-0.82","4":"0.06","5":"0.000000000"},{"1":"2020","2":"39","3":"1.90","4":"0.24","5":"0.185835329"},{"1":"2020","2":"40","3":"4.76","4":"0.02","5":"0.838751683"},{"1":"2020","2":"41","3":"6.31","4":"0.01","5":"0.929862640"},{"1":"2020","2":"42","3":"5.87","4":"0.05","5":"1.061426160"},{"1":"2020","2":"43","3":"3.20","4":"0.05","5":"0.598003237"},{"1":"2020","2":"44","3":"2.47","4":"0.64","5":"0.452774218"},{"1":"2020","2":"45","3":"1.28","4":"0.00","5":"0.232988333"},{"1":"2020","2":"46","3":"2.21","4":"0.06","5":"0.366575035"},{"1":"2020","2":"47","3":"5.45","4":"0.09","5":"0.729326200"},{"1":"2020","2":"48","3":"4.42","4":"0.06","5":"0.580458056"},{"1":"2020","2":"49","3":"3.89","4":"0.11","5":"0.949134918"},{"1":"2020","2":"50","3":"6.08","4":"0.37","5":"0.718565118"},{"1":"2020","2":"51","3":"5.47","4":"0.33","5":"0.624249254"},{"1":"2020","2":"52","3":"4.55","4":"0.43","5":"0.621018724"},{"1":"2020","2":"53","3":"5.19","4":"0.05","5":"0.565388388"},{"1":"2020","2":"54","3":"4.14","4":"0.36","5":"0.438133065"},{"1":"2020","2":"55","3":"-0.38","4":"0.02","5":"0.000000000"},{"1":"2020","2":"56","3":"-0.02","4":"0.00","5":"0.000000000"},{"1":"2020","2":"57","3":"1.11","4":"0.11","5":"0.235412951"},{"1":"2020","2":"58","3":"0.55","4":"4.24","5":"0.093719379"},{"1":"2020","2":"59","3":"-3.04","4":"2.27","5":"0.000000000"},{"1":"2020","2":"60","3":"-1.17","4":"0.00","5":"0.000000000"},{"1":"2020","2":"61","3":"-0.06","4":"0.00","5":"0.000000000"},{"1":"2020","2":"62","3":"1.84","4":"0.30","5":"0.411995410"},{"1":"2020","2":"63","3":"3.65","4":"0.13","5":"0.947007212"},{"1":"2020","2":"64","3":"4.97","4":"0.01","5":"0.920641032"},{"1":"2020","2":"65","3":"6.91","4":"0.01","5":"1.644566804"},{"1":"2020","2":"66","3":"8.23","4":"0.06","5":"1.135662180"},{"1":"2020","2":"67","3":"3.11","4":"0.24","5":"0.516351386"},{"1":"2020","2":"68","3":"2.51","4":"0.10","5":"0.767516561"},{"1":"2020","2":"69","3":"6.35","4":"1.16","5":"1.217530545"},{"1":"2020","2":"70","3":"8.44","4":"0.21","5":"1.146379724"},{"1":"2020","2":"71","3":"1.15","4":"5.01","5":"0.164798817"},{"1":"2020","2":"72","3":"0.41","4":"0.17","5":"0.132624988"},{"1":"2020","2":"73","3":"2.73","4":"0.78","5":"0.403210245"},{"1":"2020","2":"74","3":"-0.51","4":"1.36","5":"0.000000000"},{"1":"2020","2":"75","3":"-0.36","4":"0.02","5":"0.000000000"},{"1":"2020","2":"76","3":"1.83","4":"0.00","5":"0.656810401"},{"1":"2020","2":"77","3":"6.17","4":"0.04","5":"1.685391191"},{"1":"2020","2":"78","3":"7.26","4":"0.01","5":"2.019706391"},{"1":"2020","2":"79","3":"4.83","4":"0.03","5":"0.871527758"},{"1":"2020","2":"80","3":"6.45","4":"0.00","5":"1.623096857"},{"1":"2020","2":"81","3":"4.74","4":"0.00","5":"1.288657949"},{"1":"2020","2":"82","3":"4.85","4":"0.00","5":"1.035095757"},{"1":"2020","2":"83","3":"6.35","4":"0.00","5":"1.966520870"},{"1":"2020","2":"84","3":"7.44","4":"0.01","5":"2.182897196"},{"1":"2020","2":"85","3":"5.03","4":"0.20","5":"1.190967063"},{"1":"2020","2":"86","3":"3.14","4":"0.42","5":"0.995612870"},{"1":"2020","2":"87","3":"6.52","4":"0.05","5":"1.267532738"},{"1":"2020","2":"88","3":"8.44","4":"0.00","5":"2.446681218"},{"1":"2020","2":"89","3":"10.77","4":"0.37","5":"1.324103506"},{"1":"2020","2":"90","3":"8.55","4":"5.14","5":"1.038652960"},{"1":"2020","2":"91","3":"8.12","4":"0.13","5":"1.992805730"},{"1":"2020","2":"92","3":"10.46","4":"0.00","5":"2.729171368"},{"1":"2020","2":"93","3":"12.28","4":"0.01","5":"2.779215502"},{"1":"2020","2":"94","3":"13.95","4":"0.06","5":"3.000483521"},{"1":"2020","2":"95","3":"17.05","4":"0.29","5":"3.707343212"},{"1":"2020","2":"96","3":"15.91","4":"0.00","5":"3.091587243"},{"1":"2020","2":"97","3":"15.19","4":"0.00","5":"3.151747099"},{"1":"2020","2":"98","3":"12.88","4":"4.64","5":"2.440571039"},{"1":"2020","2":"99","3":"12.75","4":"1.67","5":"2.330241584"},{"1":"2020","2":"100","3":"11.99","4":"0.14","5":"2.297187319"},{"1":"2020","2":"101","3":"5.89","4":"33.46","5":"0.441542133"},{"1":"2020","2":"102","3":"7.35","4":"6.88","5":"0.710037035"},{"1":"2020","2":"103","3":"10.57","4":"0.06","5":"2.173530121"},{"1":"2020","2":"104","3":"13.51","4":"0.00","5":"3.321489722"},{"1":"2020","2":"105","3":"13.80","4":"0.11","5":"3.492532589"},{"1":"2020","2":"106","3":"11.24","4":"3.38","5":"1.409008876"},{"1":"2020","2":"107","3":"14.19","4":"0.38","5":"2.608883968"},{"1":"2020","2":"108","3":"15.84","4":"0.02","5":"3.555452646"},{"1":"2020","2":"109","3":"16.55","4":"0.00","5":"3.930927732"},{"1":"2020","2":"110","3":"16.23","4":"0.01","5":"4.081612157"},{"1":"2020","2":"111","3":"16.78","4":"0.01","5":"2.941847572"},{"1":"2020","2":"112","3":"18.44","4":"0.08","5":"3.779563502"},{"1":"2020","2":"113","3":"18.58","4":"0.07","5":"4.043221815"},{"1":"2020","2":"114","3":"17.55","4":"5.12","5":"2.339402634"},{"1":"2020","2":"115","3":"17.14","4":"1.21","5":"3.719788361"},{"1":"2020","2":"116","3":"18.12","4":"15.27","5":"3.427082554"},{"1":"2020","2":"117","3":"19.25","4":"0.05","5":"4.667290657"},{"1":"2020","2":"118","3":"19.66","4":"0.00","5":"4.724402111"},{"1":"2020","2":"119","3":"20.32","4":"0.00","5":"4.878457610"},{"1":"2020","2":"120","3":"20.12","4":"0.01","5":"4.574156156"},{"1":"2020","2":"121","3":"15.51","4":"4.11","5":"3.520614284"},{"1":"2020","2":"122","3":"14.66","4":"5.10","5":"2.135368530"},{"1":"2020","2":"123","3":"10.23","4":"15.51","5":"2.148331065"},{"1":"2020","2":"124","3":"5.22","4":"22.18","5":"0.526930175"},{"1":"2020","2":"125","3":"7.79","4":"0.21","5":"2.050945849"},{"1":"2020","2":"126","3":"9.31","4":"0.04","5":"2.775918390"},{"1":"2020","2":"127","3":"14.24","4":"0.61","5":"3.484632784"},{"1":"2020","2":"128","3":"14.99","4":"0.25","5":"2.840758693"},{"1":"2020","2":"129","3":"11.61","4":"9.08","5":"1.063946215"},{"1":"2020","2":"130","3":"10.22","4":"3.14","5":"1.694092866"},{"1":"2020","2":"131","3":"12.62","4":"5.28","5":"3.326091140"},{"1":"2020","2":"132","3":"13.11","4":"0.42","5":"3.954000106"},{"1":"2020","2":"133","3":"15.98","4":"0.48","5":"3.963078645"},{"1":"2020","2":"134","3":"13.23","4":"0.75","5":"2.081445620"},{"1":"2020","2":"135","3":"10.76","4":"0.04","5":"3.734543608"},{"1":"2020","2":"136","3":"13.48","4":"0.21","5":"3.008967576"},{"1":"2020","2":"137","3":"14.22","4":"3.65","5":"3.287185935"},{"1":"2020","2":"138","3":"11.59","4":"1.27","5":"2.963166543"},{"1":"2020","2":"139","3":"12.67","4":"0.00","5":"3.907653281"},{"1":"2020","2":"140","3":"15.18","4":"0.00","5":"4.076877374"},{"1":"2020","2":"141","3":"13.00","4":"1.00","5":"3.029418867"},{"1":"2020","2":"142","3":"16.41","4":"0.00","5":"5.005205756"},{"1":"2020","2":"143","3":"20.12","4":"0.00","5":"5.412020837"},{"1":"2020","2":"144","3":"22.09","4":"0.37","5":"5.130700778"},{"1":"2020","2":"145","3":"21.33","4":"0.03","5":"5.189080283"},{"1":"2020","2":"146","3":"21.64","4":"0.16","5":"4.440536939"},{"1":"2020","2":"147","3":"22.83","4":"0.15","5":"5.243824928"},{"1":"2020","2":"148","3":"21.99","4":"1.63","5":"3.958332380"},{"1":"2020","2":"149","3":"22.52","4":"0.42","5":"4.857520674"},{"1":"2020","2":"150","3":"23.99","4":"0.00","5":"5.904118042"},{"1":"2020","2":"151","3":"23.44","4":"0.45","5":"4.239386904"},{"1":"2020","2":"152","3":"22.83","4":"0.00","5":"5.766646238"},{"1":"2020","2":"153","3":"23.33","4":"0.20","5":"5.361894969"},{"1":"2020","2":"154","3":"24.24","4":"0.00","5":"5.887489965"},{"1":"2020","2":"155","3":"26.13","4":"0.00","5":"4.832231669"},{"1":"2020","2":"156","3":"25.93","4":"0.00","5":"6.044809316"},{"1":"2020","2":"157","3":"25.61","4":"0.19","5":"3.969367767"},{"1":"2020","2":"158","3":"26.58","4":"0.00","5":"6.756881596"},{"1":"2020","2":"159","3":"29.13","4":"0.00","5":"7.370777818"},{"1":"2020","2":"160","3":"26.28","4":"0.00","5":"4.682289845"},{"1":"2020","2":"161","3":"23.73","4":"0.46","5":"3.678205555"},{"1":"2020","2":"162","3":"20.88","4":"0.08","5":"5.697074209"},{"1":"2020","2":"163","3":"18.52","4":"0.04","5":"5.481321198"},{"1":"2020","2":"164","3":"18.90","4":"0.00","5":"6.406306086"},{"1":"2020","2":"165","3":"23.46","4":"0.95","5":"6.446355525"},{"1":"2020","2":"166","3":"20.58","4":"0.30","5":"3.709800306"},{"1":"2020","2":"167","3":"23.00","4":"0.00","5":"6.514427058"},{"1":"2020","2":"168","3":"26.12","4":"0.00","5":"6.737492317"},{"1":"2020","2":"169","3":"26.21","4":"0.00","5":"7.025329650"},{"1":"2020","2":"170","3":"26.47","4":"0.13","5":"5.205337548"},{"1":"2020","2":"171","3":"20.37","4":"5.93","5":"3.459125359"},{"1":"2020","2":"172","3":"16.12","4":"6.62","5":"0.965596831"},{"1":"2020","2":"173","3":"19.79","4":"0.02","5":"5.329590589"},{"1":"2020","2":"174","3":"21.62","4":"0.06","5":"4.997807545"},{"1":"2020","2":"175","3":"21.83","4":"1.33","5":"3.939240492"},{"1":"2020","2":"176","3":"20.80","4":"6.79","5":"3.592553978"},{"1":"2020","2":"177","3":"20.08","4":"6.05","5":"3.160794536"},{"1":"2020","2":"178","3":"21.12","4":"0.10","5":"2.725851383"},{"1":"2020","2":"179","3":"24.67","4":"0.00","5":"5.772454035"},{"1":"2020","2":"180","3":"26.94","4":"3.87","5":"5.465774616"},{"1":"2020","2":"181","3":"24.06","4":"2.96","5":"3.843212581"},{"1":"2020","2":"182","3":"25.46","4":"0.11","5":"5.356406502"},{"1":"2020","2":"183","3":"27.62","4":"0.00","5":"6.202532248"},{"1":"2020","2":"184","3":"26.19","4":"4.67","5":"3.309657308"},{"1":"2020","2":"185","3":"25.86","4":"0.00","5":"6.107074931"},{"1":"2020","2":"186","3":"27.15","4":"0.00","5":"6.219532812"},{"1":"2020","2":"187","3":"27.30","4":"0.42","5":"4.500689825"},{"1":"2020","2":"188","3":"28.76","4":"0.23","5":"4.569928405"},{"1":"2020","2":"189","3":"27.51","4":"3.42","5":"5.505630478"},{"1":"2020","2":"190","3":"25.22","4":"0.09","5":"5.165143586"},{"1":"2020","2":"191","3":"24.95","4":"0.42","5":"5.093219124"},{"1":"2020","2":"192","3":"27.76","4":"0.00","5":"6.648478428"},{"1":"2020","2":"193","3":"27.16","4":"0.10","5":"5.761502304"},{"1":"2020","2":"194","3":"26.11","4":"0.19","5":"5.706745816"},{"1":"2020","2":"195","3":"28.38","4":"0.00","5":"6.393686894"},{"1":"2020","2":"196","3":"26.34","4":"0.00","5":"5.979527290"},{"1":"2020","2":"197","3":"27.94","4":"0.01","5":"6.059939472"},{"1":"2020","2":"198","3":"29.23","4":"0.00","5":"5.462367664"},{"1":"2020","2":"199","3":"30.58","4":"0.00","5":"6.217507690"},{"1":"2020","2":"200","3":"29.52","4":"0.00","5":"5.379565992"},{"1":"2020","2":"201","3":"27.55","4":"0.03","5":"4.079946488"},{"1":"2020","2":"202","3":"29.55","4":"0.00","5":"6.054089790"},{"1":"2020","2":"203","3":"31.09","4":"0.00","5":"5.914650050"},{"1":"2020","2":"204","3":"31.44","4":"0.00","5":"5.932165831"},{"1":"2020","2":"205","3":"30.79","4":"0.00","5":"6.324015794"},{"1":"2020","2":"206","3":"30.54","4":"0.03","5":"5.277378734"},{"1":"2020","2":"207","3":"27.76","4":"7.21","5":"5.580579655"},{"1":"2020","2":"208","3":"29.98","4":"0.00","5":"6.452304338"},{"1":"2020","2":"209","3":"29.13","4":"0.00","5":"5.434551209"},{"1":"2020","2":"210","3":"31.36","4":"1.89","5":"5.935702842"},{"1":"2020","2":"211","3":"28.50","4":"0.00","5":"6.476242051"},{"1":"2020","2":"212","3":"30.62","4":"0.00","5":"6.945842079"},{"1":"2020","2":"213","3":"30.52","4":"0.01","5":"5.771741703"},{"1":"2020","2":"214","3":"32.62","4":"0.01","5":"6.034038888"},{"1":"2020","2":"215","3":"31.68","4":"17.18","5":"5.511078328"},{"1":"2020","2":"216","3":"25.02","4":"3.47","5":"2.838804326"},{"1":"2020","2":"217","3":"25.59","4":"0.51","5":"4.327011857"},{"1":"2020","2":"218","3":"26.07","4":"0.00","5":"5.763194834"},{"1":"2020","2":"219","3":"27.66","4":"0.00","5":"6.594295034"},{"1":"2020","2":"220","3":"27.58","4":"0.00","5":"6.147455454"},{"1":"2020","2":"221","3":"27.44","4":"0.00","5":"5.581934858"},{"1":"2020","2":"222","3":"27.65","4":"0.00","5":"5.709361634"},{"1":"2020","2":"223","3":"30.13","4":"0.21","5":"5.322249073"},{"1":"2020","2":"224","3":"27.37","4":"0.20","5":"3.900013172"},{"1":"2020","2":"225","3":"27.30","4":"0.69","5":"4.346652623"},{"1":"2020","2":"226","3":"28.75","4":"0.18","5":"3.691963154"},{"1":"2020","2":"227","3":"28.19","4":"0.53","5":"4.651093455"},{"1":"2020","2":"228","3":"26.76","4":"0.03","5":"5.067116264"},{"1":"2020","2":"229","3":"24.82","4":"0.00","5":"5.296919067"},{"1":"2020","2":"230","3":"25.66","4":"0.00","5":"5.828435180"},{"1":"2020","2":"231","3":"26.26","4":"0.06","5":"4.583550143"},{"1":"2020","2":"232","3":"27.05","4":"0.92","5":"5.003430739"},{"1":"2020","2":"233","3":"28.41","4":"0.00","5":"5.348781590"},{"1":"2020","2":"234","3":"28.04","4":"0.00","5":"5.161513017"},{"1":"2020","2":"235","3":"29.87","4":"0.00","5":"5.657315175"},{"1":"2020","2":"236","3":"29.37","4":"0.00","5":"5.018401513"},{"1":"2020","2":"237","3":"29.56","4":"0.05","5":"4.852997685"},{"1":"2020","2":"238","3":"23.01","4":"1.14","5":"3.464987064"},{"1":"2020","2":"239","3":"22.33","4":"0.87","5":"3.851047826"},{"1":"2020","2":"240","3":"21.69","4":"9.45","5":"2.054707167"},{"1":"2020","2":"241","3":"20.36","4":"14.06","5":"2.056685580"},{"1":"2020","2":"242","3":"21.32","4":"0.11","5":"2.767498337"},{"1":"2020","2":"243","3":"21.85","4":"0.14","5":"4.134032219"},{"1":"2020","2":"244","3":"20.36","4":"2.92","5":"1.563223135"},{"1":"2020","2":"245","3":"21.05","4":"1.69","5":"3.644969844"},{"1":"2020","2":"246","3":"21.81","4":"0.13","5":"3.978245308"},{"1":"2020","2":"247","3":"23.05","4":"0.00","5":"3.984644929"},{"1":"2020","2":"248","3":"23.35","4":"0.00","5":"4.292301608"},{"1":"2020","2":"249","3":"24.41","4":"0.00","5":"4.145289407"},{"1":"2020","2":"250","3":"24.10","4":"0.00","5":"3.993034237"},{"1":"2020","2":"251","3":"23.57","4":"0.71","5":"3.207459968"},{"1":"2020","2":"252","3":"21.22","4":"8.25","5":"1.978054572"},{"1":"2020","2":"253","3":"21.90","4":"0.18","5":"2.816532193"},{"1":"2020","2":"254","3":"19.92","4":"1.68","5":"3.148204663"},{"1":"2020","2":"255","3":"21.27","4":"0.00","5":"3.970286987"},{"1":"2020","2":"256","3":"22.57","4":"0.01","5":"3.968304321"},{"1":"2020","2":"257","3":"19.44","4":"1.45","5":"2.333451170"},{"1":"2020","2":"258","3":"17.95","4":"0.00","5":"3.566880407"},{"1":"2020","2":"259","3":"20.51","4":"0.37","5":"3.469167906"},{"1":"2020","2":"260","3":"20.80","4":"0.19","5":"3.237146925"},{"1":"2020","2":"261","3":"15.96","4":"0.36","5":"3.000252209"},{"1":"2020","2":"262","3":"17.51","4":"0.04","5":"2.351994376"},{"1":"2020","2":"263","3":"18.26","4":"0.01","5":"2.451979982"},{"1":"2020","2":"264","3":"19.03","4":"0.00","5":"3.294575636"},{"1":"2020","2":"265","3":"20.26","4":"0.16","5":"2.582287234"},{"1":"2020","2":"266","3":"19.58","4":"0.78","5":"3.144236074"},{"1":"2020","2":"267","3":"13.35","4":"0.00","5":"0.914361159"},{"1":"2020","2":"268","3":"12.05","4":"0.00","5":"2.574678042"},{"1":"2020","2":"269","3":"12.89","4":"0.00","5":"2.586535825"},{"1":"2020","2":"270","3":"13.65","4":"2.75","5":"0.644031741"},{"1":"2020","2":"271","3":"13.22","4":"2.04","5":"1.280560260"},{"1":"2020","2":"272","3":"11.27","4":"0.39","5":"2.399589256"},{"1":"2020","2":"273","3":"12.00","4":"1.90","5":"2.249949728"},{"1":"2020","2":"274","3":"12.16","4":"5.81","5":"1.880036872"},{"1":"2020","2":"275","3":"12.98","4":"0.01","5":"2.661039015"},{"1":"2020","2":"276","3":"14.02","4":"0.00","5":"1.455626939"},{"1":"2020","2":"277","3":"15.08","4":"0.00","5":"2.748078918"},{"1":"2020","2":"278","3":"13.65","4":"0.00","5":"2.110123616"},{"1":"2020","2":"279","3":"12.28","4":"0.00","5":"2.295589540"},{"1":"2020","2":"280","3":"12.48","4":"0.07","5":"2.351252266"},{"1":"2020","2":"281","3":"12.52","4":"1.03","5":"2.198555409"},{"1":"2020","2":"282","3":"13.05","4":"3.04","5":"0.708347937"},{"1":"2020","2":"283","3":"14.12","4":"1.10","5":"1.171891064"},{"1":"2020","2":"284","3":"14.44","4":"0.33","5":"1.400170323"},{"1":"2020","2":"285","3":"12.48","4":"0.00","5":"1.852045312"},{"1":"2020","2":"286","3":"10.87","4":"5.55","5":"0.507962638"},{"1":"2020","2":"287","3":"9.89","4":"1.48","5":"1.925163769"},{"1":"2020","2":"288","3":"7.68","4":"0.02","5":"1.605945805"},{"1":"2020","2":"289","3":"8.16","4":"0.00","5":"1.670953326"},{"1":"2020","2":"290","3":"10.94","4":"0.04","5":"1.048085169"},{"1":"2020","2":"291","3":"9.10","4":"0.46","5":"0.750772719"},{"1":"2020","2":"292","3":"6.23","4":"0.41","5":"0.999897001"},{"1":"2020","2":"293","3":"6.44","4":"0.43","5":"0.774447393"},{"1":"2020","2":"294","3":"4.39","4":"0.08","5":"0.706062505"},{"1":"2020","2":"295","3":"5.23","4":"0.31","5":"0.932269308"},{"1":"2020","2":"296","3":"6.14","4":"2.52","5":"1.087951252"},{"1":"2020","2":"297","3":"4.31","4":"0.33","5":"0.807651228"},{"1":"2020","2":"298","3":"4.55","4":"0.00","5":"1.002592101"},{"1":"2020","2":"299","3":"6.86","4":"0.49","5":"1.149183108"},{"1":"2020","2":"300","3":"10.00","4":"0.49","5":"0.710864586"},{"1":"2020","2":"301","3":"9.23","4":"0.02","5":"1.126460019"},{"1":"2020","2":"302","3":"10.48","4":"0.03","5":"1.226485393"},{"1":"2020","2":"303","3":"11.02","4":"0.02","5":"1.385219943"},{"1":"2020","2":"304","3":"9.46","4":"0.03","5":"1.422287331"},{"1":"2020","2":"305","3":"10.05","4":"0.15","5":"1.066791579"},{"1":"2020","2":"306","3":"10.62","4":"0.11","5":"1.259246575"},{"1":"2020","2":"307","3":"11.44","4":"0.04","5":"1.163933073"},{"1":"2020","2":"308","3":"10.90","4":"0.13","5":"0.759678495"},{"1":"2020","2":"309","3":"9.65","4":"0.05","5":"1.115105701"},{"1":"2020","2":"310","3":"9.92","4":"0.05","5":"0.709913622"},{"1":"2020","2":"311","3":"7.53","4":"0.02","5":"0.524432210"},{"1":"2020","2":"312","3":"6.87","4":"0.02","5":"0.787479340"},{"1":"2020","2":"313","3":"3.50","4":"0.08","5":"0.245163956"},{"1":"2020","2":"314","3":"0.50","4":"0.00","5":"0.105807852"},{"1":"2020","2":"315","3":"-1.06","4":"0.00","5":"0.000000000"},{"1":"2020","2":"316","3":"3.39","4":"0.02","5":"0.316725180"},{"1":"2020","2":"317","3":"7.12","4":"0.69","5":"0.485079075"},{"1":"2020","2":"318","3":"3.62","4":"0.37","5":"0.452357906"},{"1":"2020","2":"319","3":"1.58","4":"0.00","5":"0.276769012"},{"1":"2020","2":"320","3":"-0.45","4":"0.01","5":"0.000000000"},{"1":"2020","2":"321","3":"1.15","4":"0.00","5":"0.219633647"},{"1":"2020","2":"322","3":"4.65","4":"0.02","5":"0.526361044"},{"1":"2020","2":"323","3":"2.76","4":"0.02","5":"0.326366080"},{"1":"2020","2":"324","3":"2.59","4":"0.41","5":"0.277676410"},{"1":"2020","2":"325","3":"6.37","4":"0.21","5":"0.303897060"},{"1":"2020","2":"326","3":"6.69","4":"0.34","5":"0.374792151"},{"1":"2020","2":"327","3":"4.80","4":"0.18","5":"0.306621902"},{"1":"2020","2":"328","3":"1.97","4":"0.96","5":"0.125921880"},{"1":"2020","2":"329","3":"3.24","4":"3.65","5":"0.164550149"},{"1":"2020","2":"330","3":"3.35","4":"1.18","5":"0.247345754"},{"1":"2020","2":"331","3":"-2.52","4":"2.14","5":"0.000000000"},{"1":"2020","2":"332","3":"-4.91","4":"0.03","5":"0.000000000"},{"1":"2020","2":"333","3":"-3.57","4":"0.00","5":"0.000000000"},{"1":"2020","2":"334","3":"1.08","4":"0.14","5":"0.147724850"},{"1":"2020","2":"335","3":"3.64","4":"0.59","5":"0.569578655"},{"1":"2020","2":"336","3":"1.69","4":"0.30","5":"0.304462477"},{"1":"2020","2":"337","3":"2.04","4":"0.27","5":"0.240639318"},{"1":"2020","2":"338","3":"1.15","4":"0.15","5":"0.212558185"},{"1":"2020","2":"339","3":"1.19","4":"0.01","5":"0.212332846"},{"1":"2020","2":"340","3":"0.40","4":"0.00","5":"0.069388009"},{"1":"2020","2":"341","3":"1.47","4":"0.21","5":"0.085451687"},{"1":"2020","2":"342","3":"-2.27","4":"0.36","5":"0.000000000"},{"1":"2020","2":"343","3":"-4.51","4":"0.03","5":"0.000000000"},{"1":"2020","2":"344","3":"-1.35","4":"0.02","5":"0.000000000"},{"1":"2020","2":"345","3":"1.24","4":"0.25","5":"0.149445876"},{"1":"2020","2":"346","3":"2.42","4":"0.50","5":"0.232218187"},{"1":"2020","2":"347","3":"2.08","4":"0.82","5":"0.154785319"},{"1":"2020","2":"348","3":"0.83","4":"0.39","5":"0.079015965"},{"1":"2020","2":"349","3":"1.06","4":"0.10","5":"0.108074505"},{"1":"2020","2":"350","3":"0.80","4":"0.05","5":"0.078034012"},{"1":"2020","2":"351","3":"2.57","4":"0.00","5":"0.331257431"},{"1":"2020","2":"352","3":"5.23","4":"4.58","5":"0.449008245"},{"1":"2020","2":"353","3":"1.71","4":"0.03","5":"0.242238312"},{"1":"2020","2":"354","3":"2.37","4":"0.78","5":"0.256037166"},{"1":"2020","2":"355","3":"0.81","4":"3.64","5":"0.073232358"},{"1":"2020","2":"356","3":"-1.94","4":"7.86","5":"0.000000000"},{"1":"2020","2":"357","3":"-5.13","4":"0.07","5":"0.000000000"},{"1":"2020","2":"358","3":"-5.85","4":"0.01","5":"0.000000000"},{"1":"2020","2":"359","3":"-2.77","4":"0.19","5":"0.000000000"},{"1":"2020","2":"360","3":"-0.06","4":"0.14","5":"0.000000000"},{"1":"2020","2":"361","3":"-0.19","4":"0.01","5":"0.000000000"},{"1":"2020","2":"362","3":"1.29","4":"0.11","5":"0.163601013"},{"1":"2020","2":"363","3":"1.02","4":"0.01","5":"0.146169301"},{"1":"2020","2":"364","3":"2.27","4":"0.22","5":"0.205839546"},{"1":"2020","2":"365","3":"4.12","4":"0.45","5":"0.455876366"},{"1":"2021","2":"1","3":"2.05","4":"0.07","5":"0.172981827"},{"1":"2021","2":"2","3":"4.85","4":"0.02","5":"0.658788658"},{"1":"2021","2":"3","3":"2.87","4":"1.06","5":"0.201638774"},{"1":"2021","2":"4","3":"0.01","4":"4.04","5":"0.001599795"},{"1":"2021","2":"5","3":"-1.00","4":"1.97","5":"0.000000000"},{"1":"2021","2":"6","3":"-0.50","4":"2.32","5":"0.000000000"},{"1":"2021","2":"7","3":"-1.12","4":"0.53","5":"0.000000000"},{"1":"2021","2":"8","3":"-1.20","4":"0.21","5":"0.000000000"},{"1":"2021","2":"9","3":"-1.10","4":"0.14","5":"0.000000000"},{"1":"2021","2":"10","3":"-0.27","4":"1.07","5":"0.000000000"},{"1":"2021","2":"11","3":"0.84","4":"2.04","5":"0.156487113"},{"1":"2021","2":"12","3":"0.54","4":"1.55","5":"0.074594769"},{"1":"2021","2":"13","3":"-0.49","4":"1.80","5":"0.000000000"},{"1":"2021","2":"14","3":"-1.16","4":"0.05","5":"0.000000000"},{"1":"2021","2":"15","3":"-0.10","4":"0.21","5":"0.000000000"},{"1":"2021","2":"16","3":"-0.50","4":"0.12","5":"0.000000000"},{"1":"2021","2":"17","3":"-0.74","4":"0.58","5":"0.000000000"},{"1":"2021","2":"18","3":"0.63","4":"0.04","5":"0.118066109"},{"1":"2021","2":"19","3":"-0.82","4":"0.01","5":"0.000000000"},{"1":"2021","2":"20","3":"-1.00","4":"2.11","5":"0.000000000"},{"1":"2021","2":"21","3":"-2.43","4":"0.05","5":"0.000000000"},{"1":"2021","2":"22","3":"0.05","4":"0.06","5":"0.007389701"},{"1":"2021","2":"23","3":"-3.38","4":"0.07","5":"0.000000000"},{"1":"2021","2":"24","3":"-1.53","4":"0.01","5":"0.000000000"},{"1":"2021","2":"25","3":"1.58","4":"0.03","5":"0.160774315"},{"1":"2021","2":"26","3":"-5.00","4":"0.61","5":"0.000000000"},{"1":"2021","2":"27","3":"-5.62","4":"0.18","5":"0.000000000"},{"1":"2021","2":"28","3":"-2.90","4":"0.03","5":"0.000000000"},{"1":"2021","2":"29","3":"0.76","4":"0.01","5":"0.150837438"},{"1":"2021","2":"30","3":"0.53","4":"0.00","5":"0.105263541"},{"1":"2021","2":"31","3":"2.12","4":"0.00","5":"0.396176249"},{"1":"2021","2":"32","3":"1.67","4":"0.28","5":"0.212564920"},{"1":"2021","2":"33","3":"-0.99","4":"0.30","5":"0.000000000"},{"1":"2021","2":"34","3":"2.74","4":"0.01","5":"0.440428859"},{"1":"2021","2":"35","3":"1.83","4":"0.13","5":"0.223963306"},{"1":"2021","2":"36","3":"-0.84","4":"0.03","5":"0.000000000"},{"1":"2021","2":"37","3":"0.22","4":"0.20","5":"0.037358005"},{"1":"2021","2":"38","3":"-0.82","4":"0.06","5":"0.000000000"},{"1":"2021","2":"39","3":"1.90","4":"0.24","5":"0.185835329"},{"1":"2021","2":"40","3":"4.76","4":"0.02","5":"0.838751683"},{"1":"2021","2":"41","3":"6.31","4":"0.01","5":"0.929862640"},{"1":"2021","2":"42","3":"5.87","4":"0.05","5":"1.061426160"},{"1":"2021","2":"43","3":"3.20","4":"0.05","5":"0.598003237"},{"1":"2021","2":"44","3":"2.47","4":"0.64","5":"0.452774218"},{"1":"2021","2":"45","3":"1.28","4":"0.00","5":"0.232988333"},{"1":"2021","2":"46","3":"2.21","4":"0.06","5":"0.366575035"},{"1":"2021","2":"47","3":"5.45","4":"0.09","5":"0.729326200"},{"1":"2021","2":"48","3":"4.42","4":"0.06","5":"0.580458056"},{"1":"2021","2":"49","3":"3.89","4":"0.11","5":"0.949134918"},{"1":"2021","2":"50","3":"6.08","4":"0.37","5":"0.718565118"},{"1":"2021","2":"51","3":"5.47","4":"0.33","5":"0.624249254"},{"1":"2021","2":"52","3":"4.55","4":"0.43","5":"0.621018724"},{"1":"2021","2":"53","3":"5.19","4":"0.05","5":"0.565388388"},{"1":"2021","2":"54","3":"4.14","4":"0.36","5":"0.438133065"},{"1":"2021","2":"55","3":"-0.38","4":"0.02","5":"0.000000000"},{"1":"2021","2":"56","3":"-0.02","4":"0.00","5":"0.000000000"},{"1":"2021","2":"57","3":"1.11","4":"0.11","5":"0.235412951"},{"1":"2021","2":"58","3":"0.55","4":"4.24","5":"0.093719379"},{"1":"2021","2":"59","3":"-3.04","4":"2.27","5":"0.000000000"},{"1":"2021","2":"60","3":"-1.17","4":"0.00","5":"0.000000000"},{"1":"2021","2":"61","3":"-0.06","4":"0.00","5":"0.000000000"},{"1":"2021","2":"62","3":"1.84","4":"0.30","5":"0.411995410"},{"1":"2021","2":"63","3":"3.65","4":"0.13","5":"0.947007212"},{"1":"2021","2":"64","3":"4.97","4":"0.01","5":"0.920641032"},{"1":"2021","2":"65","3":"6.91","4":"0.01","5":"1.644566804"},{"1":"2021","2":"66","3":"8.23","4":"0.06","5":"1.135662180"},{"1":"2021","2":"67","3":"3.11","4":"0.24","5":"0.516351386"},{"1":"2021","2":"68","3":"2.51","4":"0.10","5":"0.767516561"},{"1":"2021","2":"69","3":"6.35","4":"1.16","5":"1.217530545"},{"1":"2021","2":"70","3":"8.44","4":"0.21","5":"1.146379724"},{"1":"2021","2":"71","3":"1.15","4":"5.01","5":"0.164798817"},{"1":"2021","2":"72","3":"0.41","4":"0.17","5":"0.132624988"},{"1":"2021","2":"73","3":"2.73","4":"0.78","5":"0.403210245"},{"1":"2021","2":"74","3":"-0.51","4":"1.36","5":"0.000000000"},{"1":"2021","2":"75","3":"-0.36","4":"0.02","5":"0.000000000"},{"1":"2021","2":"76","3":"1.83","4":"0.00","5":"0.656810401"},{"1":"2021","2":"77","3":"6.17","4":"0.04","5":"1.685391191"},{"1":"2021","2":"78","3":"7.26","4":"0.01","5":"2.019706391"},{"1":"2021","2":"79","3":"4.83","4":"0.03","5":"0.871527758"},{"1":"2021","2":"80","3":"6.45","4":"0.00","5":"1.623096857"},{"1":"2021","2":"81","3":"4.74","4":"0.00","5":"1.288657949"},{"1":"2021","2":"82","3":"4.85","4":"0.00","5":"1.035095757"},{"1":"2021","2":"83","3":"6.35","4":"0.00","5":"1.966520870"},{"1":"2021","2":"84","3":"7.44","4":"0.01","5":"2.182897196"},{"1":"2021","2":"85","3":"5.03","4":"0.20","5":"1.190967063"},{"1":"2021","2":"86","3":"3.14","4":"0.42","5":"0.995612870"},{"1":"2021","2":"87","3":"6.52","4":"0.05","5":"1.267532738"},{"1":"2021","2":"88","3":"8.44","4":"0.00","5":"2.446681218"},{"1":"2021","2":"89","3":"10.77","4":"0.37","5":"1.324103506"},{"1":"2021","2":"90","3":"8.55","4":"5.14","5":"1.038652960"},{"1":"2021","2":"91","3":"8.12","4":"0.13","5":"1.992805730"},{"1":"2021","2":"92","3":"10.46","4":"0.00","5":"2.729171368"},{"1":"2021","2":"93","3":"12.28","4":"0.01","5":"2.779215502"},{"1":"2021","2":"94","3":"13.95","4":"0.06","5":"3.000483521"},{"1":"2021","2":"95","3":"17.05","4":"0.29","5":"3.707343212"},{"1":"2021","2":"96","3":"15.91","4":"0.00","5":"3.091587243"},{"1":"2021","2":"97","3":"15.19","4":"0.00","5":"3.151747099"},{"1":"2021","2":"98","3":"12.88","4":"4.64","5":"2.440571039"},{"1":"2021","2":"99","3":"12.75","4":"1.67","5":"2.330241584"},{"1":"2021","2":"100","3":"11.99","4":"0.14","5":"2.297187319"},{"1":"2021","2":"101","3":"5.89","4":"33.46","5":"0.441542133"},{"1":"2021","2":"102","3":"7.35","4":"6.88","5":"0.710037035"},{"1":"2021","2":"103","3":"10.57","4":"0.06","5":"2.173530121"},{"1":"2021","2":"104","3":"13.51","4":"0.00","5":"3.321489722"},{"1":"2021","2":"105","3":"13.80","4":"0.11","5":"3.492532589"},{"1":"2021","2":"106","3":"11.24","4":"3.38","5":"1.409008876"},{"1":"2021","2":"107","3":"14.19","4":"0.38","5":"2.608883968"},{"1":"2021","2":"108","3":"15.84","4":"0.02","5":"3.555452646"},{"1":"2021","2":"109","3":"16.55","4":"0.00","5":"3.930927732"},{"1":"2021","2":"110","3":"16.23","4":"0.01","5":"4.081612157"},{"1":"2021","2":"111","3":"16.78","4":"0.01","5":"2.941847572"},{"1":"2021","2":"112","3":"18.44","4":"0.08","5":"3.779563502"},{"1":"2021","2":"113","3":"18.58","4":"0.07","5":"4.043221815"},{"1":"2021","2":"114","3":"17.55","4":"5.12","5":"2.339402634"},{"1":"2021","2":"115","3":"17.14","4":"1.21","5":"3.719788361"},{"1":"2021","2":"116","3":"18.12","4":"15.27","5":"3.427082554"},{"1":"2021","2":"117","3":"19.25","4":"0.05","5":"4.667290657"},{"1":"2021","2":"118","3":"19.66","4":"0.00","5":"4.724402111"},{"1":"2021","2":"119","3":"20.32","4":"0.00","5":"4.878457610"},{"1":"2021","2":"120","3":"20.12","4":"0.01","5":"4.574156156"},{"1":"2021","2":"121","3":"15.51","4":"4.11","5":"3.520614284"},{"1":"2021","2":"122","3":"14.66","4":"5.10","5":"2.135368530"},{"1":"2021","2":"123","3":"10.23","4":"15.51","5":"2.148331065"},{"1":"2021","2":"124","3":"5.22","4":"22.18","5":"0.526930175"},{"1":"2021","2":"125","3":"7.79","4":"0.21","5":"2.050945849"},{"1":"2021","2":"126","3":"9.31","4":"0.04","5":"2.775918390"},{"1":"2021","2":"127","3":"14.24","4":"0.61","5":"3.484632784"},{"1":"2021","2":"128","3":"14.99","4":"0.25","5":"2.840758693"},{"1":"2021","2":"129","3":"11.61","4":"9.08","5":"1.063946215"},{"1":"2021","2":"130","3":"10.22","4":"3.14","5":"1.694092866"},{"1":"2021","2":"131","3":"12.62","4":"5.28","5":"3.326091140"},{"1":"2021","2":"132","3":"13.11","4":"0.42","5":"3.954000106"},{"1":"2021","2":"133","3":"15.98","4":"0.48","5":"3.963078645"},{"1":"2021","2":"134","3":"13.23","4":"0.75","5":"2.081445620"},{"1":"2021","2":"135","3":"10.76","4":"0.04","5":"3.734543608"},{"1":"2021","2":"136","3":"13.48","4":"0.21","5":"3.008967576"},{"1":"2021","2":"137","3":"14.22","4":"3.65","5":"3.287185935"},{"1":"2021","2":"138","3":"11.59","4":"1.27","5":"2.963166543"},{"1":"2021","2":"139","3":"12.67","4":"0.00","5":"3.907653281"},{"1":"2021","2":"140","3":"15.18","4":"0.00","5":"4.076877374"},{"1":"2021","2":"141","3":"13.00","4":"1.00","5":"3.029418867"},{"1":"2021","2":"142","3":"16.41","4":"0.00","5":"5.005205756"},{"1":"2021","2":"143","3":"20.12","4":"0.00","5":"5.412020837"},{"1":"2021","2":"144","3":"22.09","4":"0.37","5":"5.130700778"},{"1":"2021","2":"145","3":"21.33","4":"0.03","5":"5.189080283"},{"1":"2021","2":"146","3":"21.64","4":"0.16","5":"4.440536939"},{"1":"2021","2":"147","3":"22.83","4":"0.15","5":"5.243824928"},{"1":"2021","2":"148","3":"21.99","4":"1.63","5":"3.958332380"},{"1":"2021","2":"149","3":"22.52","4":"0.42","5":"4.857520674"},{"1":"2021","2":"150","3":"23.99","4":"0.00","5":"5.904118042"},{"1":"2021","2":"151","3":"23.44","4":"0.45","5":"4.239386904"},{"1":"2021","2":"152","3":"22.83","4":"0.00","5":"5.766646238"},{"1":"2021","2":"153","3":"23.33","4":"0.20","5":"5.361894969"},{"1":"2021","2":"154","3":"24.24","4":"0.00","5":"5.887489965"},{"1":"2021","2":"155","3":"26.13","4":"0.00","5":"4.832231669"},{"1":"2021","2":"156","3":"25.93","4":"0.00","5":"6.044809316"},{"1":"2021","2":"157","3":"25.61","4":"0.19","5":"3.969367767"},{"1":"2021","2":"158","3":"26.58","4":"0.00","5":"6.756881596"},{"1":"2021","2":"159","3":"29.13","4":"0.00","5":"7.370777818"},{"1":"2021","2":"160","3":"26.28","4":"0.00","5":"4.682289845"},{"1":"2021","2":"161","3":"23.73","4":"0.46","5":"3.678205555"},{"1":"2021","2":"162","3":"20.88","4":"0.08","5":"5.697074209"},{"1":"2021","2":"163","3":"18.52","4":"0.04","5":"5.481321198"},{"1":"2021","2":"164","3":"18.90","4":"0.00","5":"6.406306086"},{"1":"2021","2":"165","3":"23.46","4":"0.95","5":"6.446355525"},{"1":"2021","2":"166","3":"20.58","4":"0.30","5":"3.709800306"},{"1":"2021","2":"167","3":"23.00","4":"0.00","5":"6.514427058"},{"1":"2021","2":"168","3":"26.12","4":"0.00","5":"6.737492317"},{"1":"2021","2":"169","3":"26.21","4":"0.00","5":"7.025329650"},{"1":"2021","2":"170","3":"26.47","4":"0.13","5":"5.205337548"},{"1":"2021","2":"171","3":"20.37","4":"5.93","5":"3.459125359"},{"1":"2021","2":"172","3":"16.12","4":"6.62","5":"0.965596831"},{"1":"2021","2":"173","3":"19.79","4":"0.02","5":"5.329590589"},{"1":"2021","2":"174","3":"21.62","4":"0.06","5":"4.997807545"},{"1":"2021","2":"175","3":"21.83","4":"1.33","5":"3.939240492"},{"1":"2021","2":"176","3":"20.80","4":"6.79","5":"3.592553978"},{"1":"2021","2":"177","3":"20.08","4":"6.05","5":"3.160794536"},{"1":"2021","2":"178","3":"21.12","4":"0.10","5":"2.725851383"},{"1":"2021","2":"179","3":"24.67","4":"0.00","5":"5.772454035"},{"1":"2021","2":"180","3":"26.94","4":"3.87","5":"5.465774616"},{"1":"2021","2":"181","3":"24.06","4":"2.96","5":"3.843212581"},{"1":"2021","2":"182","3":"25.46","4":"0.11","5":"5.356406502"},{"1":"2021","2":"183","3":"27.62","4":"0.00","5":"6.202532248"},{"1":"2021","2":"184","3":"26.19","4":"4.67","5":"3.309657308"},{"1":"2021","2":"185","3":"25.86","4":"0.00","5":"6.107074931"},{"1":"2021","2":"186","3":"27.15","4":"0.00","5":"6.219532812"},{"1":"2021","2":"187","3":"27.30","4":"0.42","5":"4.500689825"},{"1":"2021","2":"188","3":"28.76","4":"0.23","5":"4.569928405"},{"1":"2021","2":"189","3":"27.51","4":"3.42","5":"5.505630478"},{"1":"2021","2":"190","3":"25.22","4":"0.09","5":"5.165143586"},{"1":"2021","2":"191","3":"24.95","4":"0.42","5":"5.093219124"},{"1":"2021","2":"192","3":"27.76","4":"0.00","5":"6.648478428"},{"1":"2021","2":"193","3":"27.16","4":"0.10","5":"5.761502304"},{"1":"2021","2":"194","3":"26.11","4":"0.19","5":"5.706745816"},{"1":"2021","2":"195","3":"28.38","4":"0.00","5":"6.393686894"},{"1":"2021","2":"196","3":"26.34","4":"0.00","5":"5.979527290"},{"1":"2021","2":"197","3":"27.94","4":"0.01","5":"6.059939472"},{"1":"2021","2":"198","3":"29.23","4":"0.00","5":"5.462367664"},{"1":"2021","2":"199","3":"30.58","4":"0.00","5":"6.217507690"},{"1":"2021","2":"200","3":"29.52","4":"0.00","5":"5.379565992"},{"1":"2021","2":"201","3":"27.55","4":"0.03","5":"4.079946488"},{"1":"2021","2":"202","3":"29.55","4":"0.00","5":"6.054089790"},{"1":"2021","2":"203","3":"31.09","4":"0.00","5":"5.914650050"},{"1":"2021","2":"204","3":"31.44","4":"0.00","5":"5.932165831"},{"1":"2021","2":"205","3":"30.79","4":"0.00","5":"6.324015794"},{"1":"2021","2":"206","3":"30.54","4":"0.03","5":"5.277378734"},{"1":"2021","2":"207","3":"27.76","4":"7.21","5":"5.580579655"},{"1":"2021","2":"208","3":"29.98","4":"0.00","5":"6.452304338"},{"1":"2021","2":"209","3":"29.13","4":"0.00","5":"5.434551209"},{"1":"2021","2":"210","3":"31.36","4":"1.89","5":"5.935702842"},{"1":"2021","2":"211","3":"28.50","4":"0.00","5":"6.476242051"},{"1":"2021","2":"212","3":"30.62","4":"0.00","5":"6.945842079"},{"1":"2021","2":"213","3":"30.52","4":"0.01","5":"5.771741703"},{"1":"2021","2":"214","3":"32.62","4":"0.01","5":"6.034038888"},{"1":"2021","2":"215","3":"31.68","4":"17.18","5":"5.511078328"},{"1":"2021","2":"216","3":"25.02","4":"3.47","5":"2.838804326"},{"1":"2021","2":"217","3":"25.59","4":"0.51","5":"4.327011857"},{"1":"2021","2":"218","3":"26.07","4":"0.00","5":"5.763194834"},{"1":"2021","2":"219","3":"27.66","4":"0.00","5":"6.594295034"},{"1":"2021","2":"220","3":"27.58","4":"0.00","5":"6.147455454"},{"1":"2021","2":"221","3":"27.44","4":"0.00","5":"5.581934858"},{"1":"2021","2":"222","3":"27.65","4":"0.00","5":"5.709361634"},{"1":"2021","2":"223","3":"30.13","4":"0.21","5":"5.322249073"},{"1":"2021","2":"224","3":"27.37","4":"0.20","5":"3.900013172"},{"1":"2021","2":"225","3":"27.30","4":"0.69","5":"4.346652623"},{"1":"2021","2":"226","3":"28.75","4":"0.18","5":"3.691963154"},{"1":"2021","2":"227","3":"28.19","4":"0.53","5":"4.651093455"},{"1":"2021","2":"228","3":"26.76","4":"0.03","5":"5.067116264"},{"1":"2021","2":"229","3":"24.82","4":"0.00","5":"5.296919067"},{"1":"2021","2":"230","3":"25.66","4":"0.00","5":"5.828435180"},{"1":"2021","2":"231","3":"26.26","4":"0.06","5":"4.583550143"},{"1":"2021","2":"232","3":"27.05","4":"0.92","5":"5.003430739"},{"1":"2021","2":"233","3":"28.41","4":"0.00","5":"5.348781590"},{"1":"2021","2":"234","3":"28.04","4":"0.00","5":"5.161513017"},{"1":"2021","2":"235","3":"29.87","4":"0.00","5":"5.657315175"},{"1":"2021","2":"236","3":"29.37","4":"0.00","5":"5.018401513"},{"1":"2021","2":"237","3":"29.56","4":"0.05","5":"4.852997685"},{"1":"2021","2":"238","3":"23.01","4":"1.14","5":"3.464987064"},{"1":"2021","2":"239","3":"22.33","4":"0.87","5":"3.851047826"},{"1":"2021","2":"240","3":"21.69","4":"9.45","5":"2.054707167"},{"1":"2021","2":"241","3":"20.36","4":"14.06","5":"2.056685580"},{"1":"2021","2":"242","3":"21.32","4":"0.11","5":"2.767498337"},{"1":"2021","2":"243","3":"21.85","4":"0.14","5":"4.134032219"},{"1":"2021","2":"244","3":"20.36","4":"2.92","5":"1.563223135"},{"1":"2021","2":"245","3":"21.05","4":"1.69","5":"3.644969844"},{"1":"2021","2":"246","3":"21.81","4":"0.13","5":"3.978245308"},{"1":"2021","2":"247","3":"23.05","4":"0.00","5":"3.984644929"},{"1":"2021","2":"248","3":"23.35","4":"0.00","5":"4.292301608"},{"1":"2021","2":"249","3":"24.41","4":"0.00","5":"4.145289407"},{"1":"2021","2":"250","3":"24.10","4":"0.00","5":"3.993034237"},{"1":"2021","2":"251","3":"23.57","4":"0.71","5":"3.207459968"},{"1":"2021","2":"252","3":"21.22","4":"8.25","5":"1.978054572"},{"1":"2021","2":"253","3":"21.90","4":"0.18","5":"2.816532193"},{"1":"2021","2":"254","3":"19.92","4":"1.68","5":"3.148204663"},{"1":"2021","2":"255","3":"21.27","4":"0.00","5":"3.970286987"},{"1":"2021","2":"256","3":"22.57","4":"0.01","5":"3.968304321"},{"1":"2021","2":"257","3":"19.44","4":"1.45","5":"2.333451170"},{"1":"2021","2":"258","3":"17.95","4":"0.00","5":"3.566880407"},{"1":"2021","2":"259","3":"20.51","4":"0.37","5":"3.469167906"},{"1":"2021","2":"260","3":"20.80","4":"0.19","5":"3.237146925"},{"1":"2021","2":"261","3":"15.96","4":"0.36","5":"3.000252209"},{"1":"2021","2":"262","3":"17.51","4":"0.04","5":"2.351994376"},{"1":"2021","2":"263","3":"18.26","4":"0.01","5":"2.451979982"},{"1":"2021","2":"264","3":"19.03","4":"0.00","5":"3.294575636"},{"1":"2021","2":"265","3":"20.26","4":"0.16","5":"2.582287234"},{"1":"2021","2":"266","3":"19.58","4":"0.78","5":"3.144236074"},{"1":"2021","2":"267","3":"13.35","4":"0.00","5":"0.914361159"},{"1":"2021","2":"268","3":"12.05","4":"0.00","5":"2.574678042"},{"1":"2021","2":"269","3":"12.89","4":"0.00","5":"2.586535825"},{"1":"2021","2":"270","3":"13.65","4":"2.75","5":"0.644031741"},{"1":"2021","2":"271","3":"13.22","4":"2.04","5":"1.280560260"},{"1":"2021","2":"272","3":"11.27","4":"0.39","5":"2.399589256"},{"1":"2021","2":"273","3":"12.00","4":"1.90","5":"2.249949728"},{"1":"2021","2":"274","3":"12.16","4":"5.81","5":"1.880036872"},{"1":"2021","2":"275","3":"12.98","4":"0.01","5":"2.661039015"},{"1":"2021","2":"276","3":"14.02","4":"0.00","5":"1.455626939"},{"1":"2021","2":"277","3":"15.08","4":"0.00","5":"2.748078918"},{"1":"2021","2":"278","3":"13.65","4":"0.00","5":"2.110123616"},{"1":"2021","2":"279","3":"12.28","4":"0.00","5":"2.295589540"},{"1":"2021","2":"280","3":"12.48","4":"0.07","5":"2.351252266"},{"1":"2021","2":"281","3":"12.52","4":"1.03","5":"2.198555409"},{"1":"2021","2":"282","3":"13.05","4":"3.04","5":"0.708347937"},{"1":"2021","2":"283","3":"14.12","4":"1.10","5":"1.171891064"},{"1":"2021","2":"284","3":"14.44","4":"0.33","5":"1.400170323"},{"1":"2021","2":"285","3":"12.48","4":"0.00","5":"1.852045312"},{"1":"2021","2":"286","3":"10.87","4":"5.55","5":"0.507962638"},{"1":"2021","2":"287","3":"9.89","4":"1.48","5":"1.925163769"},{"1":"2021","2":"288","3":"7.68","4":"0.02","5":"1.605945805"},{"1":"2021","2":"289","3":"8.16","4":"0.00","5":"1.670953326"},{"1":"2021","2":"290","3":"10.94","4":"0.04","5":"1.048085169"},{"1":"2021","2":"291","3":"9.10","4":"0.46","5":"0.750772719"},{"1":"2021","2":"292","3":"6.23","4":"0.41","5":"0.999897001"},{"1":"2021","2":"293","3":"6.44","4":"0.43","5":"0.774447393"},{"1":"2021","2":"294","3":"4.39","4":"0.08","5":"0.706062505"},{"1":"2021","2":"295","3":"5.23","4":"0.31","5":"0.932269308"},{"1":"2021","2":"296","3":"6.14","4":"2.52","5":"1.087951252"},{"1":"2021","2":"297","3":"4.31","4":"0.33","5":"0.807651228"},{"1":"2021","2":"298","3":"4.55","4":"0.00","5":"1.002592101"},{"1":"2021","2":"299","3":"6.86","4":"0.49","5":"1.149183108"},{"1":"2021","2":"300","3":"10.00","4":"0.49","5":"0.710864586"},{"1":"2021","2":"301","3":"9.23","4":"0.02","5":"1.126460019"},{"1":"2021","2":"302","3":"10.48","4":"0.03","5":"1.226485393"},{"1":"2021","2":"303","3":"11.02","4":"0.02","5":"1.385219943"},{"1":"2021","2":"304","3":"9.46","4":"0.03","5":"1.422287331"},{"1":"2021","2":"305","3":"10.05","4":"0.15","5":"1.066791579"},{"1":"2021","2":"306","3":"10.62","4":"0.11","5":"1.259246575"},{"1":"2021","2":"307","3":"11.44","4":"0.04","5":"1.163933073"},{"1":"2021","2":"308","3":"10.90","4":"0.13","5":"0.759678495"},{"1":"2021","2":"309","3":"9.65","4":"0.05","5":"1.115105701"},{"1":"2021","2":"310","3":"9.92","4":"0.05","5":"0.709913622"},{"1":"2021","2":"311","3":"7.53","4":"0.02","5":"0.524432210"},{"1":"2021","2":"312","3":"6.87","4":"0.02","5":"0.787479340"},{"1":"2021","2":"313","3":"3.50","4":"0.08","5":"0.245163956"},{"1":"2021","2":"314","3":"0.50","4":"0.00","5":"0.105807852"},{"1":"2021","2":"315","3":"-1.06","4":"0.00","5":"0.000000000"},{"1":"2021","2":"316","3":"3.39","4":"0.02","5":"0.316725180"},{"1":"2021","2":"317","3":"7.12","4":"0.69","5":"0.485079075"},{"1":"2021","2":"318","3":"3.62","4":"0.37","5":"0.452357906"},{"1":"2021","2":"319","3":"1.58","4":"0.00","5":"0.276769012"},{"1":"2021","2":"320","3":"-0.45","4":"0.01","5":"0.000000000"},{"1":"2021","2":"321","3":"1.15","4":"0.00","5":"0.219633647"},{"1":"2021","2":"322","3":"4.65","4":"0.02","5":"0.526361044"},{"1":"2021","2":"323","3":"2.76","4":"0.02","5":"0.326366080"},{"1":"2021","2":"324","3":"2.59","4":"0.41","5":"0.277676410"},{"1":"2021","2":"325","3":"6.37","4":"0.21","5":"0.303897060"},{"1":"2021","2":"326","3":"6.69","4":"0.34","5":"0.374792151"},{"1":"2021","2":"327","3":"4.80","4":"0.18","5":"0.306621902"},{"1":"2021","2":"328","3":"1.97","4":"0.96","5":"0.125921880"},{"1":"2021","2":"329","3":"3.24","4":"3.65","5":"0.164550149"},{"1":"2021","2":"330","3":"3.35","4":"1.18","5":"0.247345754"},{"1":"2021","2":"331","3":"-2.52","4":"2.14","5":"0.000000000"},{"1":"2021","2":"332","3":"-4.91","4":"0.03","5":"0.000000000"},{"1":"2021","2":"333","3":"-3.57","4":"0.00","5":"0.000000000"},{"1":"2021","2":"334","3":"1.08","4":"0.14","5":"0.147724850"},{"1":"2021","2":"335","3":"3.64","4":"0.59","5":"0.569578655"},{"1":"2021","2":"336","3":"1.69","4":"0.30","5":"0.304462477"},{"1":"2021","2":"337","3":"2.04","4":"0.27","5":"0.240639318"},{"1":"2021","2":"338","3":"1.15","4":"0.15","5":"0.212558185"},{"1":"2021","2":"339","3":"1.19","4":"0.01","5":"0.212332846"},{"1":"2021","2":"340","3":"0.40","4":"0.00","5":"0.069388009"},{"1":"2021","2":"341","3":"1.47","4":"0.21","5":"0.085451687"},{"1":"2021","2":"342","3":"-2.27","4":"0.36","5":"0.000000000"},{"1":"2021","2":"343","3":"-4.51","4":"0.03","5":"0.000000000"},{"1":"2021","2":"344","3":"-1.35","4":"0.02","5":"0.000000000"},{"1":"2021","2":"345","3":"1.24","4":"0.25","5":"0.149445876"},{"1":"2021","2":"346","3":"2.42","4":"0.50","5":"0.232218187"},{"1":"2021","2":"347","3":"2.08","4":"0.82","5":"0.154785319"},{"1":"2021","2":"348","3":"0.83","4":"0.39","5":"0.079015965"},{"1":"2021","2":"349","3":"1.06","4":"0.10","5":"0.108074505"},{"1":"2021","2":"350","3":"0.80","4":"0.05","5":"0.078034012"},{"1":"2021","2":"351","3":"2.57","4":"0.00","5":"0.331257431"},{"1":"2021","2":"352","3":"5.23","4":"4.58","5":"0.449008245"},{"1":"2021","2":"353","3":"1.71","4":"0.03","5":"0.242238312"},{"1":"2021","2":"354","3":"2.37","4":"0.78","5":"0.256037166"},{"1":"2021","2":"355","3":"0.81","4":"3.64","5":"0.073232358"},{"1":"2021","2":"356","3":"-1.94","4":"7.86","5":"0.000000000"},{"1":"2021","2":"357","3":"-5.13","4":"0.07","5":"0.000000000"},{"1":"2021","2":"358","3":"-5.85","4":"0.01","5":"0.000000000"},{"1":"2021","2":"359","3":"-2.77","4":"0.19","5":"0.000000000"},{"1":"2021","2":"360","3":"-0.06","4":"0.14","5":"0.000000000"},{"1":"2021","2":"361","3":"-0.19","4":"0.01","5":"0.000000000"},{"1":"2021","2":"362","3":"1.29","4":"0.11","5":"0.163601013"},{"1":"2021","2":"363","3":"1.02","4":"0.01","5":"0.146169301"},{"1":"2021","2":"364","3":"2.27","4":"0.22","5":"0.205839546"},{"1":"2021","2":"365","3":"4.12","4":"0.45","5":"0.455876366"},{"1":"2022","2":"1","3":"2.05","4":"0.07","5":"0.172981827"},{"1":"2022","2":"2","3":"4.85","4":"0.02","5":"0.658788658"},{"1":"2022","2":"3","3":"2.87","4":"1.06","5":"0.201638774"},{"1":"2022","2":"4","3":"0.01","4":"4.04","5":"0.001599795"},{"1":"2022","2":"5","3":"-1.00","4":"1.97","5":"0.000000000"},{"1":"2022","2":"6","3":"-0.50","4":"2.32","5":"0.000000000"},{"1":"2022","2":"7","3":"-1.12","4":"0.53","5":"0.000000000"},{"1":"2022","2":"8","3":"-1.20","4":"0.21","5":"0.000000000"},{"1":"2022","2":"9","3":"-1.10","4":"0.14","5":"0.000000000"},{"1":"2022","2":"10","3":"-0.27","4":"1.07","5":"0.000000000"},{"1":"2022","2":"11","3":"0.84","4":"2.04","5":"0.156487113"},{"1":"2022","2":"12","3":"0.54","4":"1.55","5":"0.074594769"},{"1":"2022","2":"13","3":"-0.49","4":"1.80","5":"0.000000000"},{"1":"2022","2":"14","3":"-1.16","4":"0.05","5":"0.000000000"},{"1":"2022","2":"15","3":"-0.10","4":"0.21","5":"0.000000000"},{"1":"2022","2":"16","3":"-0.50","4":"0.12","5":"0.000000000"},{"1":"2022","2":"17","3":"-0.74","4":"0.58","5":"0.000000000"},{"1":"2022","2":"18","3":"0.63","4":"0.04","5":"0.118066109"},{"1":"2022","2":"19","3":"-0.82","4":"0.01","5":"0.000000000"},{"1":"2022","2":"20","3":"-1.00","4":"2.11","5":"0.000000000"},{"1":"2022","2":"21","3":"-2.43","4":"0.05","5":"0.000000000"},{"1":"2022","2":"22","3":"0.05","4":"0.06","5":"0.007389701"},{"1":"2022","2":"23","3":"-3.38","4":"0.07","5":"0.000000000"},{"1":"2022","2":"24","3":"-1.53","4":"0.01","5":"0.000000000"},{"1":"2022","2":"25","3":"1.58","4":"0.03","5":"0.160774315"},{"1":"2022","2":"26","3":"-5.00","4":"0.61","5":"0.000000000"},{"1":"2022","2":"27","3":"-5.62","4":"0.18","5":"0.000000000"},{"1":"2022","2":"28","3":"-2.90","4":"0.03","5":"0.000000000"},{"1":"2022","2":"29","3":"0.76","4":"0.01","5":"0.150837438"},{"1":"2022","2":"30","3":"0.53","4":"0.00","5":"0.105263541"},{"1":"2022","2":"31","3":"2.12","4":"0.00","5":"0.396176249"},{"1":"2022","2":"32","3":"1.67","4":"0.28","5":"0.212564920"},{"1":"2022","2":"33","3":"-0.99","4":"0.30","5":"0.000000000"},{"1":"2022","2":"34","3":"2.74","4":"0.01","5":"0.440428859"},{"1":"2022","2":"35","3":"1.83","4":"0.13","5":"0.223963306"},{"1":"2022","2":"36","3":"-0.84","4":"0.03","5":"0.000000000"},{"1":"2022","2":"37","3":"0.22","4":"0.20","5":"0.037358005"},{"1":"2022","2":"38","3":"-0.82","4":"0.06","5":"0.000000000"},{"1":"2022","2":"39","3":"1.90","4":"0.24","5":"0.185835329"},{"1":"2022","2":"40","3":"4.76","4":"0.02","5":"0.838751683"},{"1":"2022","2":"41","3":"6.31","4":"0.01","5":"0.929862640"},{"1":"2022","2":"42","3":"5.87","4":"0.05","5":"1.061426160"},{"1":"2022","2":"43","3":"3.20","4":"0.05","5":"0.598003237"},{"1":"2022","2":"44","3":"2.47","4":"0.64","5":"0.452774218"},{"1":"2022","2":"45","3":"1.28","4":"0.00","5":"0.232988333"},{"1":"2022","2":"46","3":"2.21","4":"0.06","5":"0.366575035"},{"1":"2022","2":"47","3":"5.45","4":"0.09","5":"0.729326200"},{"1":"2022","2":"48","3":"4.42","4":"0.06","5":"0.580458056"},{"1":"2022","2":"49","3":"3.89","4":"0.11","5":"0.949134918"},{"1":"2022","2":"50","3":"6.08","4":"0.37","5":"0.718565118"},{"1":"2022","2":"51","3":"5.47","4":"0.33","5":"0.624249254"},{"1":"2022","2":"52","3":"4.55","4":"0.43","5":"0.621018724"},{"1":"2022","2":"53","3":"5.19","4":"0.05","5":"0.565388388"},{"1":"2022","2":"54","3":"4.14","4":"0.36","5":"0.438133065"},{"1":"2022","2":"55","3":"-0.38","4":"0.02","5":"0.000000000"},{"1":"2022","2":"56","3":"-0.02","4":"0.00","5":"0.000000000"},{"1":"2022","2":"57","3":"1.11","4":"0.11","5":"0.235412951"},{"1":"2022","2":"58","3":"0.55","4":"4.24","5":"0.093719379"},{"1":"2022","2":"59","3":"-3.04","4":"2.27","5":"0.000000000"},{"1":"2022","2":"60","3":"-1.17","4":"0.00","5":"0.000000000"},{"1":"2022","2":"61","3":"-0.06","4":"0.00","5":"0.000000000"},{"1":"2022","2":"62","3":"1.84","4":"0.30","5":"0.411995410"},{"1":"2022","2":"63","3":"3.65","4":"0.13","5":"0.947007212"},{"1":"2022","2":"64","3":"4.97","4":"0.01","5":"0.920641032"},{"1":"2022","2":"65","3":"6.91","4":"0.01","5":"1.644566804"},{"1":"2022","2":"66","3":"8.23","4":"0.06","5":"1.135662180"},{"1":"2022","2":"67","3":"3.11","4":"0.24","5":"0.516351386"},{"1":"2022","2":"68","3":"2.51","4":"0.10","5":"0.767516561"},{"1":"2022","2":"69","3":"6.35","4":"1.16","5":"1.217530545"},{"1":"2022","2":"70","3":"8.44","4":"0.21","5":"1.146379724"},{"1":"2022","2":"71","3":"1.15","4":"5.01","5":"0.164798817"},{"1":"2022","2":"72","3":"0.41","4":"0.17","5":"0.132624988"},{"1":"2022","2":"73","3":"2.73","4":"0.78","5":"0.403210245"},{"1":"2022","2":"74","3":"-0.51","4":"1.36","5":"0.000000000"},{"1":"2022","2":"75","3":"-0.36","4":"0.02","5":"0.000000000"},{"1":"2022","2":"76","3":"1.83","4":"0.00","5":"0.656810401"},{"1":"2022","2":"77","3":"6.17","4":"0.04","5":"1.685391191"},{"1":"2022","2":"78","3":"7.26","4":"0.01","5":"2.019706391"},{"1":"2022","2":"79","3":"4.83","4":"0.03","5":"0.871527758"},{"1":"2022","2":"80","3":"6.45","4":"0.00","5":"1.623096857"},{"1":"2022","2":"81","3":"4.74","4":"0.00","5":"1.288657949"},{"1":"2022","2":"82","3":"4.85","4":"0.00","5":"1.035095757"},{"1":"2022","2":"83","3":"6.35","4":"0.00","5":"1.966520870"},{"1":"2022","2":"84","3":"7.44","4":"0.01","5":"2.182897196"},{"1":"2022","2":"85","3":"5.03","4":"0.20","5":"1.190967063"},{"1":"2022","2":"86","3":"3.14","4":"0.42","5":"0.995612870"},{"1":"2022","2":"87","3":"6.52","4":"0.05","5":"1.267532738"},{"1":"2022","2":"88","3":"8.44","4":"0.00","5":"2.446681218"},{"1":"2022","2":"89","3":"10.77","4":"0.37","5":"1.324103506"},{"1":"2022","2":"90","3":"8.55","4":"5.14","5":"1.038652960"},{"1":"2022","2":"91","3":"8.12","4":"0.13","5":"1.992805730"},{"1":"2022","2":"92","3":"10.46","4":"0.00","5":"2.729171368"},{"1":"2022","2":"93","3":"12.28","4":"0.01","5":"2.779215502"},{"1":"2022","2":"94","3":"13.95","4":"0.06","5":"3.000483521"},{"1":"2022","2":"95","3":"17.05","4":"0.29","5":"3.707343212"},{"1":"2022","2":"96","3":"15.91","4":"0.00","5":"3.091587243"},{"1":"2022","2":"97","3":"15.19","4":"0.00","5":"3.151747099"},{"1":"2022","2":"98","3":"12.88","4":"4.64","5":"2.440571039"},{"1":"2022","2":"99","3":"12.75","4":"1.67","5":"2.330241584"},{"1":"2022","2":"100","3":"11.99","4":"0.14","5":"2.297187319"},{"1":"2022","2":"101","3":"5.89","4":"33.46","5":"0.441542133"},{"1":"2022","2":"102","3":"7.35","4":"6.88","5":"0.710037035"},{"1":"2022","2":"103","3":"10.57","4":"0.06","5":"2.173530121"},{"1":"2022","2":"104","3":"13.51","4":"0.00","5":"3.321489722"},{"1":"2022","2":"105","3":"13.80","4":"0.11","5":"3.492532589"},{"1":"2022","2":"106","3":"11.24","4":"3.38","5":"1.409008876"},{"1":"2022","2":"107","3":"14.19","4":"0.38","5":"2.608883968"},{"1":"2022","2":"108","3":"15.84","4":"0.02","5":"3.555452646"},{"1":"2022","2":"109","3":"16.55","4":"0.00","5":"3.930927732"},{"1":"2022","2":"110","3":"16.23","4":"0.01","5":"4.081612157"},{"1":"2022","2":"111","3":"16.78","4":"0.01","5":"2.941847572"},{"1":"2022","2":"112","3":"18.44","4":"0.08","5":"3.779563502"},{"1":"2022","2":"113","3":"18.58","4":"0.07","5":"4.043221815"},{"1":"2022","2":"114","3":"17.55","4":"5.12","5":"2.339402634"},{"1":"2022","2":"115","3":"17.14","4":"1.21","5":"3.719788361"},{"1":"2022","2":"116","3":"18.12","4":"15.27","5":"3.427082554"},{"1":"2022","2":"117","3":"19.25","4":"0.05","5":"4.667290657"},{"1":"2022","2":"118","3":"19.66","4":"0.00","5":"4.724402111"},{"1":"2022","2":"119","3":"20.32","4":"0.00","5":"4.878457610"},{"1":"2022","2":"120","3":"20.12","4":"0.01","5":"4.574156156"},{"1":"2022","2":"121","3":"15.51","4":"4.11","5":"3.520614284"},{"1":"2022","2":"122","3":"14.66","4":"5.10","5":"2.135368530"},{"1":"2022","2":"123","3":"10.23","4":"15.51","5":"2.148331065"},{"1":"2022","2":"124","3":"5.22","4":"22.18","5":"0.526930175"},{"1":"2022","2":"125","3":"7.79","4":"0.21","5":"2.050945849"},{"1":"2022","2":"126","3":"9.31","4":"0.04","5":"2.775918390"},{"1":"2022","2":"127","3":"14.24","4":"0.61","5":"3.484632784"},{"1":"2022","2":"128","3":"14.99","4":"0.25","5":"2.840758693"},{"1":"2022","2":"129","3":"11.61","4":"9.08","5":"1.063946215"},{"1":"2022","2":"130","3":"10.22","4":"3.14","5":"1.694092866"},{"1":"2022","2":"131","3":"12.62","4":"5.28","5":"3.326091140"},{"1":"2022","2":"132","3":"13.11","4":"0.42","5":"3.954000106"},{"1":"2022","2":"133","3":"15.98","4":"0.48","5":"3.963078645"},{"1":"2022","2":"134","3":"13.23","4":"0.75","5":"2.081445620"},{"1":"2022","2":"135","3":"10.76","4":"0.04","5":"3.734543608"},{"1":"2022","2":"136","3":"13.48","4":"0.21","5":"3.008967576"},{"1":"2022","2":"137","3":"14.22","4":"3.65","5":"3.287185935"},{"1":"2022","2":"138","3":"11.59","4":"1.27","5":"2.963166543"},{"1":"2022","2":"139","3":"12.67","4":"0.00","5":"3.907653281"},{"1":"2022","2":"140","3":"15.18","4":"0.00","5":"4.076877374"},{"1":"2022","2":"141","3":"13.00","4":"1.00","5":"3.029418867"},{"1":"2022","2":"142","3":"16.41","4":"0.00","5":"5.005205756"},{"1":"2022","2":"143","3":"20.12","4":"0.00","5":"5.412020837"},{"1":"2022","2":"144","3":"22.09","4":"0.37","5":"5.130700778"},{"1":"2022","2":"145","3":"21.33","4":"0.03","5":"5.189080283"},{"1":"2022","2":"146","3":"21.64","4":"0.16","5":"4.440536939"},{"1":"2022","2":"147","3":"22.83","4":"0.15","5":"5.243824928"},{"1":"2022","2":"148","3":"21.99","4":"1.63","5":"3.958332380"},{"1":"2022","2":"149","3":"22.52","4":"0.42","5":"4.857520674"},{"1":"2022","2":"150","3":"23.99","4":"0.00","5":"5.904118042"},{"1":"2022","2":"151","3":"23.44","4":"0.45","5":"4.239386904"},{"1":"2022","2":"152","3":"22.83","4":"0.00","5":"5.766646238"},{"1":"2022","2":"153","3":"23.33","4":"0.20","5":"5.361894969"},{"1":"2022","2":"154","3":"24.24","4":"0.00","5":"5.887489965"},{"1":"2022","2":"155","3":"26.13","4":"0.00","5":"4.832231669"},{"1":"2022","2":"156","3":"25.93","4":"0.00","5":"6.044809316"},{"1":"2022","2":"157","3":"25.61","4":"0.19","5":"3.969367767"},{"1":"2022","2":"158","3":"26.58","4":"0.00","5":"6.756881596"},{"1":"2022","2":"159","3":"29.13","4":"0.00","5":"7.370777818"},{"1":"2022","2":"160","3":"26.28","4":"0.00","5":"4.682289845"},{"1":"2022","2":"161","3":"23.73","4":"0.46","5":"3.678205555"},{"1":"2022","2":"162","3":"20.88","4":"0.08","5":"5.697074209"},{"1":"2022","2":"163","3":"18.52","4":"0.04","5":"5.481321198"},{"1":"2022","2":"164","3":"18.90","4":"0.00","5":"6.406306086"},{"1":"2022","2":"165","3":"23.46","4":"0.95","5":"6.446355525"},{"1":"2022","2":"166","3":"20.58","4":"0.30","5":"3.709800306"},{"1":"2022","2":"167","3":"23.00","4":"0.00","5":"6.514427058"},{"1":"2022","2":"168","3":"26.12","4":"0.00","5":"6.737492317"},{"1":"2022","2":"169","3":"26.21","4":"0.00","5":"7.025329650"},{"1":"2022","2":"170","3":"26.47","4":"0.13","5":"5.205337548"},{"1":"2022","2":"171","3":"20.37","4":"5.93","5":"3.459125359"},{"1":"2022","2":"172","3":"16.12","4":"6.62","5":"0.965596831"},{"1":"2022","2":"173","3":"19.79","4":"0.02","5":"5.329590589"},{"1":"2022","2":"174","3":"21.62","4":"0.06","5":"4.997807545"},{"1":"2022","2":"175","3":"21.83","4":"1.33","5":"3.939240492"},{"1":"2022","2":"176","3":"20.80","4":"6.79","5":"3.592553978"},{"1":"2022","2":"177","3":"20.08","4":"6.05","5":"3.160794536"},{"1":"2022","2":"178","3":"21.12","4":"0.10","5":"2.725851383"},{"1":"2022","2":"179","3":"24.67","4":"0.00","5":"5.772454035"},{"1":"2022","2":"180","3":"26.94","4":"3.87","5":"5.465774616"},{"1":"2022","2":"181","3":"24.06","4":"2.96","5":"3.843212581"},{"1":"2022","2":"182","3":"25.46","4":"0.11","5":"5.356406502"},{"1":"2022","2":"183","3":"27.62","4":"0.00","5":"6.202532248"},{"1":"2022","2":"184","3":"26.19","4":"4.67","5":"3.309657308"},{"1":"2022","2":"185","3":"25.86","4":"0.00","5":"6.107074931"},{"1":"2022","2":"186","3":"27.15","4":"0.00","5":"6.219532812"},{"1":"2022","2":"187","3":"27.30","4":"0.42","5":"4.500689825"},{"1":"2022","2":"188","3":"28.76","4":"0.23","5":"4.569928405"},{"1":"2022","2":"189","3":"27.51","4":"3.42","5":"5.505630478"},{"1":"2022","2":"190","3":"25.22","4":"0.09","5":"5.165143586"},{"1":"2022","2":"191","3":"24.95","4":"0.42","5":"5.093219124"},{"1":"2022","2":"192","3":"27.76","4":"0.00","5":"6.648478428"},{"1":"2022","2":"193","3":"27.16","4":"0.10","5":"5.761502304"},{"1":"2022","2":"194","3":"26.11","4":"0.19","5":"5.706745816"},{"1":"2022","2":"195","3":"28.38","4":"0.00","5":"6.393686894"},{"1":"2022","2":"196","3":"26.34","4":"0.00","5":"5.979527290"},{"1":"2022","2":"197","3":"27.94","4":"0.01","5":"6.059939472"},{"1":"2022","2":"198","3":"29.23","4":"0.00","5":"5.462367664"},{"1":"2022","2":"199","3":"30.58","4":"0.00","5":"6.217507690"},{"1":"2022","2":"200","3":"29.52","4":"0.00","5":"5.379565992"},{"1":"2022","2":"201","3":"27.55","4":"0.03","5":"4.079946488"},{"1":"2022","2":"202","3":"29.55","4":"0.00","5":"6.054089790"},{"1":"2022","2":"203","3":"31.09","4":"0.00","5":"5.914650050"},{"1":"2022","2":"204","3":"31.44","4":"0.00","5":"5.932165831"},{"1":"2022","2":"205","3":"30.79","4":"0.00","5":"6.324015794"},{"1":"2022","2":"206","3":"30.54","4":"0.03","5":"5.277378734"},{"1":"2022","2":"207","3":"27.76","4":"7.21","5":"5.580579655"},{"1":"2022","2":"208","3":"29.98","4":"0.00","5":"6.452304338"},{"1":"2022","2":"209","3":"29.13","4":"0.00","5":"5.434551209"},{"1":"2022","2":"210","3":"31.36","4":"1.89","5":"5.935702842"},{"1":"2022","2":"211","3":"28.50","4":"0.00","5":"6.476242051"},{"1":"2022","2":"212","3":"30.62","4":"0.00","5":"6.945842079"},{"1":"2022","2":"213","3":"30.52","4":"0.01","5":"5.771741703"},{"1":"2022","2":"214","3":"32.62","4":"0.01","5":"6.034038888"},{"1":"2022","2":"215","3":"31.68","4":"17.18","5":"5.511078328"},{"1":"2022","2":"216","3":"25.02","4":"3.47","5":"2.838804326"},{"1":"2022","2":"217","3":"25.59","4":"0.51","5":"4.327011857"},{"1":"2022","2":"218","3":"26.07","4":"0.00","5":"5.763194834"},{"1":"2022","2":"219","3":"27.66","4":"0.00","5":"6.594295034"},{"1":"2022","2":"220","3":"27.58","4":"0.00","5":"6.147455454"},{"1":"2022","2":"221","3":"27.44","4":"0.00","5":"5.581934858"},{"1":"2022","2":"222","3":"27.65","4":"0.00","5":"5.709361634"},{"1":"2022","2":"223","3":"30.13","4":"0.21","5":"5.322249073"},{"1":"2022","2":"224","3":"27.37","4":"0.20","5":"3.900013172"},{"1":"2022","2":"225","3":"27.30","4":"0.69","5":"4.346652623"},{"1":"2022","2":"226","3":"28.75","4":"0.18","5":"3.691963154"},{"1":"2022","2":"227","3":"28.19","4":"0.53","5":"4.651093455"},{"1":"2022","2":"228","3":"26.76","4":"0.03","5":"5.067116264"},{"1":"2022","2":"229","3":"24.82","4":"0.00","5":"5.296919067"},{"1":"2022","2":"230","3":"25.66","4":"0.00","5":"5.828435180"},{"1":"2022","2":"231","3":"26.26","4":"0.06","5":"4.583550143"},{"1":"2022","2":"232","3":"27.05","4":"0.92","5":"5.003430739"},{"1":"2022","2":"233","3":"28.41","4":"0.00","5":"5.348781590"},{"1":"2022","2":"234","3":"28.04","4":"0.00","5":"5.161513017"},{"1":"2022","2":"235","3":"29.87","4":"0.00","5":"5.657315175"},{"1":"2022","2":"236","3":"29.37","4":"0.00","5":"5.018401513"},{"1":"2022","2":"237","3":"29.56","4":"0.05","5":"4.852997685"},{"1":"2022","2":"238","3":"23.01","4":"1.14","5":"3.464987064"},{"1":"2022","2":"239","3":"22.33","4":"0.87","5":"3.851047826"},{"1":"2022","2":"240","3":"21.69","4":"9.45","5":"2.054707167"},{"1":"2022","2":"241","3":"20.36","4":"14.06","5":"2.056685580"},{"1":"2022","2":"242","3":"21.32","4":"0.11","5":"2.767498337"},{"1":"2022","2":"243","3":"21.85","4":"0.14","5":"4.134032219"},{"1":"2022","2":"244","3":"20.36","4":"2.92","5":"1.563223135"},{"1":"2022","2":"245","3":"21.05","4":"1.69","5":"3.644969844"},{"1":"2022","2":"246","3":"21.81","4":"0.13","5":"3.978245308"},{"1":"2022","2":"247","3":"23.05","4":"0.00","5":"3.984644929"},{"1":"2022","2":"248","3":"23.35","4":"0.00","5":"4.292301608"},{"1":"2022","2":"249","3":"24.41","4":"0.00","5":"4.145289407"},{"1":"2022","2":"250","3":"24.10","4":"0.00","5":"3.993034237"},{"1":"2022","2":"251","3":"23.57","4":"0.71","5":"3.207459968"},{"1":"2022","2":"252","3":"21.22","4":"8.25","5":"1.978054572"},{"1":"2022","2":"253","3":"21.90","4":"0.18","5":"2.816532193"},{"1":"2022","2":"254","3":"19.92","4":"1.68","5":"3.148204663"},{"1":"2022","2":"255","3":"21.27","4":"0.00","5":"3.970286987"},{"1":"2022","2":"256","3":"22.57","4":"0.01","5":"3.968304321"},{"1":"2022","2":"257","3":"19.44","4":"1.45","5":"2.333451170"},{"1":"2022","2":"258","3":"17.95","4":"0.00","5":"3.566880407"},{"1":"2022","2":"259","3":"20.51","4":"0.37","5":"3.469167906"},{"1":"2022","2":"260","3":"20.80","4":"0.19","5":"3.237146925"},{"1":"2022","2":"261","3":"15.96","4":"0.36","5":"3.000252209"},{"1":"2022","2":"262","3":"17.51","4":"0.04","5":"2.351994376"},{"1":"2022","2":"263","3":"18.26","4":"0.01","5":"2.451979982"},{"1":"2022","2":"264","3":"19.03","4":"0.00","5":"3.294575636"},{"1":"2022","2":"265","3":"20.26","4":"0.16","5":"2.582287234"},{"1":"2022","2":"266","3":"19.58","4":"0.78","5":"3.144236074"},{"1":"2022","2":"267","3":"13.35","4":"0.00","5":"0.914361159"},{"1":"2022","2":"268","3":"12.05","4":"0.00","5":"2.574678042"},{"1":"2022","2":"269","3":"12.89","4":"0.00","5":"2.586535825"},{"1":"2022","2":"270","3":"13.65","4":"2.75","5":"0.644031741"},{"1":"2022","2":"271","3":"13.22","4":"2.04","5":"1.280560260"},{"1":"2022","2":"272","3":"11.27","4":"0.39","5":"2.399589256"},{"1":"2022","2":"273","3":"12.00","4":"1.90","5":"2.249949728"},{"1":"2022","2":"274","3":"12.16","4":"5.81","5":"1.880036872"},{"1":"2022","2":"275","3":"12.98","4":"0.01","5":"2.661039015"},{"1":"2022","2":"276","3":"14.02","4":"0.00","5":"1.455626939"},{"1":"2022","2":"277","3":"15.08","4":"0.00","5":"2.748078918"},{"1":"2022","2":"278","3":"13.65","4":"0.00","5":"2.110123616"},{"1":"2022","2":"279","3":"12.28","4":"0.00","5":"2.295589540"},{"1":"2022","2":"280","3":"12.48","4":"0.07","5":"2.351252266"},{"1":"2022","2":"281","3":"12.52","4":"1.03","5":"2.198555409"},{"1":"2022","2":"282","3":"13.05","4":"3.04","5":"0.708347937"},{"1":"2022","2":"283","3":"14.12","4":"1.10","5":"1.171891064"},{"1":"2022","2":"284","3":"14.44","4":"0.33","5":"1.400170323"},{"1":"2022","2":"285","3":"12.48","4":"0.00","5":"1.852045312"},{"1":"2022","2":"286","3":"10.87","4":"5.55","5":"0.507962638"},{"1":"2022","2":"287","3":"9.89","4":"1.48","5":"1.925163769"},{"1":"2022","2":"288","3":"7.68","4":"0.02","5":"1.605945805"},{"1":"2022","2":"289","3":"8.16","4":"0.00","5":"1.670953326"},{"1":"2022","2":"290","3":"10.94","4":"0.04","5":"1.048085169"},{"1":"2022","2":"291","3":"9.10","4":"0.46","5":"0.750772719"},{"1":"2022","2":"292","3":"6.23","4":"0.41","5":"0.999897001"},{"1":"2022","2":"293","3":"6.44","4":"0.43","5":"0.774447393"},{"1":"2022","2":"294","3":"4.39","4":"0.08","5":"0.706062505"},{"1":"2022","2":"295","3":"5.23","4":"0.31","5":"0.932269308"},{"1":"2022","2":"296","3":"6.14","4":"2.52","5":"1.087951252"},{"1":"2022","2":"297","3":"4.31","4":"0.33","5":"0.807651228"},{"1":"2022","2":"298","3":"4.55","4":"0.00","5":"1.002592101"},{"1":"2022","2":"299","3":"6.86","4":"0.49","5":"1.149183108"},{"1":"2022","2":"300","3":"10.00","4":"0.49","5":"0.710864586"},{"1":"2022","2":"301","3":"9.23","4":"0.02","5":"1.126460019"},{"1":"2022","2":"302","3":"10.48","4":"0.03","5":"1.226485393"},{"1":"2022","2":"303","3":"11.02","4":"0.02","5":"1.385219943"},{"1":"2022","2":"304","3":"9.46","4":"0.03","5":"1.422287331"},{"1":"2022","2":"305","3":"10.05","4":"0.15","5":"1.066791579"},{"1":"2022","2":"306","3":"10.62","4":"0.11","5":"1.259246575"},{"1":"2022","2":"307","3":"11.44","4":"0.04","5":"1.163933073"},{"1":"2022","2":"308","3":"10.90","4":"0.13","5":"0.759678495"},{"1":"2022","2":"309","3":"9.65","4":"0.05","5":"1.115105701"},{"1":"2022","2":"310","3":"9.92","4":"0.05","5":"0.709913622"},{"1":"2022","2":"311","3":"7.53","4":"0.02","5":"0.524432210"},{"1":"2022","2":"312","3":"6.87","4":"0.02","5":"0.787479340"},{"1":"2022","2":"313","3":"3.50","4":"0.08","5":"0.245163956"},{"1":"2022","2":"314","3":"0.50","4":"0.00","5":"0.105807852"},{"1":"2022","2":"315","3":"-1.06","4":"0.00","5":"0.000000000"},{"1":"2022","2":"316","3":"3.39","4":"0.02","5":"0.316725180"},{"1":"2022","2":"317","3":"7.12","4":"0.69","5":"0.485079075"},{"1":"2022","2":"318","3":"3.62","4":"0.37","5":"0.452357906"},{"1":"2022","2":"319","3":"1.58","4":"0.00","5":"0.276769012"},{"1":"2022","2":"320","3":"-0.45","4":"0.01","5":"0.000000000"},{"1":"2022","2":"321","3":"1.15","4":"0.00","5":"0.219633647"},{"1":"2022","2":"322","3":"4.65","4":"0.02","5":"0.526361044"},{"1":"2022","2":"323","3":"2.76","4":"0.02","5":"0.326366080"},{"1":"2022","2":"324","3":"2.59","4":"0.41","5":"0.277676410"},{"1":"2022","2":"325","3":"6.37","4":"0.21","5":"0.303897060"},{"1":"2022","2":"326","3":"6.69","4":"0.34","5":"0.374792151"},{"1":"2022","2":"327","3":"4.80","4":"0.18","5":"0.306621902"},{"1":"2022","2":"328","3":"1.97","4":"0.96","5":"0.125921880"},{"1":"2022","2":"329","3":"3.24","4":"3.65","5":"0.164550149"},{"1":"2022","2":"330","3":"3.35","4":"1.18","5":"0.247345754"},{"1":"2022","2":"331","3":"-2.52","4":"2.14","5":"0.000000000"},{"1":"2022","2":"332","3":"-4.91","4":"0.03","5":"0.000000000"},{"1":"2022","2":"333","3":"-3.57","4":"0.00","5":"0.000000000"},{"1":"2022","2":"334","3":"1.08","4":"0.14","5":"0.147724850"},{"1":"2022","2":"335","3":"3.64","4":"0.59","5":"0.569578655"},{"1":"2022","2":"336","3":"1.69","4":"0.30","5":"0.304462477"},{"1":"2022","2":"337","3":"2.04","4":"0.27","5":"0.240639318"},{"1":"2022","2":"338","3":"1.15","4":"0.15","5":"0.212558185"},{"1":"2022","2":"339","3":"1.19","4":"0.01","5":"0.212332846"},{"1":"2022","2":"340","3":"0.40","4":"0.00","5":"0.069388009"},{"1":"2022","2":"341","3":"1.47","4":"0.21","5":"0.085451687"},{"1":"2022","2":"342","3":"-2.27","4":"0.36","5":"0.000000000"},{"1":"2022","2":"343","3":"-4.51","4":"0.03","5":"0.000000000"},{"1":"2022","2":"344","3":"-1.35","4":"0.02","5":"0.000000000"},{"1":"2022","2":"345","3":"1.24","4":"0.25","5":"0.149445876"},{"1":"2022","2":"346","3":"2.42","4":"0.50","5":"0.232218187"},{"1":"2022","2":"347","3":"2.08","4":"0.82","5":"0.154785319"},{"1":"2022","2":"348","3":"0.83","4":"0.39","5":"0.079015965"},{"1":"2022","2":"349","3":"1.06","4":"0.10","5":"0.108074505"},{"1":"2022","2":"350","3":"0.80","4":"0.05","5":"0.078034012"},{"1":"2022","2":"351","3":"2.57","4":"0.00","5":"0.331257431"},{"1":"2022","2":"352","3":"5.23","4":"4.58","5":"0.449008245"},{"1":"2022","2":"353","3":"1.71","4":"0.03","5":"0.242238312"},{"1":"2022","2":"354","3":"2.37","4":"0.78","5":"0.256037166"},{"1":"2022","2":"355","3":"0.81","4":"3.64","5":"0.073232358"},{"1":"2022","2":"356","3":"-1.94","4":"7.86","5":"0.000000000"},{"1":"2022","2":"357","3":"-5.13","4":"0.07","5":"0.000000000"},{"1":"2022","2":"358","3":"-5.85","4":"0.01","5":"0.000000000"},{"1":"2022","2":"359","3":"-2.77","4":"0.19","5":"0.000000000"},{"1":"2022","2":"360","3":"-0.06","4":"0.14","5":"0.000000000"},{"1":"2022","2":"361","3":"-0.19","4":"0.01","5":"0.000000000"},{"1":"2022","2":"362","3":"1.29","4":"0.11","5":"0.163601013"},{"1":"2022","2":"363","3":"1.02","4":"0.01","5":"0.146169301"},{"1":"2022","2":"364","3":"2.27","4":"0.22","5":"0.205839546"},{"1":"2022","2":"365","3":"4.12","4":"0.45","5":"0.455876366"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubXVsdGlfeWVhcl9pbnB1dCAlPiVcblx0Z3JvdXBfYnkoWWVhcikgJT4lXG5cdGdyb3VwX3NwbGl0KCkgJT4lICMgU3BsaXQgdGhlIHRhYmxlIGludG8gYSBsaXN0IG9mIHRhYmxlcyBiYXNlZCBvbiB0aGUgZ3JvdXBpbmcgdmFyaWFibGVcblx0bWFwKH5jYWxjdWxhdGVfcmUoLixcblx0XHRcdFx0XHRcdFx0XHRcdFx0IHlpZWxkID0gMzAwMCxcblx0XHRcdFx0XHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0XHRcdFx0XHQgU29pbE9yZ2FuaWNDX1BlcmNlbnQgPSAyLFxuXHRcdFx0XHRcdFx0XHRcdFx0XHQgQ2xheUNvbnRlbnQgPSAwLjA1LFxuXHRcdFx0XHRcdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIpKSAlPiUgIyBSdW4gY2FsY3VsYXRlX3JlIGZvciBldmVyeSBtZW1iZXIgb2YgdGhlIGxpc3Rcblx0dW5saXN0KClcblx0XG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoibXVsdGlfeWVhcl9pbnB1dCAlPiVcblx0Z3JvdXBfYnkoWWVhcikgJT4lXG5cdGdyb3VwX3NwbGl0KCkgJT4lICMgU3BsaXQgdGhlIHRhYmxlIGludG8gYSBsaXN0IG9mIHRhYmxlcyBiYXNlZCBvbiB0aGUgZ3JvdXBpbmcgdmFyaWFibGVcblx0bWFwKH5jYWxjdWxhdGVfcmUoLixcblx0XHRcdFx0XHRcdFx0XHRcdFx0IHlpZWxkID0gMzAwMCxcblx0XHRcdFx0XHRcdFx0XHRcdFx0IHBlcmVubmlhbCA9IEZBTFNFLFxuXHRcdFx0XHRcdFx0XHRcdFx0XHQgU29pbE9yZ2FuaWNDX1BlcmNlbnQgPSAyLFxuXHRcdFx0XHRcdFx0XHRcdFx0XHQgQ2xheUNvbnRlbnQgPSAwLjA1LFxuXHRcdFx0XHRcdFx0XHRcdFx0XHQgU2FuZENvbnRlbnQgPSAwLjIpKSAlPiUgIyBSdW4gY2FsY3VsYXRlX3JlIGZvciBldmVyeSBtZW1iZXIgb2YgdGhlIGxpc3Rcblx0dW5saXN0KCkifQ== -->
 <pre class="r"><code>multi_year_input %&gt;%
     group_by(Year) %&gt;%
     group_split() %&gt;% # Split the table into a list of tables based on the grouping variable
@@ -2840,9 +3346,18 @@ multi_year_input</code></pre>
                                          SoilOrganicC_Percent = 2,
                                          ClayContent = 0.05,
                                          SandContent = 0.2)) %&gt;% # Run calculate_re for every member of the list
-    unlist()
-    </code></pre>
+    unlist()</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-warning-begin eyJkYXRhIjpbIldhcm5pbmcgaW4gY2FsY3VsYXRlX3JlKC4sIHlpZWxkID0gMzAwMCwgcGVyZW5uaWFsID0gRkFMU0UsIFNvaWxPcmdhbmljQ19QZXJjZW50ID0gMiwgOiBOQSB2YWx1ZXMgZGV0ZWN0ZWQgaW4gcl9jLiBFc3RpbWF0aW5nIHJfYyBiYXNlZCBvbiBUaWxsYWdlX3RhYmxlIHVzaW5nIHRpbGxhZ2Vfc29pbCA9IEJyb3duLCBhbmQgdGlsbGFnZV90eXBlID0gSW50ZW5zaXZlIFRpbGxhZ2UuXG4iLCJXYXJuaW5nIGluIGNhbGN1bGF0ZV9yZSguLCB5aWVsZCA9IDMwMDAsIHBlcmVubmlhbCA9IEZBTFNFLCBTb2lsT3JnYW5pY0NfUGVyY2VudCA9IDIsIDogTkEgdmFsdWVzIGRldGVjdGVkIGluIHJfYy4gRXN0aW1hdGluZyByX2MgYmFzZWQgb24gVGlsbGFnZV90YWJsZSB1c2luZyB0aWxsYWdlX3NvaWwgPSBCcm93biwgYW5kIHRpbGxhZ2VfdHlwZSA9IEludGVuc2l2ZSBUaWxsYWdlLlxuIiwiV2FybmluZyBpbiBjYWxjdWxhdGVfcmUoLiwgeWllbGQgPSAzMDAwLCBwZXJlbm5pYWwgPSBGQUxTRSwgU29pbE9yZ2FuaWNDX1BlcmNlbnQgPSAyLCA6IE5BIHZhbHVlcyBkZXRlY3RlZCBpbiByX2MuIEVzdGltYXRpbmcgcl9jIGJhc2VkIG9uIFRpbGxhZ2VfdGFibGUgdXNpbmcgdGlsbGFnZV9zb2lsID0gQnJvd24sIGFuZCB0aWxsYWdlX3R5cGUgPSBJbnRlbnNpdmUgVGlsbGFnZS5cbiJdfQ== -->
+<pre><code>Warning in calculate_re(., yield = 3000, perennial = FALSE, SoilOrganicC_Percent = 2, : NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = Brown, and tillage_type = Intensive Tillage.
+
+Warning in calculate_re(., yield = 3000, perennial = FALSE, SoilOrganicC_Percent = 2, : NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = Brown, and tillage_type = Intensive Tillage.
+
+Warning in calculate_re(., yield = 3000, perennial = FALSE, SoilOrganicC_Percent = 2, : NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = Brown, and tillage_type = Intensive Tillage.</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIuMjgzNDIyIDIuMjgzNDIyIDIuMjgzNDIyXG4ifQ== -->
+<pre><code>[1] 2.283422 2.283422 2.283422</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>From the above output, each value in <code>multi_year_re</code>

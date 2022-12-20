@@ -3,7 +3,7 @@
 
 
 getSiteData <- function(location_data,
-												site_name)
+site_name)
 	{
 	
 	site_data <- location_data %>%
@@ -22,12 +22,15 @@ getSiteData <- function(location_data,
 					 straw_biomass_kgha,
 					 straw_returned,
 					 crop_residue_kgha,
-					 hay_residue_kgha...23,
+					 hay_residue_kgha,
 					 roots_residue_kgha,
 					 manure_kgha,
 					 
-					 tillage,
-					 province
+					 perennial,
+					 tillage_soil,
+					 tillage_type,
+					 irrigation_region,
+					 irrigation
 		)
 	
 	return(site_data)
