@@ -68,17 +68,21 @@ RunICBMAndRe <- function(DailyClimateTable,
     }
 
     # Step 1: Calculate re for all years ------------------------------------------------
-
+    
     re <- DailyClimateTable %>%
         filter(Year %in% simulation_years) %>%
         group_by(Year) %>%
         group_split() %>%
+        # Note: the way this map works is that it calculates re for every year
+        # using the yearly daily climate table as input. The terms such as:
+        # filter(SiteDataTable, year_name == .$Year[1])$total_yield
+        # pull the relevant data from the site data table for use in the re calculation for that year only
         map(~calculate_re(.,
-            yield = yield,
-            perennial = perennial,
-            SoilOrganicC_Percent = SoilOrganicC_Percent,
-            ClayContent = ClayContent,
-            SandContent = SandContent,
+            yield = filter(SiteDataTable, year_name == .$Year[1])$total_yield,
+            perennial = filter(SiteDataTable, year_name == .$Year[1])$perennial,
+            SoilOrganicC_Percent = filter(SiteDataTable, year_name == .$Year[1])$soil_total_carbon_px,
+            ClayContent = filter(SiteDataTable, year_name == .$Year[1])$clay_px,
+            SandContent = filter(SiteDataTable, year_name == .$Year[1])$sand_px,
             alfa = alfa,
             SoilTopThickness = SoilTopThickness,
             Temp_min = Temp_min,
@@ -86,12 +90,12 @@ RunICBMAndRe <- function(DailyClimateTable,
             r_s = r_s,
             r_wp = r_wp,
             ReferenceAdjustment = ReferenceAdjustment,
-            r_c = r_c,
-            tillage_soil = tillage_soil,
-            tillage_type = tillage_type,
-            irrigation_region = irrigation_region,
+            r_c = filter(SiteDataTable, year_name == .$Year[1])$r_c,
+            tillage_soil = filter(SiteDataTable, year_name == .$Year[1])$tillage_soil,
+            tillage_type = filter(SiteDataTable, year_name == .$Year[1])$tillage_type,
+            irrigation_region = filter(SiteDataTable, year_name == .$Year[1])$irrigation_region,
             irrigation_use_estimate = irrigation_use_estimate,
-            irrigation = irrigation)) %>% 
+            irrigation = filter(SiteDataTable, year_name == .$Year[1])$irrigation)) %>% 
         unlist()
     
     # Step 2: Run ICBM ------------------------------------------------------------------
