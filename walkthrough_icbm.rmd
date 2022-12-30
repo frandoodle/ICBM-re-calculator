@@ -195,6 +195,7 @@ Otherwise, an error is returned:
 ```{r}
 sitedata_ex_error1 <- sitedata_all %>%
 	filter(team_name == "B") %>%
+	filter(year_name >= 1981) %>%
 	group_by(location_name) %>%
 	group_split
 ```
@@ -231,6 +232,7 @@ However, this does not work for all sites:
 ```{r}
 sitedata_ex_error2 <- sitedata_all %>%
 	filter(team_name == "B") %>%
+	filter(year_name >= 1981) %>%
 	group_by(team_name, location_name, treatment_name, replication_number) %>%
 	group_split
 sitedata_ex_error2 %>%
@@ -239,15 +241,18 @@ sitedata_ex_error2 %>%
 
 ```
 
-The reason why is because in all of these sites, there is another grouping variable that we haven't accounted for: soil depth.
+In these sites, there are actually two other grouping variables that we need to account for: soil depth and plot id.
 
-### Dealing with soil depth
-Some experiments sample the same treatment at different depths.
-Make sure to group out sampling depths if this is an issue.
+In our dataset, soil_depth_min_cm and soil_depth_max_cm are in seperate columns.
+To create a grouping variable for soil depth, we concatenate these two columns into a single soil depth column, and then add this as a new group.
+
+Then, by adding soil_depth as well as plot_id to our grouping variables, we arrive at valid inputs to the model:
 ```{r}
 sitedata_ex_depth <- sitedata_all %>%
 	filter(team_name == "B") %>%
-	group_by(team_name, location_name, treatment_name, replication_number, soil_depth_min_cm) %>%
+	filter(year_name >= 1981) %>%
+	mutate(soil_depth = paste0(soil_depth_min_cm,"-",soil_depth_max_cm)) %>%
+	group_by(team_name, location_name, treatment_name, replication_number, plot_id, soil_depth) %>%
 	group_split
 sitedata_ex_depth %>%
 	map(~any(duplicated(.$year_name))) %>%
@@ -255,7 +260,7 @@ sitedata_ex_depth %>%
 ```
 
 ```{r}
-result_ex_depth <- sitedata_ex_depth %>%
+result_ex_depth <- sitedata_ex_depth[1:10] %>%
 	map(~RunICBMAndRe(
 	SiteDataTable = .,
 	DailyClimateTable = climatedata,
@@ -263,9 +268,12 @@ result_ex_depth <- sitedata_ex_depth %>%
 	bg_init = 0,
 	o_init = 0,
 	irrigation_use_estimate = FALSE))
+result_ex_depth
 ```
 
-## Running ICBM using multithreading
+Other possible columns that could lead to problems with grouping include `field_name`, `block`, etc.
+
+## Running ICBM using parellel computing
 
 ## Running ICBM calibrations using parameter overrides
 
