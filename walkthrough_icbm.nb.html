@@ -1758,14 +1758,18 @@ display: none;
 <li><a href="#quick-start---icbm-re-calculator" id="toc-quick-start---icbm-re-calculator"><span class="toc-section-number">1</span> Quick Start - ICBM + r<sub>e</sub>
 Calculator</a>
 <ul>
-<li><a href="#importing-climate-data" id="toc-importing-climate-data"><span class="toc-section-number">1.1</span> Importing climate data</a>
-<ul>
-<li><a href="#using-getclimatedata" id="toc-using-getclimatedata"><span class="toc-section-number">1.1.1</span> using
+<li><a href="#importing-climate-data-using-getclimatedata" id="toc-importing-climate-data-using-getclimatedata"><span class="toc-section-number">1.1</span> Importing climate data using
 <code>getClimateData()</code></a></li>
-<li><a href="#using-manual-input" id="toc-using-manual-input"><span class="toc-section-number">1.1.2</span> Using manual input</a></li>
-</ul></li>
 <li><a href="#running-icbm" id="toc-running-icbm"><span class="toc-section-number">1.2</span> Running ICBM</a></li>
 </ul></li>
+<li><a href="#running-multiple-sites" id="toc-running-multiple-sites"><span class="toc-section-number">2</span> Running multiple sites</a></li>
+<li><a href="#running-according-to-groups" id="toc-running-according-to-groups"><span class="toc-section-number">3</span> Running according to groups</a></li>
+<li><a href="#running-using-multithreading" id="toc-running-using-multithreading"><span class="toc-section-number">4</span> Running using
+multithreading</a></li>
+<li><a href="#running-calibrations-with-parameter-overrides" id="toc-running-calibrations-with-parameter-overrides"><span class="toc-section-number">5</span> Running calibrations with parameter
+overrides</a></li>
+<li><a href="#ipcct2" id="toc-ipcct2"><span class="toc-section-number">6</span> IPCCT2</a></li>
+<li><a href="#rothc" id="toc-rothc"><span class="toc-section-number">7</span> RothC</a></li>
 </ul>
 </div>
 
@@ -1783,92 +1787,201 @@ in the header of that script. The function returns the same output as
 the ICBM function <code>icbm_holos4_classic_manure</code>; a table with
 ICBM C pools for every year, as well as the yearly mean r<sub>e</sub>
 value.</p>
-<div id="importing-climate-data" class="section level2" number="1.1">
+<p>We need to add SLC polygon IDs to the sitedata because this is how
+the cliamte data is parsed.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjpbIiMgZ2V0IFNMQyBwb2x5Z29uIElEcyIsImFsbF9wb2x5aWRzIDwtIHJlYWRyOjpyZWFkX2NzdihoZXJlKFwiY2xpbWF0ZV9kYXRhXCIsXCJEb2N1bWVudGF0aW9uXCIsIFwiU0xDX1BDUFRSRUdJT04uY3N2XCIpKSJdfQ== -->
+<pre class="r"><code># get SLC polygon IDs
+all_polyids &lt;- readr::read_csv(here(&quot;climate_data&quot;,&quot;Documentation&quot;, &quot;SLC_PCPTREGION.csv&quot;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-message-begin eyJkYXRhIjoiTmV3IG5hbWVzOlxuUm93czogOSBDb2x1bW5zOiA5XG7ilIDilIAgQ29sdW1uIHNwZWNpZmljYXRpb25cbuKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgCBEZWxpbWl0ZXI6IFwiLFwiIGNoclxuKDIpOiBQUk9WSU5DRSwgUENQVFJFR0lPTiBkYmwgKDYpOiBMb2NhdGlvbiwgTG9uZywgTGF0LCBQT0xZSUQsIEVDT19JRCwgU0wgbGdsXG4oMSk6IC4uLjZcbuKEuSBVc2UgYHNwZWMoKWAgdG8gcmV0cmlldmUgdGhlIGZ1bGwgY29sdW1uIHNwZWNpZmljYXRpb24gZm9yIHRoaXMgZGF0YS4g4oS5XG5TcGVjaWZ5IHRoZSBjb2x1bW4gdHlwZXMgb3Igc2V0IGBzaG93X2NvbF90eXBlcyA9IEZBTFNFYCB0byBxdWlldCB0aGlzIG1lc3NhZ2UuXG7igKIgYGAgLT4gYC4uLjZgXG4ifQ== -->
+<pre><code>New names:
+Rows: 9 Columns: 9
+── Column specification
+──────────────────────────────────────────────────────── Delimiter: &quot;,&quot; chr
+(2): PROVINCE, PCPTREGION dbl (6): Location, Long, Lat, POLYID, ECO_ID, SL lgl
+(1): ...6
+ℹ Use `spec()` to retrieve the full column specification for this data. ℹ
+Specify the column types or set `show_col_types = FALSE` to quiet this message.
+• `` -&gt; `...6`</code></pre>
+<!-- rnb-message-end -->
+<!-- rnb-source-begin eyJkYXRhIjpbIiMgcmVhZCBjbGltYXRlIGRhdGEiLCJhbGxfc2l0ZWRhdGEgPC0gcmVhZHI6OnJlYWRfY3N2KFwiYWxsX2V4cGVyaW1lbnRzX2R1bW15LmNzdlwiKSAlPiVcbiAgICBsZWZ0X2pvaW4oYWxsX3BvbHlpZHMsIGJ5PWMoXCJsYXRpdHVkZVwiID0gXCJMYXRcIikpIl19 -->
+<pre class="r"><code># read climate data
+all_sitedata &lt;- readr::read_csv(&quot;all_experiments_dummy.csv&quot;) %&gt;%
+    left_join(all_polyids, by=c(&quot;latitude&quot; = &quot;Lat&quot;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZzogT25lIG9yIG1vcmUgcGFyc2luZyBpc3N1ZXMsIGNhbGwgYHByb2JsZW1zKClgIG9uIHlvdXIgZGF0YSBmcmFtZSBmb3IgZGV0YWlscyxcbmUuZy46XG4gIGRhdCA8LSB2cm9vbSguLi4pXG4gIHByb2JsZW1zKGRhdClcbiJ9 -->
+<pre><code>Warning: One or more parsing issues, call `problems()` on your data frame for details,
+e.g.:
+  dat &lt;- vroom(...)
+  problems(dat)</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-message-begin eyJkYXRhIjoiUm93czogNTUwNTggQ29sdW1uczogNzBcbuKUgOKUgCBDb2x1bW4gc3BlY2lmaWNhdGlvbiDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIBcbkRlbGltaXRlcjogXCIsXCJcbmNociAoMjEpOiBsb2NhdGlvbl9uYW1lLCBwcm92aW5jZSwgc29pbF90ZXh0dXJlLCBwbG90X2lkLCBibG9jaywgdHJlYXRtZW50X24uLi5cbmRibCAoMzgpOiBFeHBfSUQsIGxhdGl0dWRlLCBsb25naXR1ZGUsIGVjb3pvbmUsIHNhbmRfcHgsIGNsYXlfcHgsIHNpbHRfcHgsIGkuLi5cbmxnbCAoMTEpOiBwZXJlbm5pYWwsIE5fZmVydGlsaXplcl9rZ2hhXzIsIE5fZmVydGlsaXplcl9rZ2hhXzMsIFBfZmVydGlsaXplcl8uLi5cblxu4oS5IFVzZSBgc3BlYygpYCB0byByZXRyaWV2ZSB0aGUgZnVsbCBjb2x1bW4gc3BlY2lmaWNhdGlvbiBmb3IgdGhpcyBkYXRhLlxu4oS5IFNwZWNpZnkgdGhlIGNvbHVtbiB0eXBlcyBvciBzZXQgYHNob3dfY29sX3R5cGVzID0gRkFMU0VgIHRvIHF1aWV0IHRoaXMgbWVzc2FnZS5cbiJ9 -->
+<pre><code>Rows: 55058 Columns: 70
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+chr (21): location_name, province, soil_texture, plot_id, block, treatment_n...
+dbl (38): Exp_ID, latitude, longitude, ecozone, sand_px, clay_px, silt_px, i...
+lgl (11): perennial, N_fertilizer_kgha_2, N_fertilizer_kgha_3, P_fertilizer_...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<!-- rnb-message-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>For this example, filter out only the experiments conducted at the
+Ellerslie site</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjpbImV4X3NpdGVkYXRhIDwtIGFsbF9zaXRlZGF0YSAlPiVcbiAgICBmaWx0ZXIobG9jYXRpb25fbmFtZSA9PSBcIkVsbGVyc2xpZVwiKSAlPiVcblx0ZmlsdGVyKHRyZWF0bWVudF9udW1iZXIgPT0gNykgJT4lXG5cdGZpbHRlcih5ZWFyX25hbWUgPD0gMTk4NSkiLCIiLCIjZ2V0U2l0ZURhdGEoYWxsX3NpdGVkYXRhLCBcIkVsbGVyc2xpZVwiKSJdfQ== -->
+<pre class="r"><code>ex_sitedata &lt;- all_sitedata %&gt;%
+    filter(location_name == &quot;Ellerslie&quot;) %&gt;%
+    filter(treatment_number == 7) %&gt;%
+    filter(year_name &lt;= 1985)
+
+#getSiteData(all_sitedata, &quot;Ellerslie&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<div id="importing-climate-data-using-getclimatedata" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> Importing climate
-data</h2>
-<p>Climate data can be manually inputted into the model runs, or the
-function <code>getClimateData</code> can be used to automatically build
-the climate data input from a folder containing .csv files for each year
-of daily climate data.</p>
-<p>Note that the length of the simulation run in years is determined by
-the number of years represented in the climate data. The climate data
-should have these mandatory columns: <code>Year</code>,
-<code>JulianDay</code>, <code>Tavg</code>, which is the mean daily air
-temperature, <code>PREC</code>, which is the mean daily precipitation,
-and <code>PET</code>, which is the mean daily PET.</p>
+data using <code>getClimateData()</code></h2>
+<p>The climate data should have these mandatory columns:
+<code>Year</code>, <code>JulianDay</code>, <code>Tavg</code>, which is
+the mean daily air temperature, <code>PREC</code>, which is the mean
+daily precipitation, and <code>PET</code>, which is the mean daily
+PET.</p>
 <p>Note: use the <code>suppressWarnings</code> function to run a
 function without any warnings
 (e.g. <code>suppressWarnings(run_icbm_and_re.r())</code>).</p>
-<div id="using-getclimatedata" class="section level3" number="1.1.1">
-<h3><span class="header-section-number">1.1.1</span> using
-<code>getClimateData()</code></h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBJbXBvcnQgY2xpbWF0ZSBkYXRhXG5nZXRfY2xpbWF0ZV9kYXRhX2V4YW1wbGUgPC0gZ2V0Q2xpbWF0ZURhdGEoXG5cdGNsaW1hdGVfZGF0YV9mb2xkZXIgPSBcImNsaW1hdGVfZGF0YVwiLFxuXHRtYXN0ZXJfZGF0YV9mb2xkZXIgPSBcIm1hc3RlclwiLFxuXHRzaXRlX25hbWUgPSBcIjI0NDAxNFwiKVxuYGBgIn0= -->
-<pre class="r"><code># Import climate data
-get_climate_data_example &lt;- getClimateData(
-    climate_data_folder = &quot;climate_data&quot;,
-    master_data_folder = &quot;master&quot;,
-    site_name = &quot;244014&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjpbIiMgQ2xpbWF0ZSBkYXRhIGlzIG9yZ2FuaXplZCBhY2NvcmluZyB0byBQT0xZSUQsIHdoaWNoIGlzIHVuaXF1ZSBmb3IgZXZlcnkgc2l0ZSBsb2NhdGlvbi4iLCJleF9wb2x5aWQgPC0gdW5pcXVlKGV4X3NpdGVkYXRhJFBPTFlJRCkiLCIjIEltcG9ydCBjbGltYXRlIGRhdGEiLCJleF9jbGltYXRlZGF0YSA8LSBnZXRDbGltYXRlRGF0YShcblx0Y2xpbWF0ZV9kYXRhX2RpcmVjdG9yeSA9IGhlcmUoXCJjbGltYXRlX2RhdGFcIixcIlc5cGFyYW1fVGFibGVzQ2xlYW5lZFwiKSxcblx0cG9seWlkID0gZXhfcG9seWlkKSJdfQ== -->
+<pre class="r"><code># Climate data is organized accoring to POLYID, which is unique for every site location.
+ex_polyid &lt;- unique(ex_sitedata$POLYID)
+# Import climate data
+ex_climatedata &lt;- getClimateData(
+    climate_data_directory = here(&quot;climate_data&quot;,&quot;W9param_TablesCleaned&quot;),
+    polyid = ex_polyid)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-</div>
-<div id="using-manual-input" class="section level3" number="1.1.2">
-<h3><span class="header-section-number">1.1.2</span> Using manual
-input</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBJbXBvcnQgd2VhdGhlciBkYXRhXG4jIFRoaXMgaXMgYXJiaXRyYXJ5IHdlYXRoZXIgZGF0YSBmcm9tIHRoZSBsYXQvbG9uZyA0NS80NS5cbmhvbG9zX25hc2FfY2xpbWF0ZV9leGFtcGxlIDwtIHJlYWRyOjpyZWFkX2NzdihoZXJlOjpoZXJlKFwiaG9sb3NfbmFzYV9jbGltYXRlX2V4YW1wbGUuY3N2XCIpKSAlPiVcblx0ZmlsdGVyKFllYXIgPj0gMjAwMCkgJT4lXG5cdHJlbmFtZShUYXZnID0gTWVhbkRhaWx5QWlyVGVtcGVyYXR1cmUsXG5cdFx0XHRcdFx0IFBSRUMgPSBNZWFuRGFpbHlQcmVjaXBpdGF0aW9uLFxuXHRcdFx0XHRcdCBQRVQgPSBNZWFuRGFpbHlQRVQpXG5gYGAifQ== -->
-<pre class="r"><code># Import weather data
-# This is arbitrary weather data from the lat/long 45/45.
-holos_nasa_climate_example &lt;- readr::read_csv(here::here(&quot;holos_nasa_climate_example.csv&quot;)) %&gt;%
-    filter(Year &gt;= 2000) %&gt;%
-    rename(Tavg = MeanDailyAirTemperature,
-                     PREC = MeanDailyPrecipitation,
-                     PET = MeanDailyPET)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
 </div>
 <div id="running-icbm" class="section level2" number="1.2">
 <h2><span class="header-section-number">1.2</span> Running ICBM</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBUaGVzZSBhcmUgYXJiaXRyYXJ5IGFubnVhbCBDIGlucHV0c1xuaWFnIDwtIHJlcCg5NzcsbGVuZ3RoKHVuaXF1ZShnZXRfY2xpbWF0ZV9kYXRhX2V4YW1wbGUkWWVhcikpKSAjYWJvdmVncm91bmQgeW91bmdcbmliZyA8LSByZXAoMjg4LGxlbmd0aCh1bmlxdWUoZ2V0X2NsaW1hdGVfZGF0YV9leGFtcGxlJFllYXIpKSkgI2JlbG93Z3JvdW5kIHlvdW5nXG5pbWFuIDwtIHJlcCg4OCxsZW5ndGgodW5pcXVlKGdldF9jbGltYXRlX2RhdGFfZXhhbXBsZSRZZWFyKSkpICNtYW51cmVcbiMgVGhpcyBpcyBhbm51YWwgeWllbGQgZm9yIGFuIGFyYml0cmFyeSBjcm9wIHR5cGVcbnlpZWxkIDwtIDMwMDBcbnBlcmVubmlhbCA8LSBGQUxTRVxuIyBUaGVzZSBhcmUgYXJiaXRyYXJ5IHNvaWwgcGFyYW1ldGVycztcbiMgbm90IHJlbGF0ZWQgdG8gYW4gU0xDIHBvbHlnb24gb3IgdGhlIGxvY2F0aW9uIG9mIHRoZSBjbGltYXRlIGRhdGFcblNvaWxPcmdhbmljQ19QZXJjZW50IDwtIDVcbkNsYXlDb250ZW50IDwtIDAuMDVcblNhbmRDb250ZW50IDwtIDAuMlxuXG5SdW5JQ0JNQW5kUmUoeWllbGQgPSB5aWVsZCxcblx0XHRcdFx0XHRcdCBpYWcgPSBpYWcsXG5cdFx0XHRcdFx0XHQgaWJnID0gaWJnLFxuXHRcdFx0XHRcdFx0IGltYW4gPSBpbWFuLFxuXHRcdFx0XHRcdFx0IGFnX2luaXQgPSAwLFxuXHRcdFx0XHRcdFx0IGJnX2luaXQgPSAwLFxuXHRcdFx0XHRcdFx0IG9faW5pdCA9IDAsXG5cdFx0XHRcdFx0XHQgRGFpbHlDbGltYXRlVGFibGUgPSBnZXRfY2xpbWF0ZV9kYXRhX2V4YW1wbGUsXG5cdFx0XHRcdFx0XHQgcGVyZW5uaWFsID0gcGVyZW5uaWFsLFxuXHRcdFx0XHRcdFx0IFNvaWxPcmdhbmljQ19QZXJjZW50ID0gU29pbE9yZ2FuaWNDX1BlcmNlbnQsXG5cdFx0XHRcdFx0XHQgQ2xheUNvbnRlbnQgPSBDbGF5Q29udGVudCxcblx0XHRcdFx0XHRcdCBTYW5kQ29udGVudCA9IFNhbmRDb250ZW50LFxuXHRcdFx0XHRcdFx0IGlycmlnYXRpb25fdXNlX2VzdGltYXRlID0gRkFMU0UpXG5gYGAifQ== -->
-<pre class="r"><code># These are arbitrary annual C inputs
-iag &lt;- rep(977,length(unique(get_climate_data_example$Year))) #aboveground young
-ibg &lt;- rep(288,length(unique(get_climate_data_example$Year))) #belowground young
-iman &lt;- rep(88,length(unique(get_climate_data_example$Year))) #manure
-# This is annual yield for an arbitrary crop type
-yield &lt;- 3000
-perennial &lt;- FALSE
-# These are arbitrary soil parameters;
-# not related to an SLC polygon or the location of the climate data
-SoilOrganicC_Percent &lt;- 5
-ClayContent &lt;- 0.05
-SandContent &lt;- 0.2
+<!-- rnb-source-begin eyJkYXRhIjoicmVzdWx0IDwtIFJ1bklDQk1BbmRSZShcblx0U2l0ZURhdGFUYWJsZSA9IGV4X3NpdGVkYXRhLFxuXHREYWlseUNsaW1hdGVUYWJsZSA9IGV4X2NsaW1hdGVkYXRhLFxuXHRhZ19pbml0ID0gMCxcblx0YmdfaW5pdCA9IDAsXG5cdG9faW5pdCA9IDAsXG5cdGlycmlnYXRpb25fdXNlX2VzdGltYXRlID0gRkFMU0UpIn0= -->
+<pre class="r"><code>result &lt;- RunICBMAndRe(
+    SiteDataTable = ex_sitedata,
+    DailyClimateTable = ex_climatedata,
+    ag_init = 0,
+    bg_init = 0,
+    o_init = 0,
+    irrigation_use_estimate = FALSE)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZyBpbiBjYWxjdWxhdGVfcmUoLiwgeWllbGQgPSBmaWx0ZXIoU2l0ZURhdGFUYWJsZSwgeWVhcl9uYW1lXG49PSAuJFllYXJbMV0pJHRvdGFsX3lpZWxkLCA6IGNhbGN1bGF0ZV9yZSgpIC0gTkEgdmFsdWVzIGZvdW5kIGZvciB0aGVzZSBpbnB1dHM6XG5yX2NcbiJ9 -->
+<pre><code>Warning in calculate_re(., yield = filter(SiteDataTable, year_name
+== .$Year[1])$total_yield, : calculate_re() - NA values found for these inputs:
+r_c</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZyBpbiBjYWxjdWxhdGVfcmUoLiwgeWllbGQgPSBmaWx0ZXIoU2l0ZURhdGFUYWJsZSwgeWVhcl9uYW1lID09IC4kWWVhclsxXSkkdG90YWxfeWllbGQsIDogTkEgdmFsdWVzIGRldGVjdGVkIGluIHJfYy4gRXN0aW1hdGluZyByX2MgYmFzZWQgb24gVGlsbGFnZV90YWJsZSB1c2luZyB0aWxsYWdlX3NvaWwgPSBCcm93biwgYW5kIHRpbGxhZ2VfdHlwZSA9IEludGVuc2l2ZSBUaWxsYWdlLlxuIn0= -->
+<pre><code>Warning in calculate_re(., yield = filter(SiteDataTable, year_name == .$Year[1])$total_yield, : NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = Brown, and tillage_type = Intensive Tillage.</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZyBpbiBjYWxjdWxhdGVfcmUoLiwgeWllbGQgPSBmaWx0ZXIoU2l0ZURhdGFUYWJsZSwgeWVhcl9uYW1lXG49PSAuJFllYXJbMV0pJHRvdGFsX3lpZWxkLCA6IGNhbGN1bGF0ZV9yZSgpIC0gTkEgdmFsdWVzIGZvdW5kIGZvciB0aGVzZSBpbnB1dHM6XG5yX2NcbiJ9 -->
+<pre><code>Warning in calculate_re(., yield = filter(SiteDataTable, year_name
+== .$Year[1])$total_yield, : calculate_re() - NA values found for these inputs:
+r_c</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZyBpbiBjYWxjdWxhdGVfcmUoLiwgeWllbGQgPSBmaWx0ZXIoU2l0ZURhdGFUYWJsZSwgeWVhcl9uYW1lID09IC4kWWVhclsxXSkkdG90YWxfeWllbGQsIDogTkEgdmFsdWVzIGRldGVjdGVkIGluIHJfYy4gRXN0aW1hdGluZyByX2MgYmFzZWQgb24gVGlsbGFnZV90YWJsZSB1c2luZyB0aWxsYWdlX3NvaWwgPSBCcm93biwgYW5kIHRpbGxhZ2VfdHlwZSA9IEludGVuc2l2ZSBUaWxsYWdlLlxuIn0= -->
+<pre><code>Warning in calculate_re(., yield = filter(SiteDataTable, year_name == .$Year[1])$total_yield, : NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = Brown, and tillage_type = Intensive Tillage.</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZyBpbiBjYWxjdWxhdGVfcmUoLiwgeWllbGQgPSBmaWx0ZXIoU2l0ZURhdGFUYWJsZSwgeWVhcl9uYW1lXG49PSAuJFllYXJbMV0pJHRvdGFsX3lpZWxkLCA6IGNhbGN1bGF0ZV9yZSgpIC0gTkEgdmFsdWVzIGZvdW5kIGZvciB0aGVzZSBpbnB1dHM6XG5yX2NcbiJ9 -->
+<pre><code>Warning in calculate_re(., yield = filter(SiteDataTable, year_name
+== .$Year[1])$total_yield, : calculate_re() - NA values found for these inputs:
+r_c</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-warning-begin eyJkYXRhIjoiV2FybmluZyBpbiBjYWxjdWxhdGVfcmUoLiwgeWllbGQgPSBmaWx0ZXIoU2l0ZURhdGFUYWJsZSwgeWVhcl9uYW1lID09IC4kWWVhclsxXSkkdG90YWxfeWllbGQsIDogTkEgdmFsdWVzIGRldGVjdGVkIGluIHJfYy4gRXN0aW1hdGluZyByX2MgYmFzZWQgb24gVGlsbGFnZV90YWJsZSB1c2luZyB0aWxsYWdlX3NvaWwgPSBCcm93biwgYW5kIHRpbGxhZ2VfdHlwZSA9IEludGVuc2l2ZSBUaWxsYWdlLlxuIn0= -->
+<pre><code>Warning in calculate_re(., yield = filter(SiteDataTable, year_name == .$Year[1])$total_yield, : NA values detected in r_c. Estimating r_c based on Tillage_table using tillage_soil = Brown, and tillage_type = Intensive Tillage.</code></pre>
+<!-- rnb-warning-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDNcblsxXSAzXG5bMV0gM1xuWzFdIDNcbiJ9 -->
+<pre><code>[1] 3
+[1] 3
+[1] 3
+[1] 3</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoicmVzdWx0In0= -->
+<pre class="r"><code>result</code></pre>
+<!-- rnb-source-end -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["time"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Yag"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Ybg"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Old"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["YManure"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Tot"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["re"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"1983","2":"1358.066","3":"581.4356","4":"0.0000","5":"0","6":"1939.502","7":"0.6616274"},{"1":"1984","2":"2161.016","3":"925.2067","4":"380.0199","5":"0","6":"3466.243","7":"0.6598750"},{"1":"1985","2":"2813.750","3":"1358.9843","4":"840.8452","5":"0","6":"5013.580","7":"0.5951363"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjpbInNldHdkKFwiQzovVXNlcnMvZHVyZW52ZXJtZXR0ZWYvRG9jdW1lbnRzL0lDQk0tcmUtY2FsY3VsYXRvclwiKSIsIlNpdGVEYXRhVGFibGUgPSBleF9zaXRlZGF0YSIsIlx0RGFpbHlDbGltYXRlVGFibGUgPSBleF9jbGltYXRlZGF0YSIsIlx0YWdfaW5pdCA9IDAiLCJcdGJnX2luaXQgPSAwIiwiXHRvX2luaXQgPSAwIiwiXHRpcnJpZ2F0aW9uX3VzZV9lc3RpbWF0ZSA9IEZBTFNFIiwiIiwiXHRhbGZhID0gMC43IiwiICAgICAgICAgICAgICAgIFNvaWxUb3BUaGlja25lc3MgPSAyNTAiLCIgICAgICAgICAgICAgICAgVGVtcF9taW4gPSAtMy43OCIsIiAgICAgICAgICAgICAgICBUZW1wX21heCA9IDMwIiwiICAgICAgICAgICAgICAgIHJfcyA9IDAuNDIiLCIgICAgICAgICAgICAgICAgcl93cCA9IDAuMTgiLCIgICAgICAgICAgICAgICAgUmVmZXJlbmNlQWRqdXN0bWVudCA9IDAuMTA1MTYiLCIiLCJcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHQgcl9jID0gTkEiLCJcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHQgdGlsbGFnZV9zb2lsID0gXCJCcm93blwiIiwiXHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0IHRpbGxhZ2VfdHlwZSA9IFwiSW50ZW5zaXZlIFRpbGxhZ2VcIiIsIlx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdCBpcnJpZ2F0aW9uX3JlZ2lvbiA9IFwiQ2FuYWRhXCIiLCJcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHQgaXJyaWdhdGlvbl91c2VfZXN0aW1hdGUgPSBGQUxTRSIsIlx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdCBpcnJpZ2F0aW9uID0gMCIsIiIsIlx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcdCB5aWVsZCA9IGZpbHRlcihTaXRlRGF0YVRhYmxlLCB5ZWFyX25hbWUgPT0gMTk4MykkdG90YWxfeWllbGQiLCIgICAgICAgICAgICBwZXJlbm5pYWwgPSBmaWx0ZXIoU2l0ZURhdGFUYWJsZSwgeWVhcl9uYW1lID09IDE5ODMpJHBlcmVubmlhbCIsIiAgICAgICAgICAgIFNvaWxPcmdhbmljQ19QZXJjZW50ID0gZmlsdGVyKFNpdGVEYXRhVGFibGUsIHllYXJfbmFtZSA9PSAxOTgzKSRzb2lsX3RvdGFsX2NhcmJvbl9weCIsIiAgICAgICAgICAgIENsYXlDb250ZW50ID0gZmlsdGVyKFNpdGVEYXRhVGFibGUsIHllYXJfbmFtZSA9PSAxOTgzKSRjbGF5X3B4IiwiICAgICAgICAgICAgU2FuZENvbnRlbnQgPSBmaWx0ZXIoU2l0ZURhdGFUYWJsZSwgeWVhcl9uYW1lID09IDE5ODMpJHNhbmRfcHgiXX0= -->
+<pre class="r"><code>setwd(&quot;C:/Users/durenvermettef/Documents/ICBM-re-calculator&quot;)
+SiteDataTable = ex_sitedata
+    DailyClimateTable = ex_climatedata
+    ag_init = 0
+    bg_init = 0
+    o_init = 0
+    irrigation_use_estimate = FALSE
 
-RunICBMAndRe(yield = yield,
-                         iag = iag,
-                         ibg = ibg,
-                         iman = iman,
-                         ag_init = 0,
-                         bg_init = 0,
-                         o_init = 0,
-                         DailyClimateTable = get_climate_data_example,
-                         perennial = perennial,
-                         SoilOrganicC_Percent = SoilOrganicC_Percent,
-                         ClayContent = ClayContent,
-                         SandContent = SandContent,
-                         irrigation_use_estimate = FALSE)</code></pre>
+    alfa = 0.7
+                SoilTopThickness = 250
+                Temp_min = -3.78
+                Temp_max = 30
+                r_s = 0.42
+                r_wp = 0.18
+                ReferenceAdjustment = 0.10516
+
+                                                 r_c = NA
+                                                 tillage_soil = &quot;Brown&quot;
+                                                 tillage_type = &quot;Intensive Tillage&quot;
+                                                 irrigation_region = &quot;Canada&quot;
+                                                 irrigation_use_estimate = FALSE
+                                                 irrigation = 0
+
+                                                 yield = filter(SiteDataTable, year_name == 1983)$total_yield
+            perennial = filter(SiteDataTable, year_name == 1983)$perennial
+            SoilOrganicC_Percent = filter(SiteDataTable, year_name == 1983)$soil_total_carbon_px
+            ClayContent = filter(SiteDataTable, year_name == 1983)$clay_px
+            SandContent = filter(SiteDataTable, year_name == 1983)$sand_px</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 </div>
+</div>
+<div id="running-multiple-sites" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Running multiple
+sites</h1>
+</div>
+<div id="running-according-to-groups" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Running according to
+groups</h1>
+</div>
+<div id="running-using-multithreading" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Running using
+multithreading</h1>
+</div>
+<div id="running-calibrations-with-parameter-overrides" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Running calibrations
+with parameter overrides</h1>
+</div>
+<div id="ipcct2" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> IPCCT2</h1>
+</div>
+<div id="rothc" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> RothC</h1>
+<!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlJ1bm5pbmcgSUNCTSINCmF1dGhvcjogIkZyYW5jaXMgRHVybmluLVZlcm1ldHRlIg0KZGF0ZTogIjIwMjIvMTIvMTkiDQpvdXRwdXQ6DQogIGh0bWxfbm90ZWJvb2s6DQogICAgdG9jOiB0cnVlDQogICAgbnVtYmVyX3NlY3Rpb25zOiB0cnVlDQogICAgZGZfcHJpbnQ6IHBhZ2VkDQpiaWJsaW9ncmFwaHk6IHJlLmJpYg0KZWRpdG9yX29wdGlvbnM6DQogIGNodW5rX291dHB1dF90eXBlOiBpbmxpbmUNCi0tLQ0KDQpgYGB7ciBpbmNsdWRlPUZBTFNFfQ0KbGlicmFyeShnZ3Bsb3QyKQ0KbGlicmFyeShrbml0cikNCmxpYnJhcnkoZHBseXIpDQpsaWJyYXJ5KGdlb2pzb24pDQpsaWJyYXJ5KHRpYmJsZSkNCmxpYnJhcnkocHVycnIpDQpsaWJyYXJ5KHN0cmluZ3IpDQpsaWJyYXJ5KGhlcmUpDQpsaWJyYXJ5KGx1YnJpZGF0ZSkNCmxpYnJhcnkodGlkeXIpDQoNCmRpci5jcmVhdGUodGVtcGRpcigpKSAjVGhpcyBmaXhlcyBhIGJ1ZyBpZiB0aGUgdGVtcG9yYXJ5IGRpcmVjdG9yeSBpcyBub3QgZm91bmQNCg0KaGVyZTo6aV9hbSgicmVfd2Fsa3Rocm91Z2gucm1kIikNCnNvdXJjZShoZXJlOjpoZXJlKCJyZV9zY3JpcHQuciIpKQ0Kc291cmNlKGhlcmU6OmhlcmUoInJlX2Z1bmN0aW9ucy5yIikpDQpzb3VyY2UoaGVyZTo6aGVyZSgicnVuX2ljYm1fYW5kX3JlLnIiKSkNCnNvdXJjZShoZXJlOjpoZXJlKCJnZXRfY2xpbWF0ZV9kYXRhLnIiKSkNCg0KYGBgDQoNCg0KIyBRdWljayBTdGFydCAtIElDQk0gKyByfmV+IENhbGN1bGF0b3INCkluIG9yZGVyIHRvIHJ1biBJQ0JNIHNpbXVsYXRpb25zIHRoYXQgaW5jbHVkZSB0aGUgY2FsY3VsYXRlZCByfmV+IHBhcmFtZXRlciBmcm9tIGNsaW1hdGUgZGF0YSwgeW91IGNhbiB1c2UgdGhlIGZ1bmN0aW9uIGBSdW5JQ0JNQW5kUmVgIGZyb20gdGhlIHNjcmlwdCBgcnVuX2ljYm1fYW5kX3JlLnJgLiBUaGUgZGVmaW5pdGlvbnMgb2YgZXZlcnkgaW5wdXQgYXJlIGdpdmVuIGluIHRoZSBoZWFkZXIgb2YgdGhhdCBzY3JpcHQuIFRoZSBmdW5jdGlvbiByZXR1cm5zIHRoZSBzYW1lIG91dHB1dCBhcyB0aGUgSUNCTSBmdW5jdGlvbiBgaWNibV9ob2xvczRfY2xhc3NpY19tYW51cmVgOyBhIHRhYmxlIHdpdGggSUNCTSBDIHBvb2xzIGZvciBldmVyeSB5ZWFyLCBhcyB3ZWxsIGFzIHRoZSB5ZWFybHkgbWVhbiByfmV+IHZhbHVlLg0KDQojIyBJbXBvcnRpbmcgY2xpbWF0ZSBkYXRhDQpDbGltYXRlIGRhdGEgY2FuIGJlIG1hbnVhbGx5IGlucHV0dGVkIGludG8gdGhlIG1vZGVsIHJ1bnMsIG9yIHRoZSBmdW5jdGlvbiBgZ2V0Q2xpbWF0ZURhdGFgIGNhbiBiZSB1c2VkIHRvIGF1dG9tYXRpY2FsbHkgYnVpbGQgdGhlIGNsaW1hdGUgZGF0YSBpbnB1dCBmcm9tIGEgZm9sZGVyIGNvbnRhaW5pbmcgLmNzdiBmaWxlcyBmb3IgZWFjaCB5ZWFyIG9mIGRhaWx5IGNsaW1hdGUgZGF0YS4NCg0KTm90ZSB0aGF0IHRoZSBsZW5ndGggb2YgdGhlIHNpbXVsYXRpb24gcnVuIGluIHllYXJzIGlzIGRldGVybWluZWQgYnkgdGhlIG51bWJlciBvZiB5ZWFycyByZXByZXNlbnRlZCBpbiB0aGUgY2xpbWF0ZSBkYXRhLg0KVGhlIGNsaW1hdGUgZGF0YSBzaG91bGQgaGF2ZSB0aGVzZSBtYW5kYXRvcnkgY29sdW1uczogYFllYXJgLCBgSnVsaWFuRGF5YCwgYFRhdmdgLCB3aGljaCBpcyB0aGUgbWVhbiBkYWlseSBhaXIgdGVtcGVyYXR1cmUsIGBQUkVDYCwgd2hpY2ggaXMgdGhlIG1lYW4gZGFpbHkgcHJlY2lwaXRhdGlvbiwgYW5kIGBQRVRgLCB3aGljaCBpcyB0aGUgbWVhbiBkYWlseSBQRVQuDQoNCk5vdGU6IHVzZSB0aGUgYHN1cHByZXNzV2FybmluZ3NgIGZ1bmN0aW9uIHRvIHJ1biBhIGZ1bmN0aW9uIHdpdGhvdXQgYW55IHdhcm5pbmdzDQooZS5nLiBgc3VwcHJlc3NXYXJuaW5ncyhydW5faWNibV9hbmRfcmUucigpKWApLg0KDQojIyMgdXNpbmcgYGdldENsaW1hdGVEYXRhKClgDQoNCmBgYHtyfQ0KIyBJbXBvcnQgY2xpbWF0ZSBkYXRhDQpnZXRfY2xpbWF0ZV9kYXRhX2V4YW1wbGUgPC0gZ2V0Q2xpbWF0ZURhdGEoDQoJY2xpbWF0ZV9kYXRhX2ZvbGRlciA9ICJjbGltYXRlX2RhdGEiLA0KCW1hc3Rlcl9kYXRhX2ZvbGRlciA9ICJtYXN0ZXIiLA0KCXNpdGVfbmFtZSA9ICIyNDQwMTQiKQ0KYGBgDQoNCg0KIyMjIFVzaW5nIG1hbnVhbCBpbnB1dA0KDQpgYGB7cn0NCiMgSW1wb3J0IHdlYXRoZXIgZGF0YQ0KIyBUaGlzIGlzIGFyYml0cmFyeSB3ZWF0aGVyIGRhdGEgZnJvbSB0aGUgbGF0L2xvbmcgNDUvNDUuDQpob2xvc19uYXNhX2NsaW1hdGVfZXhhbXBsZSA8LSByZWFkcjo6cmVhZF9jc3YoaGVyZTo6aGVyZSgiaG9sb3NfbmFzYV9jbGltYXRlX2V4YW1wbGUuY3N2IikpICU+JQ0KCWZpbHRlcihZZWFyID49IDIwMDApICU+JQ0KCXJlbmFtZShUYXZnID0gTWVhbkRhaWx5QWlyVGVtcGVyYXR1cmUsDQoJCQkJCSBQUkVDID0gTWVhbkRhaWx5UHJlY2lwaXRhdGlvbiwNCgkJCQkJIFBFVCA9IE1lYW5EYWlseVBFVCkNCmBgYA0KDQojIyBSdW5uaW5nIElDQk0NCg0KYGBge3J9DQojIFRoZXNlIGFyZSBhcmJpdHJhcnkgYW5udWFsIEMgaW5wdXRzDQppYWcgPC0gcmVwKDk3NyxsZW5ndGgodW5pcXVlKGdldF9jbGltYXRlX2RhdGFfZXhhbXBsZSRZZWFyKSkpICNhYm92ZWdyb3VuZCB5b3VuZw0KaWJnIDwtIHJlcCgyODgsbGVuZ3RoKHVuaXF1ZShnZXRfY2xpbWF0ZV9kYXRhX2V4YW1wbGUkWWVhcikpKSAjYmVsb3dncm91bmQgeW91bmcNCmltYW4gPC0gcmVwKDg4LGxlbmd0aCh1bmlxdWUoZ2V0X2NsaW1hdGVfZGF0YV9leGFtcGxlJFllYXIpKSkgI21hbnVyZQ0KIyBUaGlzIGlzIGFubnVhbCB5aWVsZCBmb3IgYW4gYXJiaXRyYXJ5IGNyb3AgdHlwZQ0KeWllbGQgPC0gMzAwMA0KcGVyZW5uaWFsIDwtIEZBTFNFDQojIFRoZXNlIGFyZSBhcmJpdHJhcnkgc29pbCBwYXJhbWV0ZXJzOw0KIyBub3QgcmVsYXRlZCB0byBhbiBTTEMgcG9seWdvbiBvciB0aGUgbG9jYXRpb24gb2YgdGhlIGNsaW1hdGUgZGF0YQ0KU29pbE9yZ2FuaWNDX1BlcmNlbnQgPC0gNQ0KQ2xheUNvbnRlbnQgPC0gMC4wNQ0KU2FuZENvbnRlbnQgPC0gMC4yDQoNClJ1bklDQk1BbmRSZSh5aWVsZCA9IHlpZWxkLA0KCQkJCQkJIGlhZyA9IGlhZywNCgkJCQkJCSBpYmcgPSBpYmcsDQoJCQkJCQkgaW1hbiA9IGltYW4sDQoJCQkJCQkgYWdfaW5pdCA9IDAsDQoJCQkJCQkgYmdfaW5pdCA9IDAsDQoJCQkJCQkgb19pbml0ID0gMCwNCgkJCQkJCSBEYWlseUNsaW1hdGVUYWJsZSA9IGdldF9jbGltYXRlX2RhdGFfZXhhbXBsZSwNCgkJCQkJCSBwZXJlbm5pYWwgPSBwZXJlbm5pYWwsDQoJCQkJCQkgU29pbE9yZ2FuaWNDX1BlcmNlbnQgPSBTb2lsT3JnYW5pY0NfUGVyY2VudCwNCgkJCQkJCSBDbGF5Q29udGVudCA9IENsYXlDb250ZW50LA0KCQkJCQkJIFNhbmRDb250ZW50ID0gU2FuZENvbnRlbnQsDQoJCQkJCQkgaXJyaWdhdGlvbl91c2VfZXN0aW1hdGUgPSBGQUxTRSkNCmBgYA0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlJ1bm5pbmcgSUNCTSINCmF1dGhvcjogIkZyYW5jaXMgRHVybmluLVZlcm1ldHRlIg0KZGF0ZTogIjIwMjIvMTIvMTkiDQpvdXRwdXQ6DQogIGh0bWxfbm90ZWJvb2s6DQogICAgdG9jOiB0cnVlDQogICAgbnVtYmVyX3NlY3Rpb25zOiB0cnVlDQogICAgZGZfcHJpbnQ6IHBhZ2VkDQpiaWJsaW9ncmFwaHk6IHJlLmJpYg0KZWRpdG9yX29wdGlvbnM6DQogIGNodW5rX291dHB1dF90eXBlOiBpbmxpbmUNCi0tLQ0KDQpgYGB7ciBpbmNsdWRlPUZBTFNFfQ0KDQpsaWJyYXJ5KGdncGxvdDIpDQpsaWJyYXJ5KGtuaXRyKQ0KbGlicmFyeShkcGx5cikNCmxpYnJhcnkoZ2VvanNvbikNCmxpYnJhcnkodGliYmxlKQ0KbGlicmFyeShwdXJycikNCmxpYnJhcnkoc3RyaW5ncikNCmxpYnJhcnkoaGVyZSkNCmxpYnJhcnkobHVicmlkYXRlKQ0KbGlicmFyeSh0aWR5cikNCg0KZGlyLmNyZWF0ZSh0ZW1wZGlyKCkpICNUaGlzIGZpeGVzIGEgYnVnIGlmIHRoZSB0ZW1wb3JhcnkgZGlyZWN0b3J5IGlzIG5vdCBmb3VuZA0KDQpoZXJlOjppX2FtKCJ3YWxrdGhyb3VnaF9pY2JtLnJtZCIpDQpzb3VyY2UoaGVyZTo6aGVyZSgicmVfc2NyaXB0LnIiKSkNCnNvdXJjZShoZXJlOjpoZXJlKCJyZV9mdW5jdGlvbnMuciIpKQ0Kc291cmNlKGhlcmU6OmhlcmUoInJ1bl9pY2JtX2FuZF9yZS5yIikpDQpzb3VyY2UoaGVyZTo6aGVyZSgiZ2V0X2NsaW1hdGVfZGF0YS5yIikpDQoNCmBgYA0KDQoNCiMgUXVpY2sgU3RhcnQgLSBJQ0JNICsgcn5lfiBDYWxjdWxhdG9yDQpJbiBvcmRlciB0byBydW4gSUNCTSBzaW11bGF0aW9ucyB0aGF0IGluY2x1ZGUgdGhlIGNhbGN1bGF0ZWQgcn5lfiBwYXJhbWV0ZXIgZnJvbSBjbGltYXRlIGRhdGEsIHlvdSBjYW4gdXNlIHRoZSBmdW5jdGlvbiBgUnVuSUNCTUFuZFJlYCBmcm9tIHRoZSBzY3JpcHQgYHJ1bl9pY2JtX2FuZF9yZS5yYC4NClRoZSBkZWZpbml0aW9ucyBvZiBldmVyeSBpbnB1dCBhcmUgZ2l2ZW4gaW4gdGhlIGhlYWRlciBvZiB0aGF0IHNjcmlwdC4NClRoZSBmdW5jdGlvbiByZXR1cm5zIHRoZSBzYW1lIG91dHB1dCBhcyB0aGUgSUNCTSBmdW5jdGlvbiBgaWNibV9ob2xvczRfY2xhc3NpY19tYW51cmVgOw0KYSB0YWJsZSB3aXRoIElDQk0gQyBwb29scyBmb3IgZXZlcnkgeWVhciwgYXMgd2VsbCBhcyB0aGUgeWVhcmx5IG1lYW4gcn5lfiB2YWx1ZS4NCg0KV2UgbmVlZCB0byBhZGQgU0xDIHBvbHlnb24gSURzIHRvIHRoZSBzaXRlZGF0YSBiZWNhdXNlIHRoaXMgaXMgaG93IHRoZSBjbGlhbXRlIGRhdGEgaXMgcGFyc2VkLg0KDQpgYGB7cn0NCiMgZ2V0IFNMQyBwb2x5Z29uIElEcw0KYWxsX3BvbHlpZHMgPC0gcmVhZHI6OnJlYWRfY3N2KGhlcmUoImNsaW1hdGVfZGF0YSIsIkRvY3VtZW50YXRpb24iLCAiU0xDX1BDUFRSRUdJT04uY3N2IikpDQojIHJlYWQgY2xpbWF0ZSBkYXRhDQphbGxfc2l0ZWRhdGEgPC0gcmVhZHI6OnJlYWRfY3N2KCJhbGxfZXhwZXJpbWVudHNfZHVtbXkuY3N2IikgJT4lDQogICAgbGVmdF9qb2luKGFsbF9wb2x5aWRzLCBieT1jKCJsYXRpdHVkZSIgPSAiTGF0IikpDQpgYGANCg0KRm9yIHRoaXMgZXhhbXBsZSwgZmlsdGVyIG91dCBvbmx5IHRoZSBleHBlcmltZW50cyBjb25kdWN0ZWQgYXQgdGhlIEVsbGVyc2xpZSBzaXRlDQpgYGB7cn0NCmV4X3NpdGVkYXRhIDwtIGFsbF9zaXRlZGF0YSAlPiUNCiAgICBmaWx0ZXIobG9jYXRpb25fbmFtZSA9PSAiRWxsZXJzbGllIikgJT4lDQoJZmlsdGVyKHRyZWF0bWVudF9udW1iZXIgPT0gNykgJT4lDQoJZmlsdGVyKHllYXJfbmFtZSA8PSAxOTg1KQ0KDQojZ2V0U2l0ZURhdGEoYWxsX3NpdGVkYXRhLCAiRWxsZXJzbGllIikNCmBgYA0KDQojIyBJbXBvcnRpbmcgY2xpbWF0ZSBkYXRhIHVzaW5nIGBnZXRDbGltYXRlRGF0YSgpYA0KVGhlIGNsaW1hdGUgZGF0YSBzaG91bGQgaGF2ZSB0aGVzZSBtYW5kYXRvcnkgY29sdW1uczogYFllYXJgLCBgSnVsaWFuRGF5YCwgYFRhdmdgLCB3aGljaCBpcyB0aGUgbWVhbiBkYWlseSBhaXIgdGVtcGVyYXR1cmUsIGBQUkVDYCwgd2hpY2ggaXMgdGhlIG1lYW4gZGFpbHkgcHJlY2lwaXRhdGlvbiwgYW5kIGBQRVRgLCB3aGljaCBpcyB0aGUgbWVhbiBkYWlseSBQRVQuDQoNCk5vdGU6IHVzZSB0aGUgYHN1cHByZXNzV2FybmluZ3NgIGZ1bmN0aW9uIHRvIHJ1biBhIGZ1bmN0aW9uIHdpdGhvdXQgYW55IHdhcm5pbmdzDQooZS5nLiBgc3VwcHJlc3NXYXJuaW5ncyhydW5faWNibV9hbmRfcmUucigpKWApLg0KDQpgYGB7cn0NCiMgQ2xpbWF0ZSBkYXRhIGlzIG9yZ2FuaXplZCBhY2NvcmluZyB0byBQT0xZSUQsIHdoaWNoIGlzIHVuaXF1ZSBmb3IgZXZlcnkgc2l0ZSBsb2NhdGlvbi4NCmV4X3BvbHlpZCA8LSB1bmlxdWUoZXhfc2l0ZWRhdGEkUE9MWUlEKQ0KIyBJbXBvcnQgY2xpbWF0ZSBkYXRhDQpleF9jbGltYXRlZGF0YSA8LSBnZXRDbGltYXRlRGF0YSgNCgljbGltYXRlX2RhdGFfZGlyZWN0b3J5ID0gaGVyZSgiY2xpbWF0ZV9kYXRhIiwiVzlwYXJhbV9UYWJsZXNDbGVhbmVkIiksDQoJcG9seWlkID0gZXhfcG9seWlkKQ0KDQpgYGANCg0KDQojIyBSdW5uaW5nIElDQk0NCg0KYGBge3J9DQpyZXN1bHQgPC0gUnVuSUNCTUFuZFJlKA0KCVNpdGVEYXRhVGFibGUgPSBleF9zaXRlZGF0YSwNCglEYWlseUNsaW1hdGVUYWJsZSA9IGV4X2NsaW1hdGVkYXRhLA0KCWFnX2luaXQgPSAwLA0KCWJnX2luaXQgPSAwLA0KCW9faW5pdCA9IDAsDQoJaXJyaWdhdGlvbl91c2VfZXN0aW1hdGUgPSBGQUxTRSkNCnJlc3VsdA0KYGBgDQoNCmBgYHtyfQ0Kc2V0d2QoIkM6L1VzZXJzL2R1cmVudmVybWV0dGVmL0RvY3VtZW50cy9JQ0JNLXJlLWNhbGN1bGF0b3IiKQ0KU2l0ZURhdGFUYWJsZSA9IGV4X3NpdGVkYXRhDQoJRGFpbHlDbGltYXRlVGFibGUgPSBleF9jbGltYXRlZGF0YQ0KCWFnX2luaXQgPSAwDQoJYmdfaW5pdCA9IDANCglvX2luaXQgPSAwDQoJaXJyaWdhdGlvbl91c2VfZXN0aW1hdGUgPSBGQUxTRQ0KDQoJYWxmYSA9IDAuNw0KICAgICAgICAgICAgICAgIFNvaWxUb3BUaGlja25lc3MgPSAyNTANCiAgICAgICAgICAgICAgICBUZW1wX21pbiA9IC0zLjc4DQogICAgICAgICAgICAgICAgVGVtcF9tYXggPSAzMA0KICAgICAgICAgICAgICAgIHJfcyA9IDAuNDINCiAgICAgICAgICAgICAgICByX3dwID0gMC4xOA0KICAgICAgICAgICAgICAgIFJlZmVyZW5jZUFkanVzdG1lbnQgPSAwLjEwNTE2DQoNCgkJCQkJCQkJCQkJCSByX2MgPSBOQQ0KCQkJCQkJCQkJCQkJIHRpbGxhZ2Vfc29pbCA9ICJCcm93biINCgkJCQkJCQkJCQkJCSB0aWxsYWdlX3R5cGUgPSAiSW50ZW5zaXZlIFRpbGxhZ2UiDQoJCQkJCQkJCQkJCQkgaXJyaWdhdGlvbl9yZWdpb24gPSAiQ2FuYWRhIg0KCQkJCQkJCQkJCQkJIGlycmlnYXRpb25fdXNlX2VzdGltYXRlID0gRkFMU0UNCgkJCQkJCQkJCQkJCSBpcnJpZ2F0aW9uID0gMA0KDQoJCQkJCQkJCQkJCQkgeWllbGQgPSBmaWx0ZXIoU2l0ZURhdGFUYWJsZSwgeWVhcl9uYW1lID09IDE5ODMpJHRvdGFsX3lpZWxkDQogICAgICAgICAgICBwZXJlbm5pYWwgPSBmaWx0ZXIoU2l0ZURhdGFUYWJsZSwgeWVhcl9uYW1lID09IDE5ODMpJHBlcmVubmlhbA0KICAgICAgICAgICAgU29pbE9yZ2FuaWNDX1BlcmNlbnQgPSBmaWx0ZXIoU2l0ZURhdGFUYWJsZSwgeWVhcl9uYW1lID09IDE5ODMpJHNvaWxfdG90YWxfY2FyYm9uX3B4DQogICAgICAgICAgICBDbGF5Q29udGVudCA9IGZpbHRlcihTaXRlRGF0YVRhYmxlLCB5ZWFyX25hbWUgPT0gMTk4MykkY2xheV9weA0KICAgICAgICAgICAgU2FuZENvbnRlbnQgPSBmaWx0ZXIoU2l0ZURhdGFUYWJsZSwgeWVhcl9uYW1lID09IDE5ODMpJHNhbmRfcHgNCmBgYA0KIyBSdW5uaW5nIG11bHRpcGxlIHNpdGVzDQoNCiMgUnVubmluZyBhY2NvcmRpbmcgdG8gZ3JvdXBzDQoNCiMgUnVubmluZyB1c2luZyBtdWx0aXRocmVhZGluZw0KDQojIFJ1bm5pbmcgY2FsaWJyYXRpb25zIHdpdGggcGFyYW1ldGVyIG92ZXJyaWRlcw0KDQojIElQQ0NUMg0KDQojIFJvdGhD</div>
 
 
 

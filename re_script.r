@@ -102,6 +102,33 @@ calculate_re <- function(YearInputTable,
 												 irrigation_region = "Canada",
 												 irrigation_use_estimate = FALSE,
 												 irrigation = 0) {
+	# Check for NA values
+	required_inputs <- list(YearInputTable = YearInputTable,
+						yield = yield,
+						perennial = perennial,
+						SoilOrganicC_Percent = SoilOrganicC_Percent,
+						ClayContent = ClayContent,
+						SandContent = SandContent,
+						alfa = alfa,
+						SoilTopThickness = SoilTopThickness,
+						Temp_min = Temp_min,
+						Temp_max = Temp_max,
+						r_s = r_s,
+						r_wp = r_wp,
+						ReferenceAdjustment = ReferenceAdjustment,
+						r_c = r_c,
+						tillage_soil = tillage_soil,
+						tillage_type = tillage_type,
+						irrigation_region = irrigation_region,
+						irrigation_use_estimate = irrigation_use_estimate,
+						irrigation = irrigation
+						)
+	if(any(is.na(required_inputs))) {
+		warning(paste0("calculate_re() - NA values found for these inputs: ",paste(names(required_inputs)[is.na(required_inputs)], collapse=", ")))
+	}
+	if(any(is.na(YearInputTable))) {
+		warning("calculate_re() - NA values found in YearInputTable")
+	}
 	
 	# Eq. 2.2.1-1 through Eq. 2.2.1-3
 	GAI_return <- calculateGAI(JulianDay = YearInputTable$JulianDay,

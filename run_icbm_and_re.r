@@ -62,7 +62,9 @@ RunICBMAndRe <- function(DailyClimateTable,
                 )
 {
     simulation_years <- unique(SiteDataTable$year_name)
-
+    if(any(duplicated(SiteDataTable$year_name))) {
+        stop("Duplicate years detected in SiteDataTable.")
+    }
     if(any(!(simulation_years %in% unique(DailyClimateTable$Year)))) {
         stop("Years in DailyClimateTable do not overlap all years in SiteDataTable.")
     }

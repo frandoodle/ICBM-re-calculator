@@ -36,58 +36,201 @@ source(here::here("get_climate_data.r"))
 ```
 
 
-# Quick Start - ICBM + r~e~ Calculator
-In order to run ICBM simulations that include the calculated r~e~ parameter from climate data, you can use the function `RunICBMAndRe` from the script `run_icbm_and_re.r`.
+# ICBM
+ICBM simulations can be run using the function `RunICBMAndRe()` from the script `run_icbm_and_re.r`.
+These simulations include the r~e~ parameter calculated from daily climate data.
 The definitions of every input are given in the header of that script.
-The function returns the same output as the ICBM function `icbm_holos4_classic_manure`;
+The function returns a similar output as the original ICBM function `icbm_holos4_classic_manure()`:
 a table with ICBM C pools for every year, as well as the yearly mean r~e~ value.
 
-We need to add SLC polygon IDs to the sitedata because this is how the cliamte data is parsed.
+## Reading input data
 
+### Site data
 ```{r}
-# get SLC polygon IDs
+# We need to add SLC polygon IDs to the sitedata because this is how the climate data is parsed.
+# read SLC polygon IDs
 all_polyids <- readr::read_csv(here("climate_data","Documentation", "SLC_PCPTREGION.csv"))
-# read climate data
+# read site data
 all_sitedata <- readr::read_csv("all_experiments_dummy.csv") %>%
-    left_join(all_polyids, by=c("latitude" = "Lat"))
+    left_join(all_polyids, by=c("latitude" = "Lat", "longitude" = "Long"))
 ```
 
-
+For this example, filter out only the experiments conducted at the Ellerslie site
 ```{r}
-ex_sitedata <- all_sitedata %>%
-    filter(location_name == "Ellerslie")
-
-#getSiteData(all_sitedata, "Ellerslie")
-```
-
-## Importing climate data using `getClimateData()`
-The climate data should have these mandatory columns: `Year`, `JulianDay`, `Tavg`, which is the mean daily air temperature, `PREC`, which is the mean daily precipitation, and `PET`, which is the mean daily PET.
-
-Note: use the `suppressWarnings` function to run a function without any warnings
-(e.g. `suppressWarnings(run_icbm_and_re.r())`).
-
-```{r}
-# Import climate data
-ex_polyid <- unique(ex_sitedata$POLYID)
-ex_climatedata <- getClimateData(
-	climate_data_directory = here("climate_data","W9param_TablesCleaned"),
-	polyid = ex_polyid)
-
-```
-
-
-## Running ICBM
-
-```{r}
-ex_sitedata_1 <- ex_sitedata %>%
+ex1_sitedata <- all_sitedata %>%
+    filter(location_name == "Ellerslie") %>%
 	filter(treatment_number == 7) %>%
 	filter(year_name <= 1985)
+```
 
+### Climate data
+To run ICBM with the r~e~ calculator, the climate data should have these mandatory columns: `Year`, `JulianDay`, `Tavg`, which is the mean daily air temperature, `PREC`, which is the mean daily precipitation, and `PET`, which is the mean daily PET.
+
+We can use the function `getClimateData()` to fetch the relevant climate data from a specific POLYID, and format it according to the above requirements.
+
+Note: use `suppressWarnings()` to run a function without any warnings.
+
+```{r}
+# Climate data is organized accoring to POLYID, which is unique for every site location.
+ex1_polyids <- unique(ex1_sitedata$POLYID)
+# Import climate data
+ex1_climatedata <- getClimateData(
+	climate_data_directory = here("climate_data","W9param_TablesCleaned"),
+	polyids = ex1_polyids)
+
+```
+
+
+## Running the model on one site
+```{r}
+ex1_result <- RunICBMAndRe(
+	SiteDataTable = ex1_sitedata,
+	DailyClimateTable = ex1_climatedata,
+	ag_init = 0,
+	bg_init = 0,
+	o_init = 0,
+	irrigation_use_estimate = FALSE)
+ex1_result
+```
+
+```{r}
+setwd("C:/Users/durenvermettef/Documents/ICBM-re-calculator")
+SiteDataTable = ex1_sitedata
+DailyClimateTable = ex1_climatedata
+ag_init = 0
+bg_init = 0
+o_init = 0
+irrigation_use_estimate = FALSE
+
+alfa = 0.7
+SoilTopThickness = 250
+Temp_min = -3.78
+Temp_max = 30
+r_s = 0.42
+r_wp = 0.18
+ReferenceAdjustment = 0.10516
+
+r_c = NA
+tillage_soil = "Brown"
+tillage_type = "Intensive Tillage"
+irrigation_region = "Canada"
+irrigation_use_estimate = FALSE
+irrigation = 0
+
+yield = filter(SiteDataTable, year_name == 1983)$total_yield
+perennial = filter(SiteDataTable, year_name == 1983)$perennial
+SoilOrganicC_Percent = filter(SiteDataTable, year_name == 1983)$soil_total_carbon_px
+ClayContent = filter(SiteDataTable, year_name == 1983)$clay_px
+SandContent = filter(SiteDataTable, year_name == 1983)$sand_px
+```
+## Running ICBM for multiple treatments on the same site
+First we read the input data:
+```{r}
+ex2_sitedata <- all_sitedata %>%
+	filter(year_name <= 1985) %>%
+	filter(location_name == "Ellerslie")
+ex2_polyids <- unique(ex2_sitedata$POLYID)
+ex2_climatedata <- getClimateData(
+	climate_data_directory = here("climate_data","W9param_TablesCleaned"),
+	polyids = ex2_polyids)
+
+```
+
+Now we need to group the site data according to whichever grouping variables we are interested in, split the site data into a list according to the grouping variables, and then run the model for each group.
+```{r}
+ex2_result <- ex2_sitedata %>%
+	group_by(treatment_number) %>%
+	group_split %>%
+	map(~RunICBMAndRe(
+	SiteDataTable = .,
+	DailyClimateTable = ex2_climatedata,
+	ag_init = 0,
+	bg_init = 0,
+	o_init = 0,
+	irrigation_use_estimate = FALSE))
+ex2_result
+```
+
+## Running ICBM for multiple sites/teams
+In order to run the model for multiple sites, the input climate data could include multiple different POLYID values - one for each different location.
+`getClimateData()` can take a vector of POLYIDS as input, but note that it will return a table that includes all POLYIDS, and so needs to be further filtered before being used as an input to `RunICBMAndRe()`.
+```{r}
+ex3_sitedata <- all_sitedata %>%
+	filter(year_name > 1990) %>%
+	filter(year_name < 2005)
+ex3_polyids <- unique(ex3_sitedata$POLYID)
+ex3_climatedata <- getClimateData(
+	climate_data_directory = here("climate_data","W9param_TablesCleaned"),
+	polyids = ex3_polyids)
+
+```
+```{r}
+ex3_result <- ex3_sitedata %>%
+	filter(location_name %in% c("Ellerslie", "Harrow")) %>%
+	group_by(location_name, treatment_name, replication_number) %>%
+	group_split %>%
+
+	map(~RunICBMAndRe(
+	SiteDataTable = .,
+	DailyClimateTable = filter(ex3_climatedata, POLYID == unique(.$POLYID)),
+	ag_init = 0,
+	bg_init = 0,
+	o_init = 0,
+	irrigation_use_estimate = FALSE))
+ex3_result
+```
+
+Each input to `RunICBMAndRe()` is a seperate model run, and so needs to have consecutive years.
+Otherwise, an error is returned:
+```{r}
+try(ex3_sitedata %>%
+	group_by(team_name) %>%
+	group_split %>%
+
+	map(~RunICBMAndRe(
+	SiteDataTable = .,
+	DailyClimateTable = ex3_climatedata,
+	ag_init = 0,
+	bg_init = 0,
+	o_init = 0,
+	irrigation_use_estimate = FALSE)))
+```
+
+### Dealing with soil depth
+Some experiments sample the same treatment at different depths.
+Make sure to group out sampling depths if this is an issue.
+```{r}
+result
+result <- ex3_sitedata %>%
+	drop_na(team_name) %>%
+	group_by(team_name, treatment_name, replication_number) %>%
+	group_split %>%
+
+	map(~RunICBMAndRe(
+	SiteDataTable = .,
+	DailyClimateTable = ex3_climatedata,
+	ag_init = 0,
+	bg_init = 0,
+	o_init = 0,
+	irrigation_use_estimate = FALSE))
+view(result[[48]])
+```
+Furthermore, `DailyClimateTable`
+```{r}
 result <- RunICBMAndRe(
-	SiteDataTable = ex_sitedata_1,
-	DailyClimateTable = ex_climatedata,
+	SiteDataTable = ex2_sitedata,
+	DailyClimateTable = ex2_climatedata,
 	ag_init = 0,
 	bg_init = 0,
 	o_init = 0,
 	irrigation_use_estimate = FALSE)
 ```
+## Running ICBM according to groups
+
+## Running ICBM using multithreading
+
+## Running ICBM calibrations using parameter overrides
+
+# IPCCT2
+
+# RothC
