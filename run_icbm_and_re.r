@@ -61,17 +61,28 @@ RunICBMAndRe <- function(DailyClimateTable,
                 ReferenceAdjustment = 0.10516
                 )
 {
+    polyid <- unique(SiteDataTable$POLYID)
+    DailyClimateTable_polyid <- DailyClimateTable %>%
+        filter(POLYID == polyid)
     simulation_years <- unique(SiteDataTable$year_name)
+
+    # Errors ----------------------------
     if(any(duplicated(SiteDataTable$year_name))) {
         stop("Duplicate years detected in SiteDataTable.")
     }
-    if(any(!(simulation_years %in% unique(DailyClimateTable$Year)))) {
-        stop("Years in DailyClimateTable do not overlap all years in SiteDataTable.")
+    if(length(polyid) > 1) {
+        stop("Multiple POLYIDs found in SiteDataTable")
+    }
+    if(any(!(simulation_years %in% unique(DailyClimateTable_polyid$Year)))) {
+        stop("Years in DailyClimateTable_polyid do not overlap all years in SiteDataTable.")
+    }
+    if(nrow(DailyClimateTable_polyid) < 365) {
+        stop("Less than 365 rows in DailyClimateTable_polyid")
     }
 
     # Step 1: Calculate re for all years ------------------------------------------------
     
-    re <- DailyClimateTable %>%
+    re <- DailyClimateTable_polyid %>%
         filter(Year %in% simulation_years) %>%
         group_by(Year) %>%
         group_split() %>%
@@ -135,7 +146,8 @@ RunICBMAndRe <- function(DailyClimateTable,
                                                          ibg = ibg,
                                                          iman = iman,
                                                          re = re,
-                                                         yopool = yopool)
+                                                         yopool = yopool) %>%
+        mutate(polyid = polyid, .before = time)
 
     return(result)
 }

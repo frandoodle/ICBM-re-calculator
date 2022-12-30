@@ -7,18 +7,14 @@ library(readr)
 library(dplyr)
 source(here('calculate_pet_HOLOS.r'))
 
-getClimateData <- function(climate_data_directory,
-													 polyids)
+getClimateData <- function(climate_data_directory)
 	# climate_data_directory is the full directory (generated using here()) containing all .csv files with
 	# 		daily climate parameters from the NASA Power database
-	# polyid is the name of the experimental site (or a vector of names), which is used
-	# 		to filter the NASA climate data files
 	{
 	files <- list.files(climate_data_directory, full.names = TRUE, pattern = "csv$")
 	
 	climate_data <- files %>%
 		purrr::map(~readr::read_csv(., col_types = "ciiiiddddddddd")) %>%
-		purrr::map(~filter(., POLYID %in% polyids)) %>%
 		bind_rows() %>%
 		mutate(PET = calculatePETHolos(meanDailyTemperature=.$Tmean,
 																			solarRadiation=.$Rad,
