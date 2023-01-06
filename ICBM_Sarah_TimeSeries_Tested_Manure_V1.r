@@ -42,7 +42,14 @@ library(tidyverse)
 #											 initial young belowground C,
 #											 initial old C)
 
-icbm_holos4_classic_manure=function(times, iag, ibg,iman,re, yopool){
+icbm_holos4_classic_manure=function(times, iag, ibg,iman,re, yopool,
+kO = 0.00605,
+kY = 0.8,
+hag = 0.125,
+hm = 0.31,
+hbg = 0.3,
+... # ellipsis is added to allow for passing unused arguments using do.call when doing parameter overrides
+){
   # times=1983:2009
   # the number of years for the run
   #yopool=c(0, 38643.15,0 )
@@ -53,11 +60,11 @@ icbm_holos4_classic_manure=function(times, iag, ibg,iman,re, yopool){
   n=length(times)
 
   #Vectoring the inputs
-  kO=rep(0.00605,n)  # decomposition rate of old carbon pool 
-  kY=rep(0.8,n)
-  hag=rep(0.125,n)
-  hm=rep(0.31, n)
-  hbg=rep(0.3, n)
+  kO=rep(kO,n)  # decomposition rate of old carbon pool 
+  kY=rep(kY,n)
+  hag=rep(hag,n)
+  hm=rep(hm, n)
+  hbg=rep(hbg, n)
   
   
   
@@ -146,10 +153,10 @@ icbm_holos4_classic_manure=function(times, iag, ibg,iman,re, yopool){
     
   }
   #print(length(time))
-  print(length(Yag))
-  print(length(Ybg))
-  print(length(O))
-  print(length(Yman))
+  # print(length(Yag))
+  # print(length(Ybg))
+  # print(length(O))
+  # print(length(Yman))
   out=data.frame("time"=times, "Yag"=unlist(Yag), "Ybg"=unlist(Ybg), "Old"=unlist(O), "YManure"=unlist(Yman))  
   out$Tot=out$Yag+out$Ybg+out$Old+out$YManure
   out$re=re
