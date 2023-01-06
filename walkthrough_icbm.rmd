@@ -84,8 +84,7 @@ result_ex_onesite <- RunICBMAndRe(
 	DailyClimateTable = climatedata,
 	ag_init = 0,
 	bg_init = 0,
-	o_init = 0,
-	irrigation_use_estimate = FALSE)
+	o_init = 0)
 result_ex_onesite
 ```
 
@@ -143,8 +142,7 @@ result_ex_multipletrmt <- sitedata_ex_multipletrmt %>%
 			DailyClimateTable = climatedata,
 			ag_init = 0,
 			bg_init = 0,
-			o_init = 0,
-			irrigation_use_estimate = FALSE)
+			o_init = 0)
 		}
 	)
 result_ex_multipletrmt
@@ -159,8 +157,7 @@ result_ex_multipletrmt <- sitedata_ex_multipletrmt %>%
 	DailyClimateTable = climatedata,
 	ag_init = 0,
 	bg_init = 0,
-	o_init = 0,
-	irrigation_use_estimate = FALSE))
+	o_init = 0))
 result_ex_multipletrmt
 ```
 
@@ -184,8 +181,7 @@ result_ex_multiplesite <- sitedata_ex_multiplesite %>%
 	DailyClimateTable = climatedata,
 	ag_init = 0,
 	bg_init = 0,
-	o_init = 0,
-	irrigation_use_estimate = FALSE))
+	o_init = 0))
 result_ex_multiplesite
 ```
 
@@ -206,8 +202,7 @@ try(sitedata_ex_error1 %>%
 	DailyClimateTable = climatedata,
 	ag_init = 0,
 	bg_init = 0,
-	o_init = 0,
-	irrigation_use_estimate = FALSE)))
+	o_init = 0)))
 ```
 
 We can see the problem by looking to see if there are any duplicated years in our list elements:
@@ -266,8 +261,7 @@ result_ex_depth <- sitedata_ex_depth[1:10] %>%
 	DailyClimateTable = climatedata,
 	ag_init = 0,
 	bg_init = 0,
-	o_init = 0,
-	irrigation_use_estimate = FALSE))
+	o_init = 0))
 result_ex_depth
 ```
 
@@ -275,7 +269,91 @@ Other possible columns that could lead to problems with grouping include `field_
 
 ## Running ICBM using parellel computing
 
-## Running ICBM calibrations using parameter overrides
+## Running ICBM using parameter overrides
+Certain parameters need to be overridden in order to perform calibrations or sensitivity analyses.
+This can be done by passing the parameters to override directly into the `RunICBMAndRe` wrapper function.
+
+Constant parameters (e.g. `SoilTopThickness`, default = 250) and parameters that are inputted as part of an external data table (e.g. `PREC` from the climate data table, no default) can both be overridden.
+
+```{r}
+result_ex_multipletrmt <- sitedata_ex_multipletrmt %>%
+	map(~RunICBMAndRe(
+	SiteDataTable = .,
+	DailyClimateTable = climatedata,
+	ag_init = 0,
+	bg_init = 0,
+	o_init = 0,
+	# overrides
+	hag = 0.1))
+result_ex_multipletrmt
+```
+
+### Optimizing a parameter using `optim`
+To demonstrate a practical example of using parameter overrides, we will use the built-in `optim` function.
+
+`optim` passes a vector to the function you define, and finds the values that minimize this function.
+The vector can have names, and these names are also passed to the function, which allows us to override parameters based on name.
+
+```{r}
+ex_func <- function(parameters) {
+    parameters["x"] + parameters["y"]
+}
+optim(par = c(x=-1.2,y=1), fn = ex_func, method = "L-BFGS-B", lower = c(x=0,y=1), upper = c(x=1,y=5))
+```
+
+In order to use optimization functions such as this with SOC models, we usually need to write a small wrapper function that translates inputs/outputs of our model script for use by the optimization function.
+In this case, the parameters that we are interested in optimizing are passed as the first argument of the function.
+
+This function runs the model, finds the mean r_{e} between years, and returns that value.
+Therefore, by passing this function to `optim`, we will be asking it to minimize the value of r_{e}.
+In practice, you will want to write a wrapper function that computes model error.
+
+```{r}
+icbm_wrapper_example <- function(parameters,
+DailyClimateTable,
+                SiteDataTable,
+                ag_init = 0,
+                bg_init = 0,
+                o_init = 0,
+                ...) {
+					args <- list(...)
+
+					inputs <- list(DailyClimateTable = DailyClimateTable,
+					SiteDataTable = SiteDataTable,
+					ag_init = ag_init,
+					bg_init = bg_init,
+					o_init = o_init) %>%
+					append(args) %>%
+					append(as.list(parameters))
+
+					model_results <- do.call(RunICBMAndRe,inputs)
+
+					mean_re <- mean(bind_rows(model_results)$re)
+
+					print(paste0(names(parameters),": ",parameters))
+					print(paste0("mean_re: ",mean_re))
+					return(mean_re)
+				}
+```
+We can override a parameter using the first argument by hand, or pass the whole function into the `optim` function.
+```{r}
+	icbm_wrapper_example(
+		parameters = c(r_c = 1),
+	SiteDataTable = sitedata_ex_multipletrmt[[1]],
+	DailyClimateTable = climatedata,
+	ag_init = 0,
+	bg_init = 0,
+	o_init = 0
+	)
+
+optim(par = c(r_c = 0.5), fn = icbm_wrapper_example, method = "L-BFGS-B", lower = c(r_c = 0), upper = c(r_c = 1), SiteDataTable = sitedata_ex_multipletrmt[[1]], DailyClimateTable = climatedata)
+```
+We can optimize for multiple parameters
+```{r}
+optim(par = c(r_c = 0.5, hag = 0.1), fn = icbm_wrapper_example, method = "L-BFGS-B", lower = c(r_c = 0, hag = 0), upper = c(r_c = 1, hag = 1), SiteDataTable = sitedata_ex_multipletrmt[[1]], DailyClimateTable = climatedata)
+```
+
+
 
 # IPCCT2
 
