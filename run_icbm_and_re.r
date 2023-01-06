@@ -48,17 +48,10 @@ source(here::here("ICBM_Sarah_TimeSeries_Tested_Manure_V1.r"))
 
 RunICBMAndRe <- function(DailyClimateTable,
                 SiteDataTable,
-                irrigation_use_estimate = FALSE,
                 ag_init = 0,
                 bg_init = 0,
                 o_init = 0,
-                alfa = 0.7,
-                SoilTopThickness = 250,
-                Temp_min = -3.78,
-                Temp_max = 30,
-                r_s = 0.42,
-                r_wp = 0.18,
-                ReferenceAdjustment = 0.10516
+                ...
                 )
 {
     polyid <- unique(SiteDataTable$POLYID)
@@ -80,6 +73,20 @@ RunICBMAndRe <- function(DailyClimateTable,
         stop("Less than 365 rows in DailyClimateTable_polyid")
     }
 
+    # Parameter overrides ---------------------------------------
+    params <- list(...)
+    if(length(params) > 0) {
+        for(paramname in names(params)) {
+            if (paramname %in% names(SiteDataTable)) {
+                SiteDataTable[paramname] <- params[paramname]
+                params <- params[names(params) != paramname]
+            }
+            if (paramname %in% names(DailyClimateTable_polyid)) {
+                DailyClimateTable_polyid[paramname] <- params[paramname]
+                params <- params[names(params) != paramname]
+            }
+      }
+    }
     # Step 1: Calculate re for all years ------------------------------------------------
     
     re <- DailyClimateTable_polyid %>%
@@ -90,26 +97,25 @@ RunICBMAndRe <- function(DailyClimateTable,
         # using the yearly daily climate table as input. The terms such as:
         # filter(SiteDataTable, year_name == .$Year[1])$total_yield
         # pull the relevant data from the site data table for use in the re calculation for that year only
-        map(~calculate_re(.,
+        # Note: do.call is used in order to pass parameter overrides to the function
+        map(~do.call(calculate_re, append(list(YearInputTable = .,
             yield = filter(SiteDataTable, year_name == .$Year[1])$total_yield,
             perennial = filter(SiteDataTable, year_name == .$Year[1])$perennial,
             SoilOrganicC_Percent = filter(SiteDataTable, year_name == .$Year[1])$soil_total_carbon_px,
             ClayContent = filter(SiteDataTable, year_name == .$Year[1])$clay_px,
             SandContent = filter(SiteDataTable, year_name == .$Year[1])$sand_px,
-            alfa = alfa,
-            SoilTopThickness = SoilTopThickness,
-            Temp_min = Temp_min,
-            Temp_max = Temp_max,
-            r_s = r_s,
-            r_wp = r_wp,
-            ReferenceAdjustment = ReferenceAdjustment,
             r_c = filter(SiteDataTable, year_name == .$Year[1])$r_c,
             tillage_soil = filter(SiteDataTable, year_name == .$Year[1])$tillage_soil,
             tillage_type = filter(SiteDataTable, year_name == .$Year[1])$tillage_type,
             irrigation_region = filter(SiteDataTable, year_name == .$Year[1])$irrigation_region,
-            irrigation_use_estimate = irrigation_use_estimate,
-            irrigation = filter(SiteDataTable, year_name == .$Year[1])$irrigation)) %>% 
+            irrigation = filter(SiteDataTable, year_name == .$Year[1])$irrigation),
+            params))) %>%
         unlist()
+        
+
+        
+        
+        
     
     # Step 2: Run ICBM ------------------------------------------------------------------
     
@@ -141,13 +147,14 @@ RunICBMAndRe <- function(DailyClimateTable,
     iman <- SiteDataTable$manure_kgha %>%
         replace_na(0)
 
-    result <- icbm_holos4_classic_manure(times = simulation_years,
-                                                         iag = iag,
-                                                         ibg = ibg,
-                                                         iman = iman,
-                                                         re = re,
-                                                         yopool = yopool) %>%
+    result <- do.call(icbm_holos4_classic_manure, append(list(times = simulation_years,
+    iag = iag,
+    ibg = ibg,
+    iman = iman,
+    re = re,
+    yopool = yopool),
+    params)) %>%
         mutate(polyid = polyid, .before = time)
-
+        
     return(result)
 }
