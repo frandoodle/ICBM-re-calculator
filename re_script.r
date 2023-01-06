@@ -101,7 +101,9 @@ calculate_re <- function(YearInputTable,
 												 tillage_type = "Intensive Tillage",
 												 irrigation_region = "Canada",
 												 irrigation_use_estimate = FALSE,
-												 irrigation = 0) {
+												 irrigation = 0,
+												 ...# ellipsis is added to allow for passing unused arguments using do.call when doing parameter overrides
+												 ) {
 	# Check for NA values
 	required_inputs <- list(YearInputTable = YearInputTable,
 						yield = yield,
