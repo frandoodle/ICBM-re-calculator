@@ -64,6 +64,7 @@ Note: use `suppressWarnings()` to run a function without any warnings.
 
 ```{r}
 climatedata <- getClimateData(climate_data_directory = here("climate_data","W9param_TablesCleaned"))
+climatedata
 ```
 
 
@@ -304,8 +305,8 @@ optim(par = c(x=-1.2,y=1), fn = ex_func, method = "L-BFGS-B", lower = c(x=0,y=1)
 In order to use optimization functions such as this with SOC models, we usually need to write a small wrapper function that translates inputs/outputs of our model script for use by the optimization function.
 In this case, the parameters that we are interested in optimizing are passed as the first argument of the function.
 
-This function runs the model, finds the mean r_{e} between years, and returns that value.
-Therefore, by passing this function to `optim`, we will be asking it to minimize the value of r_{e}.
+This function runs the model, finds the mean r~e~ between years, and returns that value.
+Therefore, by passing this function to `optim`, we will be asking it to minimize the value of r~e~.
 In practice, you will want to write a wrapper function that computes model error.
 
 ```{r}
@@ -353,8 +354,13 @@ We can optimize for multiple parameters
 optim(par = c(r_c = 0.5, hag = 0.1), fn = icbm_wrapper_example, method = "L-BFGS-B", lower = c(r_c = 0, hag = 0), upper = c(r_c = 1, hag = 1), SiteDataTable = sitedata_ex_multipletrmt[[1]], DailyClimateTable = climatedata)
 ```
 
-
-
 # IPCCT2
+
+```{r}
+sitedata_ex_onesite
+climatedata
+
+
+```
 
 # RothC

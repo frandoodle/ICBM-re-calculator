@@ -34,17 +34,6 @@ source(here::here("ICBM_Sarah_TimeSeries_Tested_Manure_V1.r"))
 # ag_init - initial aboveground young C pool
 # bg_init - initial belowground young C pool
 # o_init - initial old C pool
-# irrigation_use_estimate
-#
-# Constants:
-# alfa = 0.7,
-# SoilTopThickness = 250,
-# Temp_min = -3.78,
-# Temp_max = 30,
-# r_s = 0.42,
-# r_wp = 0.18,
-# ReferenceAdjustment = 0.10516
-
 
 RunICBMAndRe <- function(DailyClimateTable,
                 SiteDataTable,
@@ -155,6 +144,6 @@ RunICBMAndRe <- function(DailyClimateTable,
     yopool = yopool),
     params)) %>%
         mutate(polyid = polyid, .before = time)
-        
+
     return(result)
 }
