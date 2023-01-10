@@ -90,7 +90,6 @@ result_ex_onesite
 ```
 
 ```{r}
-setwd("C:/Users/durenvermettef/Documents/ICBM-re-calculator")
 SiteDataTable = sitedata_ex_onesite
 DailyClimateTable = climatedata
 ag_init = 0
