@@ -1,7 +1,5 @@
-
-dir.create(tempdir()) # This fixes a bug if the temporary directory is not found
-here::i_am("ipcct2_run.r")
-source("SOCTier2Model.r")
+library(here)
+source(here::here("r/ipcct2_SOCTier2Model.r"))
 
 run_ipcct2 <- function(site_data,
 											 climate_data,

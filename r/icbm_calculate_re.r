@@ -9,8 +9,7 @@ library(here)
 
 dir.create(tempdir()) # This fixes a bug if the temporary directory is not found
 
-here::i_am("re_script.r")
-source(here::here("re_functions.r"))
+source(here::here("r/icbm_calculate_re_functions.r"))
 
 # INPUTS:
 # 

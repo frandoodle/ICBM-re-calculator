@@ -1,4 +1,4 @@
-calculatePETHolos <- function(meanDailyTemperature,
+holos_calculate_pet <- function(meanDailyTemperature,
 															solarRadiation,
 															relativeHumidity){
 	# This is a vectorized implementation of the Holos reference PET calculator.

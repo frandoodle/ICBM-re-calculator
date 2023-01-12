@@ -1,7 +1,9 @@
 library(here)
 library(purrr)
 
-appendClimateData <- function(climate_data_folder,
+# This function can be used to append new sites to the master climate data files
+
+append_climate_data <- function(climate_data_folder,
 															master_folder,
 															new_site_folder)
 {

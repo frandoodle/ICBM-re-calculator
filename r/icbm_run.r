@@ -2,10 +2,8 @@
 # yearly inputs (a site data table and a daily climate table)
 
 dir.create(tempdir()) # This fixes a bug if the temporary directory is not found
-here::i_am("run_icbm_and_re.r")
-source(here::here("re_functions.r"))
-source(here::here("re_script.r"))
-source(here::here("ICBM_Sarah_TimeSeries_Tested_Manure_V1.r"))
+source(here::here("r/icbm_calculate_re.r"))
+source(here::here("r/ICBM_Sarah_TimeSeries_Tested_Manure_V1.r"))
 
 # Overall Inputs ------------------------------------------------------------
 # SiteDataTable - a table with yearly site data
@@ -34,7 +32,7 @@ source(here::here("ICBM_Sarah_TimeSeries_Tested_Manure_V1.r"))
 # bg_init - initial belowground young C pool
 # o_init - initial old C pool
 
-RunICBMAndRe <- function(DailyClimateTable,
+run_icbm <- function(DailyClimateTable,
 												 SiteDataTable,
 												 ag_init = 0,
 												 bg_init = 0,
@@ -100,27 +98,27 @@ RunICBMAndRe <- function(DailyClimateTable,
 					 irrigation = filter(SiteDataTable, year_name == .$Year[1])$irrigation),
 			params))) %>%
 		unlist()
-        
-    # Step 2: Run ICBM ------------------------------------------------------------------
-    
-    # ICBM Inputs ---
-    # times - the number of years to run
-    # iag - annual carbon input to aboveground young C pool.
-    # 			Should be a vector of the same length as "times"
-    # ibg - annual carbon input to belowground young C pool.
-    # 			Should be a vector of the same length as "times"
-    # iman - annual carbon input to manure young C pool.
-    # 			 Should be a vector of the same length as "times"
-    # re - a soil climate-and management parameter that aggregates
-    #			 the external influences on soil biological activity
-    #			 Should be a single, constant numerical value.
-    #			 OR MAYBE: Should be a vector of the same length as "times"
-    # yopool - A vector of length 3 representing the 
-    #					 Initial C pools. 
-    #						yopool = c(initial young aboveground C,
-    #											 initial young belowground C,
-    #											 initial old C)
-
+	
+	# Step 2: Run ICBM ------------------------------------------------------------------
+	
+	# ICBM Inputs ---
+	# times - the number of years to run
+	# iag - annual carbon input to aboveground young C pool.
+	# 			Should be a vector of the same length as "times"
+	# ibg - annual carbon input to belowground young C pool.
+	# 			Should be a vector of the same length as "times"
+	# iman - annual carbon input to manure young C pool.
+	# 			 Should be a vector of the same length as "times"
+	# re - a soil climate-and management parameter that aggregates
+	#			 the external influences on soil biological activity
+	#			 Should be a single, constant numerical value.
+	#			 OR MAYBE: Should be a vector of the same length as "times"
+	# yopool - A vector of length 3 representing the 
+	#					 Initial C pools. 
+	#						yopool = c(initial young aboveground C,
+	#											 initial young belowground C,
+	#											 initial old C)
+	
 	yopool <- c(ag = ag_init,
 							bg = bg_init,
 							o = o_init)

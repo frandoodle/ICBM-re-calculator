@@ -91,10 +91,10 @@ calculateWaterContent <- function(SoilOrganicC_Percent, ClayContent, SandContent
 	FieldCapacity <- FieldCapacityPercent/100
 	
 	return(c(OrgCfactor = OrgCfactor,
-				 Clayfactor = Clayfactor,
-				 Sandfactor = Sandfactor,
-				 WiltingPoint = WiltingPoint,
-				 FieldCapacity = FieldCapacity))
+					 Clayfactor = Clayfactor,
+					 Sandfactor = Sandfactor,
+					 WiltingPoint = WiltingPoint,
+					 FieldCapacity = FieldCapacity))
 }
 
 # calculateSurfaceTemp <- function(InputTable){

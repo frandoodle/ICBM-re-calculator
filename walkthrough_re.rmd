@@ -3,13 +3,19 @@ title: "Running ICBM r~e~ Calculator"
 author: "Francis Durnin-Vermette"
 date: "2022/11/22"
 output:
+  html_document:
+    toc: true
+    number_sections: true
+    df_print: paged
   html_notebook:
     toc: true
     number_sections: true
     df_print: paged
-bibliography: re.bib
+bibliography: bib.bib
 editor_options:
   chunk_output_type: inline
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "doc") })
 ---
 
 ```{r include=FALSE}
@@ -27,14 +33,13 @@ library(tidyr)
 dir.create(tempdir()) #This fixes a bug if the temporary directory is not found
 
 here::i_am("walkthrough_re.rmd")
-source(here::here("re_script.r"))
-source(here::here("re_functions.r"))
+source(here::here("r/icbm_calculate_re.r"))
 
 ```
 
 # Quick Start - r~e~ Calculator
 This code chunk represents the necessary input table and function call to use the r~e~ calculator.
-Definitions of the input variables can be found in the header section of the re_script.r file.
+Definitions of the input variables can be found in the header section of the icbm_calculate_re.r file.
 `calculate_re` returns a single numeric value: the mean daily r~e~ value averages across every day of one year.
 In order to build a vector of r~e~ values for a multi-year simulation, see the code chunks in [this section](#multiyear).
 
@@ -81,7 +86,7 @@ calculate_re
 ## Input data
 
 ```{r, message=FALSE}
-holos_re_calculation <- readr::read_csv(here::here("holos_re_calculation.csv"))
+holos_re_calculation <- readr::read_csv(here::here("data/holos_re_calculation.csv"))
 
 # climate data
 daily_input_test <- tibble(
@@ -647,13 +652,9 @@ PercentageDifference
 ```
 This means our R implementation of r~e~ is only `r PercentageDifference`% different from the r~e~ as calculated by Holos.
 
-## re_script.r vs. Holos
+## calculate_re vs. Holos
 
 Now let's test whether our standalone r~e~ script works as well:
-
-```{r, include = FALSE}
-source(here::here("re_script.r"))
-```
 
 ```{r}
 script_re <- calculate_re(daily_input_test,
@@ -668,7 +669,7 @@ PercentageDifference = 100*(holos_re - script_re)/holos_re
 
 PercentageDifference
 ```
-The error value from `script_re` (the r~e~ calculator implementation in the standalone script) is the same as from `test_re` (the r~e~ calculator implementation in this R notebook), meaning our re_script.r implementation works as intended.
+The error value from `script_re` (the r~e~ calculator implementation in the standalone script) is the same as from `test_re` (the r~e~ calculator implementation in this R notebook), meaning our icbm_calculate_re.r implementation works as intended.
 
 ## Testing irrigation parameters {#irrigationdisc}
 
