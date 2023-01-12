@@ -58,26 +58,18 @@ names(X2) <- varSI
 #    - soboljansen is used for ilustration here
 
 si_obj2 <- sensitivity::soboljansen(model = NULL, X1 = X1, X2 = X2, nboot = 100)
+
 X <- si_obj2$X
 n <- nrow(X)
+X <- cbind("SampleID" = 1:nrow(X), X)
 
-z <- X %>%
+params_list <- X %>%
 	rowwise %>%
 	group_split %>%
 	map(function(x) {y <- x %>%
 			pivot_longer(everything()) %>%
 			deframe()
 			z <- split(unname(y),names(y))})
-
-zz <- z[[1]]
-
-
-do.call("run_ipcct2",
-				append(list(input_sitedata, climate_data,
-										init_active = 0,
-										init_slow = 0,
-										init_passive = 0),
-							 zz))
 
 # End of sample generation for GSA
 
@@ -86,6 +78,29 @@ do.call("run_ipcct2",
 #      are iid 
 
 
+run_ipcct2_calculate_loglik <- function(row) 
+{
+	id <- row[[1]] #gets id, hopefully (I think foreach::foreach coerces rows into unnamed vectors)
+	modelled <- do.call("run_ipcct2",
+											append(list(input_sitedata, climate_data,
+																	init_active = 0,
+																	init_slow = 0,
+																	init_passive = 0),
+														 row))
+	actuals <-  input_sitedata %>%
+		mutate(POLYID = as.character(POLYID)) %>%
+		select(site = POLYID, year = year_name,  actual = soc_tha_30cm)
+	
+	model_actual <- modelled %>%
+		full_join(actuals, by=c("site", "year")) %>%
+		filter(!is.na(actual))
+	
+	loglike <- loglik(model_actual$soc_total, model_actual$actual)
+	
+	output <- tibble(id, loglik = loglike)
+	
+	return(output)
+}
 
 Lkhood <- NULL
 
@@ -94,30 +109,50 @@ cl=parallel::makeCluster(ncores)
 doParallel::registerDoParallel(cl)
 
 Lkhood=foreach(i=1:nrow(X), 
-               .combine = rbind, 
-               .packages = c("parallel", 
-                             "doParallel", 
-                             "tidyverse"))%dopar% RunIPCC(i, X, Driver ,value)
+							 .combine = rbind, 
+							 .packages = c("parallel", 
+							 							"doParallel", 
+							 							"tidyverse"),
+							 .export = c("run_ipcct2",
+							 						"IPCCTier2SOMmodel")) %dopar%
+	
+	run_ipcct2_calculate_loglik(i)
 stopCluster(cl)
 
 # code for non-paralleled run
-
-# for(i in 1:nrow(X)){
-# #i=1
-#     print(paste(date(), "Case: ", i))
-#     lkd <- RunIPCC(i, X, Driver, value)
-#     #View(lkd)
-#     Lkhood <- rbind(Lkhood, lkd)
+# Lkhood <- list()
+# for(i in 1:length(params_list)){
+# 	modelled <- do.call("run_ipcct2",
+# 					append(list(input_sitedata, climate_data,
+# 											init_active = 0,
+# 											init_slow = 0,
+# 											init_passive = 0),
+# 								 params_list[[i]]))
+# 	
+# 	actuals <-  input_sitedata %>%
+# 		mutate(POLYID = as.character(POLYID)) %>%
+# 		select(site = POLYID, year = year_name,  actual = soc_tha_30cm)
+# 
+# 	model_actual <- modelled %>%
+# 		full_join(actuals, by=c("site", "year")) %>%
+# 		filter(!is.na(actual))
+# 	
+# 	loglike <- loglik(model_actual$soc_total, model_actual$actual)
+# 	
+# 	Lkhood[[i]] <- tibble(id = params_list[[i]]$SampleID, loglik = loglike)
 # }
-# Lkhood%>%mutate(loglik=ifelse(loglik==-Inf, NA, loglik))%>%group_by(SampleID)%>%summarise(loglik=mean(loglik, na.rm = T))->Lkhood1
 
-Lkhood->Lkhood1
+Lkhood1 <- Lkhood %>%
+	bind_rows %>%
+	mutate(loglik = ifelse(loglik == -Inf, NA, loglik)) %>%
+	group_by(id) %>%
+	summarise(loglik = mean(loglik, na.rm=T))
 
-setwd(wkdir)
+si_obj2_llkhd <- sensitivity::tell(x = si_obj2, y = Lkhood1$loglik)
+
 #==============================
 # Calculate First-order and Total global sensitivity indices
 #==============================
-si_obj2_llkhd <- tell(x = si_obj2, y = Lkhood1$loglik)
 singleSI <-si_obj2_llkhd$S # individual sensitivity indices
 singleSI$parmas <- row.names(singleSI)
 names(singleSI) <- c("singsi", "bias", "std.error", "singsi.lci", "singsi.uci", "params")
@@ -131,8 +166,7 @@ SingPlot <- ggplot(singleSI, aes(x = reorder(params, -ID), y = singsi, ymax=sing
         coord_flip() + theme_bw()
 SingPlot
 
-
-
+si_obj2_llkhd$S
 
          
 
@@ -159,6 +193,7 @@ TotSIPlot <- ggplot(totalSI, aes(x = reorder(params, -ID), y = totsi, ymax=totsi
         geom_errorbar(width=0.2, size=1, color="black")+
         geom_bar(stat='identity', fill="grey", alpha=0.70) +
         coord_flip() + theme_bw()
+TotSIPlot
 
 AllSI%>%ggplot()+
         geom_bar(aes(x=reorder(params, totsi), y=singsi), stat='identity', fill="black", alpha=0.7)+

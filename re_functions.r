@@ -117,7 +117,7 @@ calculateSoilTemp <- function(SurfaceTemp,
 	table <- tibble(SurfaceTemp = SurfaceTemp,
 									GAI = GAI)
 	result <- table %>%
-		mutate(SoilTemp = accumulate(.x = row_number()[-1], .init = 0, .f=function(SoilTemp_dprev, row) {
+		mutate(SoilTemp = purrr::accumulate(.x = row_number()[-1], .init = 0, .f=function(SoilTemp_dprev, row) {
 			data <- cur_data_all()
 			
 			SurfaceTemp <- data$SurfaceTemp[row]
@@ -160,7 +160,7 @@ calculateWaterStorage <- function(SoilAvailWater,
 									ET_c = ET_c)
 	
 	result = table %>%
-		mutate(d = accumulate(.x = row_number()[-1], .init = WaterStorage_dprev_initial, .f=function(WaterStorage_dprev, row) {
+		mutate(d = purrr::accumulate(.x = row_number()[-1], .init = WaterStorage_dprev_initial, .f=function(WaterStorage_dprev, row) {
 			data <- cur_data_all()
 			
 			SoilAvailWater <- data$SoilAvailWater[row]

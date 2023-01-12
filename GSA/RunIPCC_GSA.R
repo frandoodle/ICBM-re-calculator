@@ -24,7 +24,7 @@ library(FME)
 
 
 
-source("./RCodes/loglike.R")
+source("GSA/loglike.R")
 
 SITES=list()
 SITES[[1]]=c("Breton", "Breton", 26, 12,1979) # orginal supplied by Chang

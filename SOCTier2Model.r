@@ -20,7 +20,8 @@ f7         = 0.42,
 f8         = 0.45,
 tmax       = 45,
 topt       = 33.69,
-plig       = 3)
+plig       = 3,
+...)
 {#browser()
   #  AUTHOR: 
   #    Ram Gurung and Stephen Ogle
