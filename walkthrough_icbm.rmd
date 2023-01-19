@@ -41,27 +41,65 @@ source(here::here("r/gsa.r"))
 
 ```
 
+This walkthrough will go over reading input data,
+grouping input data based on multiple sites or treatments,
+running the models,
+performing sensitivity analysis (global and local) using the models,
+and performing parameter optimization using the models.
 
-# ICBM
-ICBM simulations can be run using the function `run_icbm()` from the script `run_icbm_and_re.r`.
-These simulations include the r~e~ parameter calculated from daily climate data.
-The definitions of every input are given in the header of that script.
-The function returns a similar output as the original ICBM function `icbm_holos4_classic_manure()`:
-a table with ICBM C pools for every year, as well as the yearly mean r~e~ value.
+# Input data
 
-## Reading input data
+## Site data
+In order to run the models on input data, the site data needs to be grouped and
+split into individual treatments with no repeated years.
+First we show how to read the site data, then how to group and split it appropriately.
 
-### Site data
+### Reading
+We need to add SLC polygon IDs to the site data because this is how climate data is linked to site data.
 ```{r}
-# We need to add SLC polygon IDs to the sitedata because this is how climate data is linked to site data.
 # read SLC polygon IDs
 polyids_all <- readr::read_csv(here("data/climate_data","Documentation", "SLC_PCPTREGION.csv"))
 # read site data
 sitedata_all <- readr::read_csv(here("data/all_experiments_dummy.csv")) %>%
-    left_join(polyids_all, by=c("latitude" = "Lat", "longitude" = "Long"))
+	left_join(polyids_all, by=c("latitude" = "Lat", "longitude" = "Long"))
 ```
 
-### Climate data
+### Single site
+For this example, we filter out one treatment from the experiment conducted at the Ellerslie site.
+```{r}
+sitedata_ex_onesite <- sitedata_all %>%
+	filter(location_name == "Ellerslie") %>%
+	filter(treatment_number == 7) %>%
+	filter(year_name <= 1985)
+```
+
+### Multiple treatments on one site
+In this example, we want to simulate every treatment at the Ellerslie site.
+In order to do this, we `group_by` treatment, and then split each of the groups into a seperate table using `group_split`.
+This leaves us with a list of site data tables that we will pass iteratively into our modelling function.
+
+```{r}
+sitedata_ex_multipletrmt <- sitedata_all %>%
+	filter(year_name <= 1985) %>%
+	filter(location_name == "Ellerslie") %>%
+	group_by(treatment_name) %>%
+	group_split
+```
+
+### Multiple sites / teams
+Data from specific locations or for specific teams and can be acquired using `filter`:
+```{r}
+sitedata_ex_multiplesite <- sitedata_all %>%
+	filter(year_name > 1990) %>%
+	filter(year_name < 2005) %>%
+	filter(team_name == "A") %>%
+	filter(location_name %in% c("Ellerslie", "Harrow")) %>%
+	group_by(location_name, treatment_name, replication_number) %>%
+	group_split
+
+```
+
+## Climate data
 To run ICBM with the r~e~ calculator, the climate data should have these mandatory columns: `Year`, `JulianDay`, `Tavg`, which is the mean daily air temperature, `PREC`, which is the mean daily precipitation, and `PET`, which is the mean daily PET.
 
 We can use the function `read_climate_data()` to fetch the relevant climate data, and format it according to the above requirements.
@@ -74,18 +112,26 @@ climate_data
 ```
 
 
-## Running the model on one site
-For this example, we are only looking at one treatment from the experiment conducted at the Ellerslie site.
-```{r}
-sitedata_ex_onesite <- sitedata_all %>%
-    filter(location_name == "Ellerslie") %>%
-	filter(treatment_number == 7) %>%
-	filter(year_name <= 1985)
-```
+# Running the models
+
+## ICBM
+ICBM simulations can be run using the function `run_icbm()` from the script `run_icbm_and_re.r`.
+These simulations include the r~e~ parameter calculated from daily climate data.
+The definitions of every input are given in the header of that script.
+The function returns a similar output as the original ICBM function `icbm_holos4_classic_manure()`:
+a table with ICBM C pools for every year, as well as the yearly mean r~e~ value.
+
+### Single site
 To run the model, we can simply pass the site and climate data to `run_icbm()`.
 `ag_init`, `bg_init`, and `o_init` are initial C contents of those three pools,
 and `irrigation_use_estimate` is a TRUE/FALSE value indicating whether you want daily irrigation values to be estimated based on site location.
+
 ```{r}
+head(sitedata_ex_onesite, 3)
+```
+
+
+```{r warning=F}
 result_ex_onesite <- run_icbm(
 	SiteDataTable = sitedata_ex_onesite,
 	DailyClimateTable = climate_data,
@@ -95,103 +141,74 @@ result_ex_onesite <- run_icbm(
 result_ex_onesite
 ```
 
-```{r}
-SiteDataTable = sitedata_ex_onesite
-DailyClimateTable = climate_data
-ag_init = 0
-bg_init = 0
-o_init = 0
-irrigation_use_estimate = FALSE
-
-alfa = 0.7
-SoilTopThickness = 250
-Temp_min = -3.78
-Temp_max = 30
-r_s = 0.42
-r_wp = 0.18
-ReferenceAdjustment = 0.10516
-
-r_c = NA
-tillage_soil = "Brown"
-tillage_type = "Intensive Tillage"
-irrigation_region = "Canada"
-irrigation_use_estimate = FALSE
-irrigation = 0
-
-yield = filter(SiteDataTable, year_name == 1983)$total_yield
-perennial = filter(SiteDataTable, year_name == 1983)$perennial
-SoilOrganicC_Percent = filter(SiteDataTable, year_name == 1983)$soil_total_carbon_px
-ClayContent = filter(SiteDataTable, year_name == 1983)$clay_px
-SandContent = filter(SiteDataTable, year_name == 1983)$sand_px
-```
-## Running ICBM for multiple treatments on the same site
-In this example, we want to simulate every treatment at the Ellerslie site.
-In order to do this, we `group_by` treatment, and then split each of the groups into a seperate table using `group_split`.
-This leaves us with a list of site data tables that we will pass iteratively into `run_icbm`.
-
-```{r}
-sitedata_ex_multipletrmt <- sitedata_all %>%
-	filter(year_name <= 1985) %>%
-	filter(location_name == "Ellerslie") %>%
-	group_by(treatment_name) %>%
-	group_split
-```
-
+### Multiple treatments on the same site
 We use the `map` function (from the library `purrr`) to pass each list element of `sitedata_ex_multipletrmt` into `run_icbm`.
-
 More information about how `purrr` and `map` work can be found here: https://purrr.tidyverse.org/reference/map.html
+
 ```{r}
+sitedata_ex_multipletrmt[1:3] %>%
+	map(~head(.,3))
+```
+
+
+```{r warning=F}
+
 result_ex_multipletrmt <- sitedata_ex_multipletrmt %>%
+	suppressWarnings() %>%
 	map(function(x) {
-			run_icbm(
+		run_icbm(
 			SiteDataTable = x,
 			DailyClimateTable = climate_data,
 			ag_init = 0,
 			bg_init = 0,
 			o_init = 0)
-		}
+		
+	}
 	)
-result_ex_multipletrmt
+
+```
+
+```{r}
+result_ex_multipletrmt[1:3] %>%
+	map(~head(.,3))
 ```
 
 In the `map` function, `~` is shorthand for defining the function that we will iterate through, and `.` refers to the current element of the iteration.
 Using these shorthands, we can simplify this process:
-```{r}
+```{r warning=F}
 result_ex_multipletrmt <- sitedata_ex_multipletrmt %>%
 	map(~run_icbm(
-	SiteDataTable = .,
-	DailyClimateTable = climate_data,
-	ag_init = 0,
-	bg_init = 0,
-	o_init = 0))
-result_ex_multipletrmt
+		SiteDataTable = .,
+		DailyClimateTable = climate_data,
+		ag_init = 0,
+		bg_init = 0,
+		o_init = 0))
 ```
 
 
-## Running ICBM for multiple sites/teams
-Data for specific teams and from specific locations can be acquired using `filter`:
+### Multiple sites
 ```{r}
-sitedata_ex_multiplesite <- sitedata_all %>%
-	filter(year_name > 1990) %>%
-	filter(year_name < 2005) %>%
-	filter(team_name == "A") %>%
-	filter(location_name %in% c("Ellerslie", "Harrow")) %>%
-	group_by(location_name, treatment_name, replication_number) %>%
-	group_split
-	
+sitedata_ex_multiplesite[21:23] %>%
+	map(~head(.,3))
 ```
-```{r}
+
+```{r warning=F}
 result_ex_multiplesite <- sitedata_ex_multiplesite %>%
 	map(~run_icbm(
-	SiteDataTable = .,
-	DailyClimateTable = climate_data,
-	ag_init = 0,
-	bg_init = 0,
-	o_init = 0))
-result_ex_multiplesite
+		SiteDataTable = .,
+		DailyClimateTable = climate_data,
+		ag_init = 0,
+		bg_init = 0,
+		o_init = 0))
 ```
 
-### Grouping errors
+```{r}
+result_ex_multiplesite[21:23] %>%
+	map(~head(.,3))
+```
+
+
+# Grouping errors
 Each input to `run_icbm()` is a seperate model run, and so needs to have consecutive years.
 Otherwise, an error is returned:
 ```{r}
@@ -201,17 +218,18 @@ sitedata_ex_error1 <- sitedata_all %>%
 	group_by(location_name) %>%
 	group_split
 ```
+
 ```{r}
 try(sitedata_ex_error1 %>%
-	map(~run_icbm(
-	SiteDataTable = .,
-	DailyClimateTable = climate_data,
-	ag_init = 0,
-	bg_init = 0,
-	o_init = 0)))
+			map(~run_icbm(
+				SiteDataTable = .,
+				DailyClimateTable = climate_data,
+				ag_init = 0,
+				bg_init = 0,
+				o_init = 0)))
 ```
 
-We can see the problem by looking to see if there are any duplicated years in our list elements:
+We can see the problem better by finding duplicated years in our list elements:
 
 ```{r}
 sitedata_ex_error1 %>%
@@ -244,7 +262,7 @@ sitedata_ex_error2 %>%
 
 In these sites, there are actually two other grouping variables that we need to account for: soil depth and plot id.
 
-In our dataset, soil_depth_min_cm and soil_depth_max_cm are in seperate columns.
+In our dataset, soil_depth_min_cm and soil_depth_max_cm are in separate columns.
 To create a grouping variable for soil depth, we concatenate these two columns into a single soil depth column, and then add this as a new group.
 
 Then, by adding soil_depth as well as plot_id to our grouping variables, we arrive at valid inputs to the model:
@@ -260,41 +278,81 @@ sitedata_ex_depth %>%
 	unlist
 ```
 
-```{r}
+```{r warning=F}
 result_ex_depth <- sitedata_ex_depth[1:10] %>%
 	map(~run_icbm(
-	SiteDataTable = .,
-	DailyClimateTable = climate_data,
-	ag_init = 0,
-	bg_init = 0,
-	o_init = 0))
-result_ex_depth
+		SiteDataTable = .,
+		DailyClimateTable = climate_data,
+		ag_init = 0,
+		bg_init = 0,
+		o_init = 0))
+```
+```{r}
+result_ex_depth[1:3] %>%
+	map(~head(.,3))
 ```
 
 Other possible columns that could lead to problems with grouping include `field_name`, `block`, etc.
 
-## Running ICBM using parellel computing
-
-## Running ICBM using parameter overrides
+# Parameter overrides
 Certain parameters need to be overridden in order to perform calibrations or sensitivity analyses.
-This can be done by passing the parameters to override directly into the `run_icbm` wrapper function.
+This can be done by passing the parameters to override directly into the `run_icbm` function.
 
 Constant parameters (e.g. `SoilTopThickness`, default = 250) and parameters that are inputted as part of an external data table (e.g. `PREC` from the climate data table, no default) can both be overridden.
 
-```{r}
-result_ex_multipletrmt <- sitedata_ex_multipletrmt %>%
+```{r warning=F}
+result_ex_multipletrmt_override <- sitedata_ex_multipletrmt %>%
 	map(~run_icbm(
-	SiteDataTable = .,
-	DailyClimateTable = climate_data,
-	ag_init = 0,
-	bg_init = 0,
-	o_init = 0,
-	# overrides
-	hag = 0.1))
-result_ex_multipletrmt
+		SiteDataTable = .,
+		DailyClimateTable = climate_data,
+		ag_init = 0,
+		bg_init = 0,
+		o_init = 0,
+		# overrides
+		hag = 0.1))
 ```
 
-### Optimizing a parameter using `optim`
+```{r}
+tibble(Year = result_ex_multipletrmt[[1]]$time,
+			 `Total SOC Regular` = result_ex_multipletrmt[[1]]$Tot,
+			 `Total SOC Overridden` = result_ex_multipletrmt_override[[1]]$Tot)
+
+```
+
+
+# Sensitivity analysis
+```{r}
+param_bounds <- read.csv(here("data/ipcct2_parameters_gsa.csv"), stringsAsFactors = FALSE)
+param_bounds
+```
+
+```{r}
+sa_ex_onesite <- gsa(site_data = sitedata_ex_onesite,
+										 climate_data = climate_data,
+										 parameter_bounds = param_bounds,
+										 sample_size = 10)
+
+sa_ex_onesite
+```
+
+The sensitivity analysis can also be run on a list of multiple sites/treatments.
+This can be done by passing a list of data.frames to the function.
+In this case, each site/treatment is passed the same sets of parameters,
+and the results represent the mean value between each site/treatment.
+
+```{r}
+sa_ex_multipletrmt <- gsa(site_data = sitedata_ex_multipletrmt,
+													climate_data = climate_data,
+													parameter_bounds = param_bounds,
+													sample_size = 10)
+
+sa_ex_multipletrmt
+```
+
+
+# Optimization
+
+## Optimizing a parameter using `optim`
 To demonstrate a practical example of using parameter overrides, we will use the built-in `optim` function.
 
 `optim` passes a vector to the function you define, and finds the values that minimize this function.
@@ -302,7 +360,7 @@ The vector can have names, and these names are also passed to the function, whic
 
 ```{r}
 ex_func <- function(parameters) {
-    parameters["x"] + parameters["y"]
+	parameters["x"] + parameters["y"]
 }
 optim(par = c(x=-1.2,y=1), fn = ex_func, method = "L-BFGS-B", lower = c(x=0,y=1), upper = c(x=1,y=5))
 ```
@@ -316,41 +374,41 @@ In practice, you will want to write a wrapper function that computes model error
 
 ```{r}
 icbm_wrapper_example <- function(parameters,
-DailyClimateTable,
-                SiteDataTable,
-                ag_init = 0,
-                bg_init = 0,
-                o_init = 0,
-                ...) {
-					args <- list(...)
-
-					inputs <- list(DailyClimateTable = DailyClimateTable,
-					SiteDataTable = SiteDataTable,
-					ag_init = ag_init,
-					bg_init = bg_init,
-					o_init = o_init) %>%
-					append(args) %>%
-					append(as.list(parameters))
-
-					model_results <- do.call(run_icbm,inputs)
-
-					mean_re <- mean(bind_rows(model_results)$re)
-
-					print(paste0(names(parameters),": ",parameters))
-					print(paste0("mean_re: ",mean_re))
-					return(mean_re)
-				}
+																 DailyClimateTable,
+																 SiteDataTable,
+																 ag_init = 0,
+																 bg_init = 0,
+																 o_init = 0,
+																 ...) {
+	args <- list(...)
+	
+	inputs <- list(DailyClimateTable = DailyClimateTable,
+								 SiteDataTable = SiteDataTable,
+								 ag_init = ag_init,
+								 bg_init = bg_init,
+								 o_init = o_init) %>%
+		append(args) %>%
+		append(as.list(parameters))
+	
+	model_results <- do.call(run_icbm,inputs)
+	
+	mean_re <- mean(bind_rows(model_results)$re)
+	
+	print(paste0(names(parameters),": ",parameters))
+	print(paste0("mean_re: ",mean_re))
+	return(mean_re)
+}
 ```
 We can override a parameter using the first argument by hand, or pass the whole function into the `optim` function.
 ```{r}
-	icbm_wrapper_example(
-		parameters = c(r_c = 1),
+icbm_wrapper_example(
+	parameters = c(r_c = 1),
 	SiteDataTable = sitedata_ex_multipletrmt[[1]],
 	DailyClimateTable = climate_data,
 	ag_init = 0,
 	bg_init = 0,
 	o_init = 0
-	)
+)
 
 optim(par = c(r_c = 0.5), fn = icbm_wrapper_example, method = "L-BFGS-B", lower = c(r_c = 0), upper = c(r_c = 1), SiteDataTable = sitedata_ex_multipletrmt[[1]], DailyClimateTable = climate_data)
 ```
@@ -359,22 +417,35 @@ We can optimize for multiple parameters
 optim(par = c(r_c = 0.5, hag = 0.1), fn = icbm_wrapper_example, method = "L-BFGS-B", lower = c(r_c = 0, hag = 0), upper = c(r_c = 1, hag = 1), SiteDataTable = sitedata_ex_multipletrmt[[1]], DailyClimateTable = climate_data)
 ```
 
-# IPCCT2
+```{r include=FALSE}
+#Debug
+SiteDataTable = sitedata_ex_onesite
+DailyClimateTable = climate_data
+ag_init = 0
+bg_init = 0
+o_init = 0
+irrigation_use_estimate = FALSE
 
-```{r}
+alfa = 0.7
+SoilTopThickness = 250
+Temp_min = -3.78
+Temp_max = 30
+r_s = 0.42
+r_wp = 0.18
+ReferenceAdjustment = 0.10516
 
+r_c = NA
+tillage_soil = "Brown"
+tillage_type = "Intensive Tillage"
+irrigation_region = "Canada"
+irrigation_use_estimate = FALSE
+irrigation = 0
 
+yield = filter(SiteDataTable, year_name == 1983)$total_yield
+perennial = filter(SiteDataTable, year_name == 1983)$perennial
+SoilOrganicC_Percent = filter(SiteDataTable, year_name == 1983)$soil_total_carbon_px
+ClayContent = filter(SiteDataTable, year_name == 1983)$clay_px
+SandContent = filter(SiteDataTable, year_name == 1983)$sand_px
 ```
 
-# Sensitivity analysis
-```{r}
-param_bounds <- read.csv(here("data/ipcct2_parameters_gsa.csv"), stringsAsFactors = FALSE)
-
-sa_results <- gsa(sitedata_ex_onesite,
-		climate_data,
-		param_bounds)
-
-sa_results
-```
-
-# RothC
+# References

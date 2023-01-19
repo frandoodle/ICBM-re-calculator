@@ -15,7 +15,12 @@ source(here::here("r/gsa_loglike.r"))
 
 gsa <- function(site_data,
 								climate_data,
-								parameter_bounds) {
+								parameter_bounds,
+								sample_size = 10) {
+	# site_data can either be a data.frame, or a list of data.frames
+	if(!inherits(site_data, "list")) {
+		site_data <- list(site_data)
+	}
 	
 	# read prior distribution from a csv file
 	# (Required columns: Parameter, value, 
@@ -30,7 +35,7 @@ gsa <- function(site_data,
 	
 	# sample size (10 used for illustration purposes)
 	# (1024 used in Gurung et al., 2020)
-	N <- 10 
+	N <- sample_size
 	
 	# Sobols method required 2 matrix
 	m1 = matrix(runif(nParams*N), nrow=N);
@@ -82,15 +87,15 @@ gsa <- function(site_data,
 	#      are iid 
 	
 	
-	run_ipcct2_calculate_loglik <- function(row) 
+	run_ipcct2_calculate_loglik <- function(site_data, parameters) 
 	{
-		id <- row[[1]] #gets id, hopefully (I think foreach::foreach coerces rows into unnamed vectors)
+		id <- parameters[[1]] #gets id, hopefully (I think foreach::foreach coerces rows into unnamed vectors)
 		modelled <- do.call("run_ipcct2",
 												append(list(site_data, climate_data,
 																		init_active = 0,
 																		init_slow = 0,
 																		init_passive = 0),
-															 row))
+															 parameters))
 		actuals <-  site_data %>%
 			mutate(POLYID = as.character(POLYID)) %>%
 			select(site = POLYID, year = year_name,  actual = soc_tha_30cm)
@@ -108,29 +113,35 @@ gsa <- function(site_data,
 	
 	Lkhood <- NULL
 	
-	ncores=parallel::detectCores()-2
-	cl=parallel::makeCluster(ncores)
-	doParallel::registerDoParallel(cl)
+	Lkhood_list <- list()
 	
-	Lkhood=foreach(i=1:nrow(X), 
-								 .combine = rbind, 
-								 .packages = c("parallel", 
-								 							"doParallel", 
-								 							"tidyverse"),
-								 .export = c("run_ipcct2",
-								 						"IPCCTier2SOMmodel",
-								 						"loglik")) %dopar%
+	for(site_n in 1:length(site_data)) {
+		ncores=parallel::detectCores()-2
+		cl=parallel::makeCluster(ncores)
+		doParallel::registerDoParallel(cl)
 		
-		run_ipcct2_calculate_loglik(i)
-	stopCluster(cl)
+		Lkhood=foreach(i=1:nrow(X), 
+									 .combine = rbind, 
+									 .packages = c("parallel", 
+									 							"doParallel", 
+									 							"tidyverse"),
+									 .export = c("run_ipcct2",
+									 						"IPCCTier2SOMmodel",
+									 						"loglik")) %dopar%
+			
+			run_ipcct2_calculate_loglik(site_data[[site_n]], i)
+		stopCluster(cl)
+		Lkhood_list[[site_n]] <- Lkhood
+	}
+	
 	
 	# # code for non-paralleled run
-	# Lkhood <- list()
+	# Lkhood_list <- list()
 	# for(i in 1:length(params_list)){
-	# 	Lkhood[[i]] <- run_ipcct2_calculate_loglik(params_list[[i]])
+	# 	Lkhood_list[[i]] <- run_ipcct2_calculate_loglik(params_list[[i]])
 	# }
 	
-	Lkhood1 <- Lkhood %>%
+	Lkhood1 <- Lkhood_list %>%
 		bind_rows %>%
 		mutate(loglik = ifelse(loglik == -Inf, NA, loglik)) %>%
 		group_by(id) %>%
