@@ -23,15 +23,12 @@ gsa <- function(site_data,
 	}
 	
 	# read prior distribution from a csv file
-	# (Required columns: Parameter, value, 
+	# (Required columns: Parameter, value, lower, upper)
 	paramBounds <- parameter_bounds
 	
 	# names of parameters that are allowed to vary
 	varSI       <- paramBounds$Parameter
 	nParams     <- length(varSI)
-	
-	# Random sampling for GSA
-	set.seed(10)
 	
 	# sample size (10 used for illustration purposes)
 	# (1024 used in Gurung et al., 2020)
