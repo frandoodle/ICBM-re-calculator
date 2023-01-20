@@ -4,14 +4,15 @@
 
 library(sensitivity)
 library(boot)
-library(ggplot2)
 library(doParallel)
 library(parallel)
 library(foreach)
 library(here)
 
+library(ggplot2)
+
 source(here::here("r/ipcct2_run.r"))
-source(here::here("r/gsa_loglike.r"))
+source(here::here("r/bayesian_loglike.r"))
 
 gsa <- function(site_data,
 								climate_data,
@@ -84,29 +85,7 @@ gsa <- function(site_data,
 	#      are iid 
 	
 	
-	run_ipcct2_calculate_loglik <- function(site_data, parameters) 
-	{
-		id <- parameters[[1]] #gets id, hopefully (I think foreach::foreach coerces rows into unnamed vectors)
-		modelled <- do.call("run_ipcct2",
-												append(list(site_data, climate_data,
-																		init_active = 0,
-																		init_slow = 0,
-																		init_passive = 0),
-															 parameters))
-		actuals <-  site_data %>%
-			mutate(POLYID = as.character(POLYID)) %>%
-			select(site = POLYID, year = year_name,  actual = soc_tha_30cm)
-		
-		model_actual <- modelled %>%
-			full_join(actuals, by=c("site", "year")) %>%
-			filter(!is.na(actual))
-		
-		loglike <- loglik(model_actual$soc_total, model_actual$actual)
-		
-		output <- tibble(id, loglik = loglike)
-		
-		return(output)
-	}
+	
 	
 	Lkhood <- NULL
 	
@@ -124,9 +103,10 @@ gsa <- function(site_data,
 									 							"tidyverse"),
 									 .export = c("run_ipcct2",
 									 						"IPCCTier2SOMmodel",
-									 						"loglik")) %dopar%
+									 						"loglik",
+									 						"run_ipcct2_calculate_loglik")) %dopar%
 			
-			run_ipcct2_calculate_loglik(site_data[[site_n]], i)
+			run_ipcct2_calculate_loglik(site_data[[site_n]], climate_data, i)
 		stopCluster(cl)
 		Lkhood_list[[site_n]] <- Lkhood
 	}

@@ -348,6 +348,34 @@ sa_ex_multipletrmt <- gsa(site_data = sitedata_ex_multipletrmt,
 
 sa_ex_multipletrmt
 ```
+Sampling Importacne Resmapling (SIR) can also be run using a list of site data.frames:
+```{r}
+sir_ex_multipletrmt <- sir(site_data = sitedata_ex_multipletrmt,
+													climate_data = climate_data,
+													parameter_bounds = param_bounds,
+													sample_size = 100,
+													resample_size = 10)
+sir_ex_multipletrmt
+```
+
+```{r}
+prior <- sir_ex_multipletrmt$prior %>%
+	pivot_longer(cols = !`SampleID`)
+posterior <- sir_ex_multipletrmt$posterior %>%
+	pivot_longer(cols = !`SampleID`)
+
+p2<-ggplot() +
+	geom_density(data = posterior, aes(value), col = NA, fill = "red", alpha = 0.2) +
+	geom_density(data = prior, aes(value), col = NA, fill = "blue", alpha = 0.2) +
+	facet_wrap(~name, scales = "free", ncol = 3) +
+	theme_bw() +
+	theme(panel.border = element_rect(colour = "black", fill = NA), panel.grid.major = element_blank(),
+				axis.title.x=element_blank(),panel.grid.minor = element_blank()) +
+	scale_y_continuous(expand = c(0,0)) + scale_x_continuous(expand = c(0,0))
+p2
+```
+
+
 
 
 # Optimization
