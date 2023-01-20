@@ -56,9 +56,22 @@ gsa <- function(site_data,
 	
 	# choose a sensitivity method of your choice from the sensitivity package in R.
 	# see documentation for available options.
-	#    - soboljansen is used for illustration here
+	
+	fast99_qargs <- paramBounds %>%
+		group_by(Parameter) %>%
+		select(min = lower, max = upper)
+		group_split %>%
+		map(function(x) {y <- x %>%
+					select(-Parameter) %>%
+					as.list()
+		})
 	
 	si_obj2 <- sensitivity::soboljansen(model = NULL, X1 = X1, X2 = X2, nboot = 100)
+	si_obj2 <- sensitivity::fast99(model = NULL,
+																 factors = paramBounds$Parameter,
+																 n = N, M = 4,
+																 q="qunif",
+																 q.arg = fast99_qargs)
 	
 	X <- si_obj2$X
 	n <- nrow(X)
@@ -77,15 +90,8 @@ gsa <- function(site_data,
 			}) %>%
 		map(~ .[params_list_sorted_names])
 	
-	
-	# End of sample generation for GSA
-	
 	# Run the model and calculate log-likelihood
-	#    - likelihoods were calculated assuming that the error (modeled - mesasured)
-	#      are iid 
-	
-	
-	
+	# likelihoods were calculated assuming that the error (modeled - mesasured) are iid 
 	
 	Lkhood <- NULL
 	
