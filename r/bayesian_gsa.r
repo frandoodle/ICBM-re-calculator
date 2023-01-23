@@ -17,7 +17,10 @@ source(here::here("r/bayesian_loglike.r"))
 gsa <- function(site_data,
 								climate_data,
 								parameter_bounds,
-								sample_size = 10) {
+								sample_size = 10,
+								method = "soboljansen") {
+	# methods include either "soboljansen" or "fast99"
+	
 	# site_data can either be a data.frame, or a list of data.frames
 	if(!inherits(site_data, "list")) {
 		site_data <- list(site_data)
@@ -56,22 +59,25 @@ gsa <- function(site_data,
 	
 	# choose a sensitivity method of your choice from the sensitivity package in R.
 	# see documentation for available options.
+	if(method == "fast99") {
+		fast99_qargs <- paramBounds %>%
+			group_by(Parameter) %>%
+			select(Parameter, min = lower, max = upper) %>%
+			group_split %>%
+			map(function(x) {y <- x %>%
+				select(-Parameter) %>%
+				as.list()
+			})
+	}
 	
-	fast99_qargs <- paramBounds %>%
-		group_by(Parameter) %>%
-		select(min = lower, max = upper)
-		group_split %>%
-		map(function(x) {y <- x %>%
-					select(-Parameter) %>%
-					as.list()
-		})
 	
-	si_obj2 <- sensitivity::soboljansen(model = NULL, X1 = X1, X2 = X2, nboot = 100)
-	si_obj2 <- sensitivity::fast99(model = NULL,
-																 factors = paramBounds$Parameter,
-																 n = N, M = 4,
-																 q="qunif",
-																 q.arg = fast99_qargs)
+	si_obj2 <- switch(method,
+										soboljansen = sensitivity::soboljansen(model = NULL, X1 = X1, X2 = X2, nboot = 100),
+										fast99 = sensitivity::fast99(model = NULL,
+																								 factors = paramBounds$Parameter,
+																								 n = N, M = 4,
+																								 q="qunif",
+																								 q.arg = fast99_qargs))
 	
 	X <- si_obj2$X
 	n <- nrow(X)
@@ -87,7 +93,7 @@ gsa <- function(site_data,
 				deframe()
 			z <- split(unname(y),names(y))
 			return(z)
-			}) %>%
+		}) %>%
 		map(~ .[params_list_sorted_names])
 	
 	# Run the model and calculate log-likelihood
@@ -118,7 +124,7 @@ gsa <- function(site_data,
 	}
 	
 	
-	# # code for non-paralleled run
+	# # code for non-paralleled run (defunct)
 	# Lkhood_list <- list()
 	# for(i in 1:length(params_list)){
 	# 	Lkhood_list[[i]] <- run_ipcct2_calculate_loglik(params_list[[i]])
@@ -132,49 +138,30 @@ gsa <- function(site_data,
 	
 	si_obj2_llkhd <- sensitivity::tell(x = si_obj2, y = Lkhood1$loglik)
 	
-	#==============================
-	# Calculate First-order and Total global sensitivity indices
-	#==============================
-	singleSI <-si_obj2_llkhd$S # individual sensitivity indices
-	singleSI$parmas <- row.names(singleSI)
-	names(singleSI) <- c("singsi", "bias", "std.error", "singsi.lci", "singsi.uci", "params")
-	singleSI <- singleSI[order(-singleSI$singsi), ]
-	rownames(singleSI) <- 1:nrow(singleSI)
-	singleSI <- singleSI[, c("params", "singsi", "singsi.lci", "singsi.uci")]
-	SingPlot <- ggplot(singleSI, aes(x = reorder(params, -singsi), y = singsi, ymax=singsi.uci, ymin=singsi.lci)) + 
-		xlab("Parameters") +
-		ylab("First Order Sensitivity Index") +
-		geom_errorbar(width=0.2, size=1, color="black") +
-		geom_bar(stat='identity', fill="grey", alpha=0.70 ) +
-		coord_flip() +
-		theme_bw()
-	SingPlot
+	if(method == "soboljansen")
+	{
+		# Calculate First-order and Total global sensitivity indices
+		singleSI <- si_obj2_llkhd$S %>%
+			select(singsi = original, singsi.lci = `min. c.i.`, singsi.uci = `max. c.i.`) %>%
+			rownames_to_column("params") %>%
+			as_tibble()
+		totalSI <- si_obj2_llkhd$T %>%
+			select(totsi = original, totsi.lci = `min. c.i.`, totsi.uci = `max. c.i.`) %>%
+			rownames_to_column("params") %>%
+			as_tibble()
+		
+		combined_si <- totalSI %>%
+			full_join(singleSI, by=c("params"))
+		
+		return_si <- combined_si
+	}
+	if(method == "fast99")
+	{
+		return_si <- tibble(main = si_obj2_llkhd$D1 / si_obj2_llkhd$V,
+												interactions = 1 - si_obj2_llkhd$Dt / si_obj2_llkhd$V) %>%
+			mutate(params =  colnames(res$X), .before=main)
+	}
 	
-	si_obj2_llkhd$S
-	
-	
-	
-	#==============================
-	# Total-Order sensitivity indices
-	#==============================
-	totalSI <- si_obj2_llkhd$T # total sensitivity indices
-	totalSI$parmas <- row.names(totalSI)
-	names(totalSI) <- c("totsi", "bias", "std.error", "totsi.lci", "totsi.uci", "params")
-	totalSI <- totalSI[order(-totalSI$totsi), ]
-	rownames(totalSI) <- 1:nrow(totalSI)
-	totalSI <- totalSI[, c("params", "totsi", "totsi.lci", "totsi.uci")]
-	
-	TotSIPlot <- ggplot(totalSI, aes(x = reorder(params, -totsi), y = totsi, ymax=totsi.uci, ymin=totsi.lci)) + 
-		xlab("Parameters") + ylab("Total Sensitivity Index") + 
-		geom_errorbar(width=0.2, size=1, color="black") +
-		geom_bar(stat='identity', fill="grey", alpha=0.70) +
-		coord_flip() + theme_bw()
-	TotSIPlot
-	
-	combined_si <- totalSI %>%
-		full_join(singleSI, by=c("params"))
-	
-	return(combined_si)
+	return(return_si)
 	
 }
-        

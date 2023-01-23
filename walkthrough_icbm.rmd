@@ -37,7 +37,7 @@ here::i_am("walkthrough_icbm.rmd")
 source(here::here("r/icbm_calculate_re.r"))
 source(here::here("r/icbm_run.r"))
 source(here::here("r/read_climate_data.r"))
-source(here::here("r/gsa.r"))
+source(here::here("r/bayesian_gsa.r"))
 
 ```
 
@@ -327,13 +327,33 @@ param_bounds
 ```
 
 ```{r}
-sa_ex_onesite <- gsa(site_data = sitedata_ex_onesite,
+sa_ex_onesite_sj <- gsa(site_data = sitedata_ex_onesite,
 										 climate_data = climate_data,
 										 parameter_bounds = param_bounds,
-										 sample_size = 10)
+										 sample_size = 10,
+										 method = "soboljansen")
 
-sa_ex_onesite
+sa_ex_onesite_sj
 ```
+The fast99 method of computing sensitivity analyses indices can also be used
+```{r}
+sa_ex_onesite_f99 <- gsa(site_data = sitedata_ex_onesite,
+										 climate_data = climate_data,
+										 parameter_bounds = param_bounds,
+										 sample_size = 100,
+										 method = "fast99")
+
+sa_ex_onesite_f99
+
+ggplot(sa_ex_onesite_f99)+
+	geom_bar(aes(x=reorder(params, interactions), y=main),stat='identity', 
+					 fill="black") +
+	geom_bar(aes(x=reorder(params, interactions), y=interactions),
+					 stat='identity', fill="grey",alpha=0.7 ) +
+	coord_flip() +
+	theme_bw()
+```
+
 
 The sensitivity analysis can also be run on a list of multiple sites/treatments.
 This can be done by passing a list of data.frames to the function.
@@ -348,7 +368,37 @@ sa_ex_multipletrmt <- gsa(site_data = sitedata_ex_multipletrmt,
 
 sa_ex_multipletrmt
 ```
-Sampling Importacne Resmapling (SIR) can also be run using a list of site data.frames:
+Results of the sensitivity analysis can be graphed
+```{r}
+# First-order sensitivity
+ggplot(sa_ex_onesite, aes(x = reorder(params, -singsi), y = singsi, ymax=singsi.uci, ymin=singsi.lci)) + 
+	xlab("Parameters") +
+	ylab("First-Order Sensitivity Index") +
+	geom_errorbar(width=0.2, size=1, color="black") +
+	geom_bar(stat='identity', fill="grey", alpha=0.70 ) +
+	coord_flip() +
+	theme_bw()
+
+# Total order sensitivity
+ggplot(sa_ex_onesite, aes(x = reorder(params, -singsi), y = totsi, ymax=totsi.uci, ymin=totsi.lci))+ 
+	xlab("Parameters") +
+	ylab("Total-Order Sensitivity Index") + 
+	geom_errorbar(width=0.2, size=1, color="black")+
+	geom_bar(stat='identity', fill="grey", alpha=0.70) +
+	coord_flip() +
+	theme_bw()
+
+# Both
+ggplot(sa_ex_onesite, aes(x = reorder(params, -singsi), y = totsi, ymax=totsi.uci, ymin=totsi.lci)) +
+        geom_bar(aes(y = singsi), stat='identity', fill="black", alpha=0.7)+
+        geom_bar(aes(y = totsi), stat='identity', fill="grey", alpha=0.7)+
+        geom_errorbar(width=0.2, size=1)+
+        coord_flip() +
+			 	theme_bw()
+
+```
+
+Sampling Importance Resmapling (SIR) can also be run using a list of site data.frames:
 ```{r}
 sir_ex_multipletrmt <- sir(site_data = sitedata_ex_multipletrmt,
 													climate_data = climate_data,
