@@ -1,5 +1,5 @@
 
-mc <- function(site_data,
+montecarlo <- function(site_data,
 							 climate_data,
 							 distribution,
 							 sample_size = 10) {
@@ -10,8 +10,13 @@ mc <- function(site_data,
 	# Sample from distribution
 	parameters_sample <- slice_sample(distribution, n = sample_size)
 	
+	# Median from distribution
+	parameters_median <- distribution %>%
+		summarise_all(median)
+	
 	# Run model on samples (Monte Carlo)
 	model_results_list <- list()
+	median_results_list <- list()
 	for(site_n in 1:length(site_data)) {
 		ncores=parallel::detectCores()-2
 		cl=parallel::makeCluster(ncores)
@@ -34,10 +39,28 @@ mc <- function(site_data,
 										 parameters))
 		stopCluster(cl)
 		model_results_list[[site_n]] <- model_results
+		# Run model on median
+		median_results <- do.call("run_ipcct2",
+						append(list(site_data[[site_n]],
+												climate_data,
+												init_active = 0,
+												init_slow = 0,
+												init_passive = 0,
+												include_site_inputs = TRUE),
+									 parameters_median))
+		
+		median_results_list[[site_n]] <- median_results
 	}
 	
+	
+	
+	
 	# Return results
-	results <- model_results_list %>%
+	
+	results1 <- model_results_list %>%
 		bind_rows
-	return(results)
+	results2 <- median_results_list %>%
+		bind_rows
+	return(list(montecarlo = results1,
+							median = results2))
 }

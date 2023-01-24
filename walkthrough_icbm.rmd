@@ -436,16 +436,20 @@ ggplot() +
 
 # Uncertainty analysis
 ```{r}
-uncertainty_ex_multipletrmt <- mc(site_data = sitedata_ex_multipletrmt,
+uncertainty_ex_multipletrmt <- montecarlo(site_data = sitedata_ex_multipletrmt,
 													climate_data = climate_data,
 													distribution = sir_ex_multipletrmt$posterior,
 													sample_size = 10)
 uncertainty_ex_multipletrmt
 ```
-We can graph this
+We can graph this.
 ```{r}
-ggplot(uncertainty_ex_multipletrmt, aes(x=soc_total, y=soc_tha_30cm)) +
-	geom_point()
+ggplot(data = NULL, aes(x=soc_total/10, y=soc_tha_30cm)) +
+	geom_point(data=uncertainty_ex_multipletrmt$montecarlo, color = "grey") +
+	geom_point(data=uncertainty_ex_multipletrmt$median, color="black") +
+	geom_abline(intercept = 0, slope = 1) +
+	coord_fixed(ratio = 1, xlim = c(0,400), ylim = c(0,400), expand = TRUE, clip="off") +
+	theme_bw()
 ```
 
 
