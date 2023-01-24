@@ -38,6 +38,8 @@ source(here::here("r/icbm_calculate_re.r"))
 source(here::here("r/icbm_run.r"))
 source(here::here("r/read_climate_data.r"))
 source(here::here("r/bayesian_gsa.r"))
+source(here::here("r/bayesian_sir.r"))
+
 
 ```
 
@@ -397,8 +399,16 @@ ggplot(sa_ex_onesite, aes(x = reorder(params, -singsi), y = totsi, ymax=totsi.uc
 			 	theme_bw()
 
 ```
+# Sampling Importance Resampling (SIR)
+Following the sensitivity analysis, we select the parameters that have the highest sensitivities for use in our Bayesian calibration.
+@gurungBayesianCalibrationDayCent2020 use a 2.5% cut-off value for sensitivity. Parameters above this level are considered "sensitive parameters" and are included in the SIR, otherwise they are excluded.
+```{r}
+param_bounds
+sa_ex_onesite_sj
+```
 
-Sampling Importance Resmapling (SIR) can also be run using a list of site data.frames:
+
+SIR can also be run using a list of site data.frames:
 ```{r}
 sir_ex_multipletrmt <- sir(site_data = sitedata_ex_multipletrmt,
 													climate_data = climate_data,
@@ -414,7 +424,7 @@ prior <- sir_ex_multipletrmt$prior %>%
 posterior <- sir_ex_multipletrmt$posterior %>%
 	pivot_longer(cols = !`SampleID`)
 
-p2<-ggplot() +
+ggplot() +
 	geom_density(data = posterior, aes(value), col = NA, fill = "red", alpha = 0.2) +
 	geom_density(data = prior, aes(value), col = NA, fill = "blue", alpha = 0.2) +
 	facet_wrap(~name, scales = "free", ncol = 3) +
@@ -422,15 +432,26 @@ p2<-ggplot() +
 	theme(panel.border = element_rect(colour = "black", fill = NA), panel.grid.major = element_blank(),
 				axis.title.x=element_blank(),panel.grid.minor = element_blank()) +
 	scale_y_continuous(expand = c(0,0)) + scale_x_continuous(expand = c(0,0))
-p2
+```
+
+# Uncertainty analysis
+```{r}
+uncertainty_ex_multipletrmt <- mc(site_data = sitedata_ex_multipletrmt,
+													climate_data = climate_data,
+													distribution = sir_ex_multipletrmt$posterior,
+													sample_size = 10)
+uncertainty_ex_multipletrmt
+```
+We can graph this
+```{r}
+ggplot(uncertainty_ex_multipletrmt, aes(x=soc_total, y=soc_tha_30cm)) +
+	geom_point()
 ```
 
 
+# Appendix
 
-
-# Optimization
-
-## Optimizing a parameter using `optim`
+## Parameter overrides: optimizing a parameter using `optim`
 To demonstrate a practical example of using parameter overrides, we will use the built-in `optim` function.
 
 `optim` passes a vector to the function you define, and finds the values that minimize this function.

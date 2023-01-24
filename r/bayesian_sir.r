@@ -17,6 +17,10 @@ sir <- function(site_data,
 								parameter_bounds,
 								sample_size = 100,
 								resample_size = 10) {
+	# site_data can either be a data.frame, or a list of data.frames
+	if(!inherits(site_data, "list")) {
+		site_data <- list(site_data)
+	}
 	#=================================================================================
 	# read prior distribution
 	# (Required columns: Parameter, value, lower, upper)
@@ -87,20 +91,3 @@ sir <- function(site_data,
 	
 	return(list(prior = X, posterior = PostTheta))
 }
-
-#================================================================================================================
-# Graphing
-# prior <- X %>%
-# 	pivot_longer(cols = !`SampleID`)
-# posterior <- PostTheta %>%
-# 	pivot_longer(cols = !`SampleID`)
-# 
-# p2<-ggplot() +
-# 	geom_density(data = posterior, aes(value), col = NA, fill = "red", alpha = 0.2) +
-# 	geom_density(data = prior, aes(value), col = NA, fill = "blue", alpha = 0.2) +
-# 	facet_wrap(~name, scales = "free", ncol = 3) +
-# 	theme_bw() +
-# 	theme(panel.border = element_rect(colour = "black", fill = NA), panel.grid.major = element_blank(),
-# 				axis.title.x=element_blank(),panel.grid.minor = element_blank()) +
-# 	scale_y_continuous(expand = c(0,0)) + scale_x_continuous(expand = c(0,0))
-# p2
