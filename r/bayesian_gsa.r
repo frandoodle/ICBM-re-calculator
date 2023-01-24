@@ -159,7 +159,7 @@ gsa <- function(site_data,
 	{
 		return_si <- tibble(main = si_obj2_llkhd$D1 / si_obj2_llkhd$V,
 												interactions = 1 - si_obj2_llkhd$Dt / si_obj2_llkhd$V) %>%
-			mutate(params =  colnames(res$X), .before=main)
+			mutate(params =  varSI, .before=main)
 	}
 	
 	return(return_si)

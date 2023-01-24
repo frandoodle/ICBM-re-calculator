@@ -39,6 +39,7 @@ source(here::here("r/icbm_run.r"))
 source(here::here("r/read_climate_data.r"))
 source(here::here("r/bayesian_gsa.r"))
 source(here::here("r/bayesian_sir.r"))
+source(here::here("r/bayesian_uncertainty.r"))
 
 
 ```
@@ -373,7 +374,7 @@ sa_ex_multipletrmt
 Results of the sensitivity analysis can be graphed
 ```{r}
 # First-order sensitivity
-ggplot(sa_ex_onesite, aes(x = reorder(params, -singsi), y = singsi, ymax=singsi.uci, ymin=singsi.lci)) + 
+ggplot(sa_ex_multipletrmt, aes(x = reorder(params, -singsi), y = singsi, ymax=singsi.uci, ymin=singsi.lci)) + 
 	xlab("Parameters") +
 	ylab("First-Order Sensitivity Index") +
 	geom_errorbar(width=0.2, size=1, color="black") +
@@ -382,7 +383,7 @@ ggplot(sa_ex_onesite, aes(x = reorder(params, -singsi), y = singsi, ymax=singsi.
 	theme_bw()
 
 # Total order sensitivity
-ggplot(sa_ex_onesite, aes(x = reorder(params, -singsi), y = totsi, ymax=totsi.uci, ymin=totsi.lci))+ 
+ggplot(sa_ex_multipletrmt, aes(x = reorder(params, -singsi), y = totsi, ymax=totsi.uci, ymin=totsi.lci))+ 
 	xlab("Parameters") +
 	ylab("Total-Order Sensitivity Index") + 
 	geom_errorbar(width=0.2, size=1, color="black")+
@@ -391,7 +392,7 @@ ggplot(sa_ex_onesite, aes(x = reorder(params, -singsi), y = totsi, ymax=totsi.uc
 	theme_bw()
 
 # Both
-ggplot(sa_ex_onesite, aes(x = reorder(params, -singsi), y = totsi, ymax=totsi.uci, ymin=totsi.lci)) +
+ggplot(sa_ex_multipletrmt, aes(x = reorder(params, -singsi), y = totsi, ymax=totsi.uci, ymin=totsi.lci)) +
         geom_bar(aes(y = singsi), stat='identity', fill="black", alpha=0.7)+
         geom_bar(aes(y = totsi), stat='identity', fill="grey", alpha=0.7)+
         geom_errorbar(width=0.2, size=1)+
