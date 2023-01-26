@@ -33,11 +33,25 @@ These estimates were obtained using a digital soil mapping (DSM) method because 
 
 1. In this report I will only look at sites which do not have measurements of initial SOC, because these are the only sites where DSM estimates of SOC are required.
 
+<!-- 2. Many of these experiments did not sample SOC at depths 0-30cm. -->
+<!-- We corrected these values using the following equation: -->
+<!-- $$ -->
+<!-- SOC_{30} = SOC_{measured} * \frac{30cm}{max_{depth} - min_{depth}} -->
+<!-- $$ -->
+
 2. Many of these experiments did not sample SOC at depths 0-30cm.
-We corrected these values using the following equation:
+We corrected these values using the following algorithm:
+a) For that treatment, sum the SOC depth measurements in order to achieve an estimate of the largest possible cross-section up to 30cm.
+For instance, sum the measurements of 0-7.5cm and 7.5-15cm to calculate 0-15cm
+b) Take this value and correct it up to 20cm
+c) Take the control value from the same experiment, and correct the measurement for the 20-30cm depth and add this to the value.
+d) This leaves us with a 0-30cm SOC estimate where the top 20cm change according to the treatment, and the lowest 10cm is unchanging / set to the control.
+
+In order to apply depth corrections, we used the following equation:
 $$
-SOC_{30} = SOC_{measured} * \frac{30cm}{max_{depth} - min_{depth}}
+SOC_{depth_{target}} = SOC_{measured} * \frac{depth_{target}}{depth_{max} - depth_{min}}
 $$
+
 3. In order to visualize the change in SOC between the initial C estimate and the first measurement of SOC in the experiment, we need to decide on a year that the initial SOC estimate represents.
 Here is my approach:
 If the first SOC measurement in the experiment is after or during 2000, then I set the initial SOC to be the value in 1999.
@@ -45,9 +59,38 @@ If the first SOC measurement in the experiment is before 2000, then I assume tha
 
 # Read data and join tables
 
-```{r, results='hide', message=FALSE, warning=FALSE}
-site_data_all <- readr::read_csv(here("data/all_experiments_dummy.csv"))
+Handle SOC measurement depth correction.
 
+It turns out to be difficult to determine which treatment is a control based on the treatment name alone - especially for rotation trials.
+We assume that a treatment is a control if the treatment_number is 1.
+```{r, results='hide', message=FALSE, warning=FALSE}
+site_data_all <- readr::read_csv(here("data/all_experiments_dummy.csv")) %>%
+	mutate(soil_depth = paste0(soil_depth_min_cm,"-",soil_depth_max_cm))
+
+grps <- site_data_all %>%
+	select(location_name, year=year_name, treatment_number, treatment_name, replication_number, soc_tha, soil_depth_min_cm, soil_depth_max_cm, soc_tha_30cm,
+				 initial_soc_tha, initial_soc_year) %>%
+	filter(!is.na(soc_tha)) %>%
+	filter(location_name=="Ellerslie") %>%
+	filter(treatment_number == 1)
+
+bb <- site_data_all %>%
+	select(location_name, year_name, treatment_number, treatment_name, replication_number, soil_depth,
+				 soc_tha, soil_depth_min_cm, soil_depth_max_cm, soc_tha_30cm,
+				 initial_soc_tha, initial_soc_year) %>%
+	filter(!is.na(soc_tha)) %>%
+	filter(location_name=="Lethbridge") %>%
+	filter(replication_number==1) %>%
+	mutate(soc_tha_30cm)
+	
+	
+	group_by(year_name)
+	mutate(soc_tha_control = filter(cur_data(),  treatment_number==1)$soc_tha,
+				 soc_tha_10cm_control = soc_tha_control*(10/(soil_depth_max_cm - soil_depth_min_cm)))
+	
+```
+
+```{r, results='hide', message=FALSE, warning=FALSE}
 initialc_all <- readr::read_csv(here("data/lte_soc_30_cm_dsm.csv")) %>%
 	rowwise() %>%
 	mutate(location_name = stringr::str_split(location_n, ", ")[[1]][1])
