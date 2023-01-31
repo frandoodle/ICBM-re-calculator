@@ -312,7 +312,9 @@ site_data_all_joined
 
 Looking at all the sites, we can see that the DSM initial estimates seem to generally agree well with measured SOC values.
 
-```{r, message=FALSE, warning=FALSE, echo=FALSE, fig.width=10, fig.height=10}
+Additionally, it appears that in many cases (e.g. Melfort, Beaverlodge, Scott) the dynamic SOC estimation method leads to SOC values that seem more realistic within the context of the DSM initial C estimates.
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE, fig.width=15, fig.height=15}
 site_data_all_joined %>%
 	pivot_longer(c("soc_30cm_naive", "soc_30cm_dynamic_control"), names_to="soc_method", values_to="soc") %>%
 	pivot_longer(c("initial_dsm", "initial_cmods"), names_to="initial_method", values_to="initial") %>%
