@@ -27,33 +27,35 @@ dir.create(tempdir()) #This fixes a bug if the temporary directory is not found
 here::i_am("qc_initialc.rmd")
 ```
 
-```{r, results='hide', message=FALSE, warning=FALSE}
+```{r, results='hide', message=FALSE, warning=FALSE, include=FALSE}
 #site_data_all <- readr::read_csv(here("data/all_experiments_dummy.csv")) %>%
 site_data_all <- readr::read_csv(here("data/lte_master_beta_dec02.csv")) %>%
 	mutate(soil_depth = paste0(soil_depth_min_cm,"-",soil_depth_max_cm))
 ```
 The purpose of this report is to 
+
 1. give an overview of how depth measurements from field data can be corrected to the target depth for use in SOC model validation using a "dynamic depth mixing" method, and
 2. visualize the realism of initial SOC estimates for Canadian long-term experimental sites.
 
-These estimates were obtained using a digital soil mapping (DSM) method because some sites do not have an initial (meaning before the beginning of the experiment) SOC measurement, which is an important parameter in SOC modelling.
+These estimates were obtained using a digital soil mapping (DSM) method because some sites do not have an initial SOC measurement (meaning before the beginning of the experiment), which is an important parameter in SOC modelling.
 
 # Assumptions
 
+## Depth correction
 Many of these experiments did not sample SOC at depths 0-30cm.
 We corrected these values using two different algorithms: the naive method, and the dynamic method.
 
-## Naive depth correction
+### Naive approach
 
-Assume the the measured SOC is evenly distributed from 0 to 30cm.
+If we assume the the measured SOC is evenly distributed between 0 and 30cm, we can correct the measured soil depth to 0-30cm using the following equation:
 
 $$
 SOC_{30} = SOC_{measured} * \frac{30cm}{max_{depth} - min_{depth}}
 $$
 
-## Dynamic depth correction
+### Dynamic approach
 
-If we assume that the top 20cm of soil changes relative to treatment effect, but that the bottom 10cm remains relatively constant, then we could perform depth correction using a more "dynamic" approach.
+However, it might be safer to assume that the top 20cm of soil changes relative to treatment effect, but that the bottom 10cm remains relatively constant.
 
 We can test this assumption by looking at SOC measurements from different depths:
 
@@ -80,22 +82,30 @@ ggplot(aes(y=soc, x=soil_depth, fill=is_control)) +
 	theme_bw()
 ```
 
+Because there is only data from Lethbridge with complex soil depth sampling and explicit control treatments, it is hard to generalize whether the dynamic depth mixing approach would work better than the naive approach.
+
 In order to correct for SOC following the dynamic method, I follow these steps:
 
-- For each treatment, sum every SOC depth measurement under 20cm deep. For instance, sum the measurements of 0-7.5cm and 7.5-15cm to calculate 0-15cm. Take this value and correct it to 0-20cm
+- For each treatment, sum every SOC depth measurement less than or equal to 20cm deep. For instance, sum the measurements of 0-7.5cm and 7.5-15cm to calculate 0-15cm. Take this value and correct it to 0-20cm
 - Take the control value from the same experiment, find the single depth measurement closest to 20-30cm, and correct this measurement to 20-30cm
-- Sum the 0-20cm treatment SOC and the 20-30cm control SOC to get a corrected 0-30cm SOC estimate where the top 20cm are affected by changes in the treatment, and the lowest 10cm is set to the control SOC and therefore not swayed by treatment effects.
+	- If there is no control treatment for the current experimental group, instead use the **first** SOC value from the current treatment.
+- Sum the 0-20cm treatment SOC and the 20-30cm control SOC to get a corrected 0-30cm SOC estimate.
+
+
 
 In order to apply depth corrections, we used the following equation:
 $$
 SOC_{depth_{target}} = SOC_{measured} * \frac{depth_{target}}{depth_{measurement_{max}} - depth_{measurement_{min}}}
 $$
 
+In theory, the final value is a corrected SOC where 0-20cm are affected by changes in the treatment, and 20-30cm is not affected by changes in treatment.
+
 ## Initial C year
 In order to visualize the change in SOC between the initial C estimate and the first measurement of SOC in the experiment, we need to decide on a year that the initial SOC estimate represents.
 Here is my approach:
-If the first SOC measurement in the experiment is after or during 2000, then I set the initial SOC to be the value in 1999.
-If the first SOC measurement in the experiment is before 2000, then I assume that the initial C represents the SOC for the year *before* the first SOC measurement.
+
+- If the first SOC measurement in the experiment is after or during 2000, then I set the initial SOC to be the value in 1999.
+- If the first SOC measurement in the experiment is before 2000, then I assume that the initial C represents the SOC for the year *before* the first SOC measurement.
 
 # Testing SOC corrections (dynamic depth correction vs. naive correction)
 
@@ -128,7 +138,7 @@ site_data_corrected <- site_data_all %>%
 				 																													treatment_number==1,
 				 																													f_control == min(f_control))$f_control_depth)),
 				 															slice(cur_data(),1)$f_control_depth)) %>%
-	# Compute the total measured depth (only including depths < 20cm) for each treatment, use this to estimate 0-20cm SOC	
+	# Compute the total measured depth (only including depths <= 20cm) for each treatment, use this to estimate 0-20cm SOC	
 	group_by(Exp_ID, location_name, treatment_number, treatment_name, year_name) %>%
 	group_by(.add=T, initial_soc_tha, initial_soc_year) %>%
 	mutate(soc_tha_30cm = soc_tha*(30/(soil_depth_max_cm-soil_depth_min_cm))) %>%
@@ -140,6 +150,12 @@ site_data_corrected <- site_data_all %>%
 				 soc_20cm_naive = soc_30cm_naive*(20/30),
 				 soc_30cm_dynamic_control = soc_20cm_dynamic + soc_10cm_control,
 				 soc_30cm_naive_control = soc_20cm_naive + soc_10cm_control)
+
+jj <- site_data_corrected %>%
+	filter(location_name == "Elora,  Ontario")
+
+ii <- site_data_all %>%
+	filter(location_name == "Ottawa")
 
 ```
 
@@ -276,11 +292,11 @@ site_data_corrected %>%
 
 
 ## Suggestions for dynamic depth correction
-Based on the above calculations, I think it is fair to suggest that we should probably try to use the most complex correction method, because in some cases the SOC stocks estimated using the fully dynamic approach and the naive approach can be different by over 10%.
+Based on the above calculations, I think it is fair to suggest that we should probably try to use the most complex correction method, because in some cases the SOC stocks estimated using the fully dynamic approach and the naive approach can be different by as much as 10%.
 
 Here are my suggestions for how to perform the dynamic method:
 
-1. Control treatments should be explicitly and generically (meaning that every control treatment in the dataset should have the same indication - it doesn't help if control treatments could be named either "CK" or "N0", etc...) indicated in the data. For this dataset, I suggest that every control treatment is assigned treatment_number = 1.
+1. Control treatments should be explicitly and generically indicated in the data (meaning that every control treatment in the dataset should have the same indication - it doesn't help if control treatments could be named either "CK" or "N0", etc...). For this dataset, the approach I took was that every control treatment was assigned treatment_number = 1.
 2. To estimate control 20-30cm, I suggest that a single depth measurement that is closest to this interval should be used to calculate it. The closest interval can be calculated by minimizing the following term: $f = (20 - depth_{min}) + (30 - depth_{max})$. For instance, if you had to choose between control measurements that were either measured at 10-25 or 15-30cm, you could use $f_{7.5-15} = (20 - 10) + (30 - 25) = 15$ and $f_{15-30} = (20 - 15) + (30 - 30) = 5$ to decide that the 15-30cm depth is closest to the target 20-30cm.
 3. To estimate the 0-20cm depth from the treatment, we should also use a combination of depths that gets us closest to 0-20cm. If the system of measurements is quite complex, this can be difficult to do generally I did not attempt to make a general solution. Instead, the approach I took was to sum the SOC for all depth measurements under 20cm, and correct these values to 0-20cm. This works for the Lethbridge data because the deepest measurement under 20 is the 7.5-15cm depth. However, this would not work if soil was sampled down to 23cm, for instance. In this case, the constant values in my method could be re-set, or a general solution could be employed.
 
@@ -300,7 +316,7 @@ site_data_all_joined <- full_join(site_data_corrected, initialc_dsm, by="locatio
 				 soc_30cm_naive, soc_30cm_dynamic_control) %>%
 	group_by(location_name, treatment_name) %>%
 	# Set the initial C to either be 1 year before the first year in the experiment, or 1999 (maximum start date).
-	mutate(initial_soc_year = ifelse(first(year_name) < 2000, first(year_name)-1, 1999)) %>%
+	mutate(initial_soc_year = ifelse(min(year_name) < 2000, min(year_name)-1, 1999)) %>%
 	filter(!is.na(soc_30cm_naive))
 site_data_all_joined
 
