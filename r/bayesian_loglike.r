@@ -12,14 +12,20 @@ loglik=function(m,o){
   
 }
 
-run_ipcct2_calculate_loglik <- function(site_data, climate_data, parameters) 
+run_ipcct2_calculate_loglik <- function(site_data,
+																				climate_data,
+																				init_active,
+																				init_slow,
+																				init_passive,
+																				parameters) 
 {
 	id <- parameters[[1]] #gets id, hopefully (I think foreach::foreach coerces rows into unnamed vectors)
 	modelled <- do.call("run_ipcct2",
-											append(list(site_data, climate_data,
-																	init_active = 0,
-																	init_slow = 0,
-																	init_passive = 0),
+											append(list(site_data = site_data,
+																	climate_data = climate_data,
+																	init_active = init_active,
+																	init_slow = init_slow,
+																	init_passive = init_passive),
 														 parameters))
 	actuals <-  site_data %>%
 		mutate(POLYID = as.character(POLYID)) %>%

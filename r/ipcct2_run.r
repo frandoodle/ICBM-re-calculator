@@ -7,7 +7,7 @@ run_ipcct2 <- function(site_data,
 											 init_slow = 0,
 											 init_passive = 0,
 											 ..., # Parameter overrides
-											 include_site_inputs = FALSE)
+											 return_site_inputs = FALSE)
 {
 
 	polyid <- unique(site_data$POLYID)
@@ -69,7 +69,7 @@ run_ipcct2 <- function(site_data,
 																init.passive = init_passive),
 													 params))
 	
-	if(include_site_inputs) {
+	if(return_site_inputs) {
 		result <- result %>%
 			full_join(site_data, by=c("year" = "year_name"))
 	}

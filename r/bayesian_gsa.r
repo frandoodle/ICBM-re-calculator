@@ -16,6 +16,7 @@ source(here::here("r/bayesian_loglike.r"))
 
 gsa <- function(site_data,
 								climate_data,
+								initial_c,
 								parameter_bounds,
 								sample_size = 10,
 								method = "soboljansen") {
@@ -25,6 +26,15 @@ gsa <- function(site_data,
 	if(!inherits(site_data, "list")) {
 		site_data <- list(site_data)
 	}
+	#initial_c should always be a list of lists
+	if(!any(sapply(initial_c, is.list))) {
+		initial_c <- list(initial_c)
+	}
+	if(length(site_data) != length(initial_c)) {
+		stop("site_data and initial_c cannot be different lengths")
+	}
+	
+	
 	
 	# read prior distribution from a csv file
 	# (Required columns: Parameter, value, lower, upper)
@@ -100,7 +110,6 @@ gsa <- function(site_data,
 	# likelihoods were calculated assuming that the error (modeled - mesasured) are iid 
 	
 	Lkhood <- NULL
-	
 	Lkhood_list <- list()
 	
 	for(site_n in 1:length(site_data)) {
@@ -118,7 +127,12 @@ gsa <- function(site_data,
 									 						"loglik",
 									 						"run_ipcct2_calculate_loglik")) %dopar%
 			
-			run_ipcct2_calculate_loglik(site_data[[site_n]], climate_data, i)
+			run_ipcct2_calculate_loglik(site_data = site_data[[site_n]],
+																	climate_data = climate_data,
+																	init_active = initial_c[[site_n]]$init_active,
+																	init_slow = initial_c[[site_n]]$init_slow,
+																	init_passive = initial_c[[site_n]]$init_passive,
+																	i)
 		stopCluster(cl)
 		Lkhood_list[[site_n]] <- Lkhood
 	}

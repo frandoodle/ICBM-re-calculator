@@ -14,6 +14,7 @@ source(here::here("r/bayesian_loglike.r"))
 
 sir <- function(site_data,
 								climate_data,
+								initial_c,
 								parameter_bounds,
 								sample_size = 100,
 								resample_size = 10) {
@@ -21,6 +22,13 @@ sir <- function(site_data,
 	if(!inherits(site_data, "list")) {
 		site_data <- list(site_data)
 	}
+	if(!any(sapply(initial_c, is.list))) {
+		initial_c <- list(initial_c)
+	}
+	if(length(site_data) != length(initial_c)) {
+		stop("site_data and initial_c cannot be different lengths")
+	}
+	
 	#=================================================================================
 	# read prior distribution
 	# (Required columns: Parameter, value, lower, upper)
@@ -69,7 +77,12 @@ sir <- function(site_data,
 									 						"loglik",
 									 						"run_ipcct2_calculate_loglik")) %dopar%
 			
-			run_ipcct2_calculate_loglik(site_data[[site_n]], climate_data, i)
+			run_ipcct2_calculate_loglik(site_data = site_data[[site_n]],
+																	climate_data = climate_data,
+																	init_active = initial_c[[site_n]]$init_active,
+																	init_slow = initial_c[[site_n]]$init_slow,
+																	init_passive = initial_c[[site_n]]$init_passive,
+																	i)
 		stopCluster(cl)
 		Lkhood_list[[site_n]] <- Lkhood
 	}

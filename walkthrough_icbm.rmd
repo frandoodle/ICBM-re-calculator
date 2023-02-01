@@ -37,6 +37,7 @@ here::i_am("walkthrough_icbm.rmd")
 source(here::here("r/icbm_calculate_re.r"))
 source(here::here("r/icbm_run.r"))
 source(here::here("r/read_climate_data.r"))
+source(here::here("r/spinup.r"))
 source(here::here("r/bayesian_gsa.r"))
 source(here::here("r/bayesian_sir.r"))
 source(here::here("r/bayesian_uncertainty.r"))
@@ -323,6 +324,66 @@ tibble(Year = result_ex_multipletrmt[[1]]$time,
 ```
 
 
+# Spin-up
+
+To perform the spin-up, we calculate the proportion of SOC pool sizes at steady state (SS) for the first 10 years of experimental input data.
+We can either do this by run the simulation for a long time (10,000 years) until it reaches a steady state, or, if the model calculates SS as part of its operation (such as the IPCC Tier 2 Steady State model), we can just use those calculations of SS.
+
+The `spinup` function takes site data, averages it, and uses this to compute the SS for each pool of the chosen model.
+It uses the initial C value from the input data to convert proportional SS pool sizes into SOC pool sizes, and returns these as a list so that they can be easily passed to another modelling function.
+
+## One site
+```{r}
+spinup_sitedata_ex_onesite <- sitedata_ex_onesite %>%
+	slice(1:10)
+
+spinup_ex_onesite <- spinup(site_data = spinup_sitedata_ex_onesite,
+			 climate_data = climate_data,
+			 initial_c = 1000,
+			 model = "ipcct2")
+
+spinup_ex_onesite
+```
+
+```{r}
+run_ipcct2(
+	site_data = sitedata_ex_onesite,
+	climate_data = climate_data,
+	init_active = spinup_ex_onesite$init_active,
+	init_slow = spinup_ex_onesite$init_slow,
+	init_passive = spinup_ex_onesite$init_passive)
+```
+
+## Multiple sites with multiple initial C values
+```{r}
+spinup_sitedata_ex_multipletrmt <- sitedata_ex_multipletrmt %>%
+	map(~slice(., 1:10))
+
+# Note: this is just an example. The column total_yield has nothing to do with initial C values.
+initial_c_ex_multipletrmt <- sitedata_ex_multipletrmt %>%
+	map(~.$total_yield[1])
+initial_c_ex_multipletrmt
+
+spinup_ex_multipletrmt <- map2(.x = spinup_sitedata_ex_multipletrmt,
+															 .y = initial_c_ex_multipletrmt,
+															 ~spinup(site_data = .x, 
+															 				climate_data = climate_data,
+															 				initial_c = .y,
+															 				model = "ipcct2"))
+spinup_ex_multipletrmt
+```
+
+And now we run the model by iterating through the site_data and initial_c lists simultaneously.
+```{r}
+sitedata_ex_multipletrmt %>%
+	map2(spinup_ex_multipletrmt,
+			 ~run_ipcct2(site_data = .x,
+			 						climate_data = climate_data,
+			 						initial_c = .y))
+```
+
+
+
 # Sensitivity analysis
 ```{r}
 param_bounds <- read.csv(here("data/ipcct2_parameters_gsa.csv"), stringsAsFactors = FALSE)
@@ -332,6 +393,7 @@ param_bounds
 ```{r}
 sa_ex_onesite_sj <- gsa(site_data = sitedata_ex_onesite,
 										 climate_data = climate_data,
+										 initial_c = spinup_ex_onesite,
 										 parameter_bounds = param_bounds,
 										 sample_size = 10,
 										 method = "soboljansen")
@@ -342,6 +404,7 @@ The fast99 method of computing sensitivity analyses indices can also be used
 ```{r}
 sa_ex_onesite_f99 <- gsa(site_data = sitedata_ex_onesite,
 										 climate_data = climate_data,
+										 initial_c = spinup_ex_onesite,
 										 parameter_bounds = param_bounds,
 										 sample_size = 100,
 										 method = "fast99")
@@ -366,6 +429,7 @@ and the results represent the mean value between each site/treatment.
 ```{r}
 sa_ex_multipletrmt <- gsa(site_data = sitedata_ex_multipletrmt,
 													climate_data = climate_data,
+													initial_c = spinup_ex_multipletrmt,
 													parameter_bounds = param_bounds,
 													sample_size = 10)
 
@@ -413,6 +477,7 @@ SIR can also be run using a list of site data.frames:
 ```{r}
 sir_ex_multipletrmt <- sir(site_data = sitedata_ex_multipletrmt,
 													climate_data = climate_data,
+													initial_c = spinup_ex_multipletrmt,
 													parameter_bounds = param_bounds,
 													sample_size = 100,
 													resample_size = 10)
@@ -438,14 +503,15 @@ ggplot() +
 # Uncertainty analysis
 ```{r}
 uncertainty_ex_multipletrmt <- montecarlo(site_data = sitedata_ex_multipletrmt,
-													climate_data = climate_data,
-													distribution = sir_ex_multipletrmt$posterior,
-													sample_size = 10)
+																					climate_data = climate_data,
+																					initial_c = spinup_ex_multipletrmt,
+																					distribution = sir_ex_multipletrmt$posterior,
+																					sample_size = 10)
 uncertainty_ex_multipletrmt
 ```
 We can graph this.
 ```{r}
-ggplot(data = NULL, aes(x=soc_total/10, y=soc_tha_30cm)) +
+ggplot(data = NULL, aes(x=soc_total/10, y=soc_tha*(30/(soil_depth_max_cm - soil_depth_min_cm)))) +
 	geom_point(data=uncertainty_ex_multipletrmt$montecarlo, color = "grey") +
 	geom_point(data=uncertainty_ex_multipletrmt$median, color="black") +
 	geom_abline(intercept = 0, slope = 1) +

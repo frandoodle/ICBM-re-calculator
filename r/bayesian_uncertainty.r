@@ -1,11 +1,18 @@
 
 montecarlo <- function(site_data,
 							 climate_data,
+							 initial_c,
 							 distribution,
 							 sample_size = 10) {
 	# site_data can either be a data.frame, or a list of data.frames
 	if(!inherits(site_data, "list")) {
 		site_data <- list(site_data)
+	}
+	if(!any(sapply(initial_c, is.list))) {
+		initial_c <- list(initial_c)
+	}
+	if(length(site_data) != length(initial_c)) {
+		stop("site_data and initial_c cannot be different lengths")
 	}
 	# Sample from distribution
 	parameters_sample <- slice_sample(distribution, n = sample_size)
@@ -32,10 +39,10 @@ montecarlo <- function(site_data,
 			do.call("run_ipcct2",
 							append(list(site_data[[site_n]],
 													climate_data,
-													init_active = 0,
-													init_slow = 0,
-													init_passive = 0,
-													include_site_inputs = TRUE),
+													init_active = initial_c[[site_n]]$init_active,
+													init_slow = initial_c[[site_n]]$init_slow,
+													init_passive = initial_c[[site_n]]$init_passive,
+													return_site_inputs = TRUE),
 										 parameters))
 		stopCluster(cl)
 		model_results_list[[site_n]] <- model_results
@@ -43,10 +50,10 @@ montecarlo <- function(site_data,
 		median_results <- do.call("run_ipcct2",
 						append(list(site_data[[site_n]],
 												climate_data,
-												init_active = 0,
-												init_slow = 0,
-												init_passive = 0,
-												include_site_inputs = TRUE),
+												init_active = initial_c[[site_n]]$init_active,
+												init_slow = initial_c[[site_n]]$init_slow,
+												init_passive = initial_c[[site_n]]$init_passive,
+												return_site_inputs = TRUE),
 									 parameters_median))
 		
 		median_results_list[[site_n]] <- median_results
@@ -57,10 +64,10 @@ montecarlo <- function(site_data,
 	
 	# Return results
 	
-	results1 <- model_results_list %>%
+	model_results_list_bind <- model_results_list %>%
 		bind_rows
-	results2 <- median_results_list %>%
+	median_results_list_bind <- median_results_list %>%
 		bind_rows
-	return(list(montecarlo = results1,
-							median = results2))
+	return(list(montecarlo = model_results_list_bind,
+							median = median_results_list_bind))
 }
