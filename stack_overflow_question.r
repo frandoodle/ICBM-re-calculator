@@ -26,12 +26,7 @@ input <- tribble(~id, ~soil_depth_min, ~soil_depth_max, ~c,
 								 1, 15, 30, 11,)
 z <- input %>%
 	mutate(soil_depth = paste0(soil_depth_min,"-",soil_depth_max))
-	#pivot_longer(c("soil_depth_min", "soil_depth_max"))
-	expand(soil_depth_min, soil_depth_max) %>%
-	mutate(k = soil_depth_max - soil_depth_min)
-z
-subset(z, k==30)
-
+	
 combn(z$soil_depth, 3) %>%
 	t %>%
 	as_tibble() %>%
