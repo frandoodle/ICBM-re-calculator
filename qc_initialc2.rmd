@@ -108,102 +108,59 @@ Here is my approach:
 
 # Testing SOC corrections (dynamic depth correction vs. naive correction)
 
-First we need to handle SOC measurement depth correction.
+First we need to handle depth correction.
+One problem we run into with the data is that sometimes there are multiple ways to arrive at 0-30cm from the same site.
+For instance, some treatments in Lethbridge measure 0-7.5, 7.5-15, 15-30, and 0-15.
+In this case, there are two ways to arrive at 0-30: either 0-7.5 + 7.5-15 + 15-30, or just 0-15 + 15-30.
 
-It turns out to be difficult to determine which treatment is a control based on the treatment name alone - especially for rotation trials.
-We assume that a treatment is a control if the treatment_number is 1.
+In order to handle this, I made a function `make_depth_groups` which makes a dataset with both groupings in order to arrive at 0-30cm. In the above example, this duplicates the 15-30cm measurements since they are used in both groupings.
 
 ```{r}
+make_depth_groups
+```
 
-initialc_dsm <- readr::read_csv(here("data/lte_soc_30_cm_dsm.csv")) %>%
-	mutate(location_name = location_n)
-initialc_cmods <- readr::read_csv(here("data/ExptSiteList.csv"))
 
-site_data_all_joined <- full_join(site_data_corrected, initialc_dsm, by="location_name") %>%
-	full_join(initialc_cmods, by="location_name") %>%
-	select(location_name,
-				 initial_dsm = `Can_SOC30 (Mg ha-1)`, initial_cmods = init_soc, initial_soc_year,
-				 treatment_name,
-				 year_name,
-				 soc_30cm_naive, soc_30cm_dynamic_control) %>%
-	group_by(location_name, treatment_name) %>%
-	# Set the initial C to either be 1 year before the first year in the experiment, or 1999 (maximum start date).
-	mutate(initial_soc_year = ifelse(min(year_name) < 2000, min(year_name)-1, 1999)) %>%
-	filter(!is.na(soc_30cm_naive))
-
-unique(site_data_all$soil_depth)
-
-site_data_zz <- site_data_all %>%
-	full_join(initialc_dsm, by="location_name") %>%
-	full_join(initialc_cmods, by="location_name") %>%
-	select(Exp_ID,
-				 location_name,
-				 treatment_number,
-				 treatment_name,
-				 year_name,
-				 replication_number,
-				 soil_depth,
-				 soil_depth_min_cm,
-				 soil_depth_max_cm,
-				 soc_tha,
-				 initial_soc_tha,
-				 initial_dsm = `Can_SOC30 (Mg ha-1)`,
-				 initial_cmods = init_soc,
-				 initial_soc_year) %>%
-		filter(!is.na(soc_tha)) %>%
-	# Get the mean for field_name, replication_number, and block
-	group_by(Exp_ID, location_name, year_name, treatment_number, treatment_name, soil_depth, soil_depth_min_cm, soil_depth_max_cm) %>%
-	group_by(.add=T, initial_soc_year) %>%
-
-	summarise(across(soc_tha:initial_soc_tha, mean)) %>%
-	# Compute the total measured depth (only including depths <= 31cm) for each treatment, use this to estimate 0-20cm SOC
-	group_by(Exp_ID, location_name, treatment_number, treatment_name, year_name) %>%
-	group_by(.add=T, initial_soc_tha, initial_soc_year) %>%
-	filter(location_name == "Swift Current Old")
-	summarise(lowest_depth_soc = -sum(-soil_depth_max_cm[soil_depth_max_cm<=31],
-																		soil_depth_min_cm[soil_depth_max_cm<=31]))
-	
-
-		
-site_data_corrected <- site_data_all %>%
+```{r results='hide', message=FALSE, warning=FALSE}
+site_data_corrected_depth_groups <- site_data_all %>%
 	full_join(initialc_dsm, by=c("location_name")) %>%
 	full_join(initialc_cmods, by="location_name") %>%
 	select(Exp_ID, location_name, treatment_number,treatment_name, year_name, replication_number, soil_depth, soil_depth_min_cm, soil_depth_max_cm,
-				 soc_tha, initial_dataset = initial_soc_tha, initial_dsm = `Can_SOC30 (Mg ha-1)`, initial_cmods = init_soc, initial_soc_year) %>%
-	
+				 initial_soc_year,
+				 initial_dataset = initial_soc_tha,
+				 soc_tha) %>%
 	filter(!is.na(soc_tha)) %>%
 	# Get the mean for field_name, replication_number, and block
-	group_by(Exp_ID, location_name, year_name, treatment_number, treatment_name, soil_depth_min_cm, soil_depth_max_cm) %>%
-	group_by(.add=T, initial_soc_year) %>%
-	summarise(across(soc_tha:initial_dataset, mean))
-	
-site_data_corrected_depth_groups <- site_data_corrected %>%
+	group_by(Exp_ID, location_name, year_name, treatment_number, treatment_name, soil_depth_min_cm, soil_depth_max_cm, initial_soc_year) %>%
+	summarise(across(initial_dataset:soc_tha, mean)) %>%
 	group_by(Exp_ID, location_name, year_name, treatment_number, treatment_name) %>%
 	group_split() %>%
 	purrr::map(~make_depth_groups(.)) %>%
 	bind_rows
-	
-	# Compute the total measured depth (only including depths <= 20cm) for each treatment, use this to estimate 0-20cm SOC	
-	group_by(Exp_ID, location_name, treatment_number, treatment_name, year_name) %>%
-	group_by(.add=T, initial_dataset, initial_soc_year) %>%
-	mutate(soc_tha_30cm = soc_tha*(30/(soil_depth_max_cm-soil_depth_min_cm))) %>%
-	summarise(lowest_depth = -sum(-soil_depth_max_cm[soil_depth_max_cm<=20], soil_depth_min_cm[soil_depth_max_cm<=20]),
-						soc_lowestdepth_dynamic = sum(soc_tha[soil_depth_max_cm<=20]),
-						soc_30cm_naive = mean(soc_tha_30cm),
-						soc_10cm_control = mean(soc_tha_10cm_control)) %>%
-	mutate(soc_20cm_dynamic = soc_lowestdepth_dynamic*(20/lowest_depth),
-				 soc_20cm_naive = soc_30cm_naive*(20/30),
-				 soc_30cm_dynamic_control = soc_20cm_dynamic + soc_10cm_control,
-				 soc_30cm_naive_control = soc_20cm_naive + soc_10cm_control)
-
-jj <- site_data_corrected %>%
-	filter(location_name == "Elora,  Ontario")
-
-ii <- site_data_all %>%
-	filter(location_name == "Ottawa")
-
 ```
 
+Now we add different estimates of initial C. These come from the digital soil mapping (DSM) estimates and the CMods repository.
+
+We assume that the DSM estimates are from the year 1999 or earlier, and if the first measures SOC event for that experiment is before 1999 we choose the first year before that measurement as the initial SOC estimate year.
+
+
+```{r}
+initialc_dsm <- readr::read_csv(here("data/lte_soc_30_cm_dsm.csv")) %>%
+	mutate(location_name = location_n) %>%
+	select(location_name, initial_dsm = `Can_SOC30 (Mg ha-1)`) %>%
+	unique
+initialc_cmods <- readr::read_csv(here("data/ExptSiteList.csv")) %>%
+	select(location_name, initial_cmods = init_soc) %>%
+	unique
+
+site_data_corrected <- site_data_corrected_depth_groups %>%
+	full_join(initialc_dsm, by=c("location_name")) %>%
+	full_join(initialc_cmods, by="location_name") %>%
+	select(Exp_ID, location_name, treatment_number,treatment_name, year_name, soil_depth, soil_depth_min_cm, soil_depth_max_cm,
+				 soc_tha, initial_dataset, initial_dsm, initial_cmods, initial_soc_year) %>%
+	# Set the initial C to either be 1 year before the first year in the experiment, or 1999 (maximum start date).
+	mutate(initial_soc_year_dsm = ifelse(min(year_name) < 2000, min(year_name)-1, 1999))
+
+```
 
 ## Ellerslie 
 
@@ -229,12 +186,6 @@ Treatment 0-30cm = 123.3200 * (30/20) = **184.98**
 
 ### Dynamic
 
-Treatment 0-20cm = 123.32
-
-Control 20-30cm = 118.8533 * (10/20) = 59.42665
-
-Treatment 0-30cm = 123.32 + 59.42665 = **182.7466**
-
 ```{r}
 site_data_corrected %>%
 	select(Exp_ID, location_name, treatment_name, year_name,
@@ -246,9 +197,6 @@ site_data_corrected %>%
 				 	treatment_name == "F25NS",
 				 year_name == 2009)
 ```
-The dynamic method only decreased our estimated SOC by about 1% in this case. However, it is a particularly simple sampling scheme so there was not much room for difference.
-
-Now let's see what happens with a more complex soil sampling scheme.
 
 ## Lethbridge 
 
@@ -270,58 +218,6 @@ For year = 1992:
 Treatment 0-30cm = mean(56.50, 116.00, 117.50) = **96.66667**
 
 ### Dynamic
-Treatment 0-7.5cm = 14.125
-
-Treatment 7.5-15cm = 29.375
-
-Treatment 15-30cm = 58.000
-
-Treatment 0-30cm = 14.125 + 29.375 + 58.000 = 101.5
-
-Control 0-7.5cm = 14.450
-
-Control 7.5-15cm = 31.325
-
-Control 15-30cm = 58.425
-
-Control 0-30cm = 14.450 + 31.325 + 58.425 = 104.2
-
-Control 20-30cm = 104.2 * (10/30) = 34.73333
-
-Treatment 0-20cm = 101.5 * (20/30) = 67.66667
-
-Treatment 0-30cm = 34.73333 + 67.66667 = **102.4**
-
-## Dynamic with 0-15cm treatment
-The dynamic method has some specifics that need to be ironed out. For instance, in this case we have measurements from 0-7.5, 7.5-15, and 15-30cm. So if we want to estimate 0-20cm, should we do this using the 0-30cm measurements, or the 0-15cm measurements?
-In the above example, I use the 0-30cm measurements for simplicity's sake, and the actual difference in SOC between the two methods is probably so minute it's below a detection threshold, but this is still something that needs to be made explicit in the method.
-
-Let's test:
-
-Treatment 0-15 = 14.125 + 29.375 = 43.5
-
-Treatment 0-20cm = 43.5 * (20/15) = 58
-
-Treatment 0-30cm = 34.73333 + 58 = **92.73333**
-
-It turns out that using only the 0-15cm measurements and correction to 0-20cm decreases the SOC by about **9.5%**, which is higher than I was expecting.
-
-### Dynamic with 15-30cm control
-The same logic can be applied to the control treatment. Again, for simplicity's sake, I used the 0-30cm control measurement and corrected this to 20-30cm, but in reality I probably should have used the 15-30cm depth because this is closest to 20-30cm.
-
-Control 15-30cm = 58.425
-
-Control 20-30cm = 58.425 * (10/15) = 38.95
-
-Treatment 0-30cm = 38.95 + 67.66667 = **106.6167**
-
-In this case, using just the 15-30cm control increases SOC by about **4%**.
-
-### Dynamic with both 0-15cm treatment and 15-30cm control
-Treatment 0-30cm = 38.95 + 58 = **96.95**
-
-That's funny - in this case the most complex dynamic method calculated essentially the same SOC value as the fully naive method.
-Still, because we are using soil samples from specific depths, we have more control over what is being calculated using this method.
 
 ```{r}
 site_data_corrected %>%
@@ -333,38 +229,6 @@ site_data_corrected %>%
 	filter(treatment_number == 1 |
 				 	treatment_name == "Fw-Wt I",
 				 year_name == 1992)
-```
-
-
-## Suggestions for dynamic depth correction
-Based on the above calculations, I think it is fair to suggest that we should probably try to use the most complex correction method, because in some cases the SOC stocks estimated using the fully dynamic approach and the naive approach can be different by as much as 10%.
-
-Here are my suggestions for how to perform the dynamic method:
-
-1. Control treatments should be explicitly and generically indicated in the data (meaning that every control treatment in the dataset should have the same indication - it doesn't help if control treatments could be named either "CK" or "N0", etc...). For this dataset, the approach I took was that every control treatment was assigned treatment_number = 1.
-2. To estimate control 20-30cm, I suggest that a single depth measurement that is closest to this interval should be used to calculate it. The closest interval can be calculated by minimizing the following term: $f = (20 - depth_{min}) + (30 - depth_{max})$. For instance, if you had to choose between control measurements that were either measured at 10-25 or 15-30cm, you could use $f_{7.5-15} = (20 - 10) + (30 - 25) = 15$ and $f_{15-30} = (20 - 15) + (30 - 30) = 5$ to decide that the 15-30cm depth is closest to the target 20-30cm.
-3. To estimate the 0-20cm depth from the treatment, we should also use a combination of depths that gets us closest to 0-20cm. If the system of measurements is quite complex, this can be difficult to do generally I did not attempt to make a general solution. Instead, the approach I took was to sum the SOC for all depth measurements under 20cm, and correct these values to 0-20cm. This works for the Lethbridge data because the deepest measurement under 20 is the 7.5-15cm depth. However, this would not work if soil was sampled down to 23cm, for instance. In this case, the constant values in my method could be re-set, or a general solution could be employed.
-
-```{r, results='hide', message=FALSE, warning=FALSE}
-
-initialc_dsm <- readr::read_csv(here("data/lte_soc_30_cm_dsm.csv")) %>%
-	mutate(location_name = location_n)
-
-initialc_cmods <- readr::read_csv(here("data/ExptSiteList.csv"))
-
-site_data_all_joined <- full_join(site_data_corrected, initialc_dsm, by="location_name") %>%
-	full_join(initialc_cmods, by="location_name") %>%
-	select(location_name,
-				 initial_dsm = `Can_SOC30 (Mg ha-1)`, initial_cmods = init_soc, initial_soc_year,
-				 treatment_name,
-				 year_name,
-				 soc_30cm_naive, soc_30cm_dynamic_control) %>%
-	group_by(location_name, treatment_name) %>%
-	# Set the initial C to either be 1 year before the first year in the experiment, or 1999 (maximum start date).
-	mutate(initial_soc_year = ifelse(min(year_name) < 2000, min(year_name)-1, 1999)) %>%
-	filter(!is.na(soc_30cm_naive))
-site_data_all_joined
-
 ```
 
 # Graphing
