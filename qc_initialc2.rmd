@@ -24,12 +24,22 @@ library(tidyr)
 
 dir.create(tempdir()) #This fixes a bug if the temporary directory is not found
 
+source("stack_overflow_question.r")
+
 here::i_am("qc_initialc.rmd")
 ```
 
 ```{r, results='hide', message=FALSE, warning=FALSE, include=FALSE}
 site_data_all <- readr::read_csv(here("data/lte_master_beta_dec02.csv")) %>%
 	mutate(soil_depth = paste0(soil_depth_min_cm,"-",soil_depth_max_cm))
+
+initialc_dsm <- readr::read_csv(here("data/lte_soc_30_cm_dsm.csv")) %>%
+	mutate(location_name = location_n) %>%
+	select(location_name, initial_dsm = `Can_SOC30 (Mg ha-1)`) %>%
+	unique
+initialc_cmods <- readr::read_csv(here("data/ExptSiteList.csv")) %>%
+	select(location_name, initial_cmods = init_soc) %>%
+	unique
 ```
 The purpose of this report is to 
 
@@ -149,14 +159,6 @@ We assume that the DSM estimates are from the year 1999 or earlier, and if the f
 
 
 ```{r}
-initialc_dsm <- readr::read_csv(here("data/lte_soc_30_cm_dsm.csv")) %>%
-	mutate(location_name = location_n) %>%
-	select(location_name, initial_dsm = `Can_SOC30 (Mg ha-1)`) %>%
-	unique
-initialc_cmods <- readr::read_csv(here("data/ExptSiteList.csv")) %>%
-	select(location_name, initial_cmods = init_soc) %>%
-	unique
-
 site_data_joined <- site_data_depth_groups_summed %>%
 	full_join(initialc_dsm, by=c("location_name")) %>%
 	full_join(initialc_cmods, by="location_name") %>%
@@ -267,6 +269,29 @@ site_data_corrected %>%
 
 I will analyze major sites in more depth, but an overview of the DSM initial estimates + dynamic depth correction technique compared to the CMods initial estimates + naive depth correction can be seen in the following graph:
 ```{r}
+bb <- site_data_corrected %>%
+	filter(!(treatment_name %in% c("NT", "CT", "NT", "NA"))) %>%
+	group_by_all() %>%
+	summarise_all(mean) %>%
+	summarise_all(mean) %>%
+	group_by(location_name, treatment_name) %>%
+	mutate(dsm_first_soc = first(soc_30cm_dsm),
+				 dsm_first_soc_year = initial_soc_year_dsm,
+				 dataset_first_soc = first(soc_30cm_naive),
+				 dataset_first_soc_year = initial_soc_year,
+				 
+				 `DSM + Dynamic` = initial_dsm - dsm_first_soc,
+				 `CMods + Naive` = initial_cmods - dataset_first_soc) %>%
+pivot_longer(c("DSM + Dynamic", "CMods + Naive"), names_to="method", values_to="diff") %>%
+	select(location_name, treatment_name, method, diff) %>%
+	group_by(location_name, method) %>%
+	summarise(diff = mean(diff))
+
+ggplot(bb, aes(x=location_name, y=diff, fill=method)) +
+	geom_col(position = "dodge") +
+	ylab("[Initial estimate] - [First measured SOC] (Mg C/ha)") +
+	theme_bw() +
+	theme(axis.text.x = element_text(angle = -90))
 
 ```
 
