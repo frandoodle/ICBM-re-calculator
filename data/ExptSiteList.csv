@@ -1,9 +1,9 @@
 sitename,location_name,clay,sand,init_soc,study_years
-Breton,Breton,26,12,45,35
-Ellerslie_Solberg,Ellerslie,39,17,165,26
-Harrow_CC,Harrow,37,28,80,18
-IndianHead,Indian Head,63,16,40,46
-Lethbridge_E008,Lethbridge,25,45,60.8,42
-Ottawa,Ottawa,53.3,52.1,95,21
+Breton,"Breton, Alberta",26,12,45,35
+Ellerslie_Solberg,"Ellerslie, Alberta",39,17,165,26
+Harrow_CC,"Harrow, Ontario",37,28,80,18
+IndianHead,"Indian Head, Saskatchewan",63,16,40,46
+Lethbridge_E008,"Lethbridge, Alberta",25,45,60.8,42
+Ottawa,"Ottawa, Ontario",53.3,52.1,95,21
 SwiftCurrent_NewRot,Swift Current New,27.6,33,25,16
 SwiftCurrent_oldRot,Swift Current Old,27.6,33,25,36
