@@ -135,7 +135,7 @@ gsa <- function(site_data,
 																	i)
 		stopCluster(cl)
 		Lkhood_list[[site_n]] <- Lkhood
-		print(paste0("gsa: site ", site_n, "/", length(site_data, " (sample_size = ",sample_size,")")))
+		print(paste0("gsa: site ", site_n, "/", length(site_data), " (sample_size = ",sample_size,")"))
 	}
 	
 	
