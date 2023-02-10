@@ -24,9 +24,11 @@ library(tidyr)
 
 dir.create(tempdir()) #This fixes a bug if the temporary directory is not found
 
-source("stack_overflow_question.r")
 
 here::i_am("qc_initialc.rmd")
+
+source(here("r/make_depth_groups.r"))
+
 ```
 
 ```{r, results='hide', message=FALSE, warning=FALSE, include=FALSE}
