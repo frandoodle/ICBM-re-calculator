@@ -28,8 +28,10 @@ spinup <- function(site_data,
 		}
 	}
 	
-	# Combine into average values for this site
-	site_data_average <- bind_cols(site_data_nonnumeric, site_data_numeric)
+	# Combine into average values for this site, and set the year as the first year of the input data
+	first_year <- first(site_data$year_name)
+	site_data_average <- bind_cols(site_data_nonnumeric, site_data_numeric) %>%
+		mutate(year_name = first_year)
 	
 	# Calculate steady state
 	ss <- do.call(model_function,
