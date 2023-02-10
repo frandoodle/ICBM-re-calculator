@@ -85,6 +85,8 @@ calculate_re
 # Walkthrough
 ## Input data
 
+We source our test input data from an example r~e~ calculation made by Holos so that later we can test the accuracy of our R implementation with the Holos calculation.
+
 ```{r, message=FALSE}
 holos_re_calculation <- readr::read_csv(here::here("data/holos_re_calculation.csv"))
 
@@ -593,6 +595,9 @@ Where
 # Testing
 
 ## This notebook vs. Holos
+
+The input data from this notebook are based on a test calculation of r~e~ made using Holos, so we can directly test the r~e~ value we calculated here and compare them to the same values made using Holos.
+
 ```{r, include = FALSE}
 daily_input_test_all <- daily_input_test %>%
 	bind_cols(Days_month = Days_month,
@@ -629,19 +634,25 @@ daily_input_test_all <- daily_input_test %>%
 						r_e = r_e)
 ```
 
+```{r}
+daily_input_test_all
+```
+
+
 r~e~ value from this notebook:
 ```{r}
 test_re <- daily_input_test_all %>%
 	summarise(r_e = mean(r_e)) %>%
 	unlist
+test_re
 ```
 
 r~e~ value from Holos:
 ```{r}
 holos_re <- holos_re_calculation %>%
-	mutate(r_e = mean(ClimateParameter)) %>%
 	summarise(r_e = mean(ClimateParameter)) %>%
 	unlist
+holos_re
 ```
 
 Percentage difference between the two implementations:
@@ -664,12 +675,17 @@ script_re <- calculate_re(daily_input_test,
 													ClayContent=0.05,
 													SandContent=0.2,
 													irrigation_use_estimate = FALSE)
+script_re
+```
+
+```{r}
 
 PercentageDifference = 100*(holos_re - script_re)/holos_re
 
 PercentageDifference
 ```
-The error value from `script_re` (the r~e~ calculator implementation in the standalone script) is the same as from `test_re` (the r~e~ calculator implementation in this R notebook), meaning our icbm_calculate_re.r implementation works as intended.
+
+As expected, the standalone r~e~ calculation script (`calculate_re()`) returns the same final value as this notebook, meaning our icbm_calculate_re.r implementation works as intended.
 
 ## Testing irrigation parameters {#irrigationdisc}
 

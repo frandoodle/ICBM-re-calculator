@@ -1,0 +1,99 @@
+---
+title: "Run experiment"
+author: "Francis Durnin-Vermette"
+date: "2023/2/10"
+output:
+  html_notebook:
+    toc: true
+    number_sections: true
+    df_print: paged
+bibliography: bib.bib
+editor_options:
+  chunk_output_type: inline
+---
+
+
+```{r include=FALSE}
+
+library(ggplot2)
+library(knitr)
+library(dplyr)
+library(geojson)
+library(tibble)
+library(purrr)
+library(stringr)
+library(here)
+library(lubridate)
+library(tidyr)
+
+dir.create(tempdir()) #This fixes a bug if the temporary directory is not found
+
+here::i_am("walkthrough_icbm.rmd")
+source(here::here("r/icbm_calculate_re.r"))
+source(here::here("r/icbm_run.r"))
+source(here::here("r/read_climate_data.r"))
+source(here::here("r/spinup.r"))
+source(here::here("r/bayesian_gsa.r"))
+source(here::here("r/bayesian_sir.r"))
+source(here::here("r/bayesian_uncertainty.r"))
+```
+
+First we get our input data:
+```{r}
+# read SLC polygon IDs
+polyids_all <- readr::read_csv(here("data/climate_data","Documentation", "SLC_PCPTREGION.csv"))
+# read site data
+site_data <- readr::read_csv(here("data/all_experiments_dummy.csv")) %>%
+#site_data <- readr::read_csv(here("data/lte_master_beta_dec02.csv")) %>%
+	left_join(polyids_all, by=c("latitude" = "Lat", "longitude" = "Long")) %>%
+	mutate(tillage = ifelse(is.na(tillage), "CT", tillage))
+```
+
+Split the data into calibration and validation sets:
+```{r}
+calibration_data <- site_data %>%
+	filter(location_name %in% c("Ellerslie", "Harrow")) %>%
+		group_by(location_name, treatment_name, replication_number) %>%
+	group_split
+validation_data <- site_data %>%
+	filter(!location_name %in% c("Ellerslie", "Harrow")) %>%
+		group_by(location_name, treatment_name, replication_number) %>%
+	group_split
+```
+
+Get climate data:
+```{r}
+climate_data <- read_climate_data(climate_data_directory = here("data/climate_data","W9param_TablesCleaned"))
+```
+
+Run spinup:
+```{r}
+calibration_data_spinup <- calibration_data %>%
+	map(~slice(., 1:10))
+
+#Get initial C
+initial_c_calibration <- calibration_data %>%
+	map(~.$initial_soc_tha[1]*10) %>%
+	map(~ifelse(is.na(.), 1000, .))
+
+spinup_calibration <- map2(.x = calibration_data_spinup,
+													 .y = initial_c_calibration,
+													 ~spinup(site_data = .x, 
+													 				climate_data = climate_data,
+													 				initial_c = .y,
+													 				model = "ipcct2"))
+```
+
+Sensitivity analysis
+```{r}
+param_bounds <- read.csv(here("data/ipcct2_parameters_gsa.csv"), stringsAsFactors = FALSE)
+param_bounds
+
+sensitivity_calibration <- gsa(site_data = calibration_data,
+													climate_data = climate_data,
+													initial_c = spinup_calibration,
+													parameter_bounds = param_bounds,
+													sample_size = 100)
+```
+
+
