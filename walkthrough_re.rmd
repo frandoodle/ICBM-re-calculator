@@ -92,18 +92,18 @@ holos_re_calculation <- readr::read_csv(here::here("data/holos_re_calculation.cs
 
 # climate data
 daily_input_test <- tibble(
-	Year = 2000,
+	Year = 1983,
 	JulianDay = 1:365,
 	Tavg = holos_re_calculation$InputTemperature,
 	PREC = holos_re_calculation$InputPrecipitation,
 	PET = holos_re_calculation$InputEvapotranspiration)
 
 # other values
-yield = 3000
+yield = 2181.304348
 perennial = FALSE
 SoilOrganicC_Percent = 2
-ClayContent = 0.05
-SandContent = 0.2
+ClayContent = 0.39
+SandContent = 0.17
 alfa = 0.7
 SoilTopThickness = 250
 Temp_min = -3.78
@@ -119,6 +119,19 @@ irrigation_use_estimate = FALSE
 irrigation = 0
 ```
 
+```{r include=FALSE}
+ggplot(holos_re_calculation, aes(x=JulianDay, y=InputTemperature)) +
+	geom_col(fill="salmon") +
+	ylab("Temperature (°C)") +
+	xlab("Day") +
+	theme_bw()
+
+ggplot(holos_re_calculation, aes(x=JulianDay, y=InputPrecipitation)) +
+	geom_col(fill="aquamarine2") +
+	ylab("Precipitation (mm/day)") +
+	xlab("Day") +
+	theme_bw()
+```
 
 
 ## Green area index (GAI) dynamics
@@ -669,11 +682,11 @@ Now let's test whether our standalone r~e~ script works as well:
 
 ```{r}
 script_re <- calculate_re(daily_input_test,
-													yield=3000,
+													yield=2181.304348,
 													perennial=F,
 													SoilOrganicC_Percent=2,
-													ClayContent=0.05,
-													SandContent=0.2,
+													ClayContent=0.39,
+													SandContent=0.17,
 													irrigation_use_estimate = FALSE)
 script_re
 ```
