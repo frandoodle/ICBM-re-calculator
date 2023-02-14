@@ -77,35 +77,32 @@ The fact that this difference is constant is an assumption based on the premise 
 
 In order to correct for SOC following the dynamic method, I follow these steps:
 
-- For each treatment, sum every SOC depth measurement less than or equal to 30cm deep. For instance, sum the measurements of 0-7.5cm and 7.5-15cm to calculate 0-15cm. Take this value and correct it to 0-15cm
-- Take the initial C estimate from the same experiment (0-30cm), and find the difference in SOC between the measured SOC and the initial SOC, which represents SOC for 15-30cm.
+- For each treatment, sum every SOC depth measurement less than or equal to 30cm deep. For instance, sum the measurements of 0-7.5cm and 7.5-15cm to calculate 0-15cm.
+- Take the DSM initial C estimate from the same experiment (0-30cm), and find the difference in SOC between the first measured SOC (0-15cm) and the initial SOC (0-30cm), which represents SOC at 15-30cm.
 - Sum the measured 0-15cm with the estimated 15-30cm SOC to arrive at an estimated 0-30cm SOC.
+- The same value for 15-30cm will be used for the entire site/treatment, because the initial DSM estimate doesn't change within the site/treatment, and neither does the first measured SOC point.
+
+Other situations that need to be handled:
+- If the measured SOC points have been measured at different depths, and it is possible to arrive at 0-30cm depth using multiple combinations of sampling depths, then we calculate the 0-30cm depth using all possible combinations, and get the average between all groupings.
+<!-- - Within the same site/treatment, if some years have been measured at 0-30cm and others only at 0-15cm, then we need to perform depth correction on the 0-15cm data points but not the 0-30cm data points. -->
 
 
+# Testing SOC depth correction method
 
-In order to apply depth corrections, we used the following equation:
-$$
-SOC_{depth_{target}} = SOC_{measured} * \frac{depth_{target}}{depth_{measurement_{max}} - depth_{measurement_{min}}}
-$$
-
-
-# Testing SOC corrections (dynamic depth correction vs. naive correction)
-
-First we need to handle depth correction.
 One problem we run into with the data is that sometimes there are multiple ways to arrive at 0-30cm from the same site.
 For instance, some treatments in Lethbridge measure 0-7.5, 7.5-15, 15-30, and 0-15.
 In this case, there are two ways to arrive at 0-30: either 0-7.5 + 7.5-15 + 15-30, or just 0-15 + 15-30.
 
 In order to handle this, I made a function `make_depth_groups` which makes a dataset with both groupings in order to arrive at 0-30cm. In the above example, this duplicates the 15-30cm measurements since they are used in both groupings.
 
-In order to avoid duplicating data which would affect the sample size of calibration datasets, we then average the SOC between depth groupings.
+In order to avoid duplicating data which could affect the statistical properties of simulations, we find the average SOC between possible depth groupings.
 
 ```{r}
 make_depth_groups
 ```
 
 
-```{r results='hide', message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, results='hide'}
 site_data_depth_groups <- site_data_all %>%
 	full_join(initialc_dsm, by=c("location_name")) %>%
 	full_join(initialc_cmods, by="location_name") %>%
@@ -121,33 +118,51 @@ site_data_depth_groups <- site_data_all %>%
 	group_split() %>%
 	purrr::map(~make_depth_groups(.)) %>%
 	bind_rows
-
-site_data_depth_groups_summed <- site_data_depth_groups %>%
-	rename(lowest_depth = k) %>%
-	group_by(Exp_ID, location_name, year_name, treatment_number, treatment_name, initial_soc_year, combination_group, lowest_depth) %>%
-	summarise(soc_tha_lowest_depth = sum(soc_tha),
-						initial_dataset = mean(initial_dataset)) %>%
-	# Get mean values for each combination group to remove duplicates
-	group_by(Exp_ID, location_name, year_name, treatment_number, treatment_name, initial_soc_year, lowest_depth) %>%
-	summarise(across(c("soc_tha_lowest_depth", "initial_dataset"), mean))
 ```
 
 Now we add different estimates of initial C. These come from the digital soil mapping (DSM) estimates and the CMods repository.
 
 We assume that the DSM estimates are from the year 1999 or earlier, and if the first measures SOC event for that experiment is before 1999 we choose the first year before that measurement as the initial SOC estimate year.
 
-
 ```{r}
-site_data_joined <- site_data_depth_groups_summed %>%
+site_data_joined <- site_data_depth_groups %>%
 	left_join(initialc_dsm, by=c("location_name")) %>%
 	left_join(initialc_cmods, by="location_name") %>%
-	select(Exp_ID, location_name, treatment_number,treatment_name, year_name, lowest_depth,
-				 soc_tha_lowest_depth, initial_dataset, initial_dsm, initial_cmods, initial_soc_year) %>%
+	select(Exp_ID, location_name, treatment_number,treatment_name, year_name, lowest_depth, soil_depth,
+				 soil_depth_min_cm, soil_depth_max_cm, combination_group,
+				 soc_tha, initial_dataset, initial_dsm, initial_cmods, initial_soc_year) %>%
 	# Set the initial C to either be 1 year before the first year ever measured for that site, or 1999 (maximum start date).
 	group_by(Exp_ID, location_name) %>%
 	mutate(initial_soc_year_dsm = ifelse(min(year_name) < 2000, min(year_name)-1, 1999))
 
 ```
+
+<!-- We need to handle situations where different lowest depths are measured within the same treatment/site. This will mean that multiple estimates of the DSM difference (DSM initial C - first measured C) will need to be obtained for different depth ranges. -->
+
+<!-- ```{r} -->
+<!-- site_data_depth_ranges <- site_data_joined %>% -->
+<!-- 	group_by(Exp_ID, location_name, treatment_number, treatment_name, soil_depth) %>% -->
+<!-- 	filter(year_name == first(year_name)) %>% -->
+<!-- 	filter(soil_depth_min_cm == 0) -->
+<!-- 	filter(soil_depth_max_cm == lowest_depth) -->
+
+<!-- 	mutate(dsm_diff = initial_dsm - first(soc_tha)) -->
+
+<!-- ``` -->
+
+Now we sum each of the depths for each depth group in order to arrive at the total SOC for the lowest measured depth.
+
+```{r}
+site_data_summed <- site_data_joined %>%
+	group_by(Exp_ID, location_name, year_name, treatment_number, treatment_name, initial_dataset, initial_dsm, initial_cmods, initial_soc_year, initial_soc_year_dsm, combination_group, lowest_depth) %>%
+	summarise(soc_tha_lowest_depth = sum(soc_tha)) %>%
+	# Get mean values for each combination group to remove duplicates
+	group_by(Exp_ID, location_name, year_name, treatment_number, treatment_name, initial_dataset, initial_dsm, initial_cmods, initial_soc_year, initial_soc_year_dsm, lowest_depth) %>%
+	summarise(across(c("soc_tha_lowest_depth"), mean))
+```
+
+
+
 
 Now, in circumstances where 0-30cm is measured, we can just use this number.
 However, if less or more than 30cm is measured in total, then we need to perform correction.
@@ -155,7 +170,7 @@ However, if less or more than 30cm is measured in total, then we need to perform
 In order to do this, we find the difference between the initial DSM estimate for the site/treatment, and find the difference between that and the first SOC measurements for that site_treatment. Then, we just add that difference to each measurement of SOC for the site/treatment.
 
 ```{r}
-site_data_corrected <- site_data_joined %>%
+site_data_corrected <- site_data_summed %>%
 	group_by(Exp_ID, location_name, treatment_number, treatment_name) %>%
 	mutate(first_soc_treatment = first(soc_tha_lowest_depth),
 				 soc_dsm_difference = initial_dsm - first_soc_treatment,

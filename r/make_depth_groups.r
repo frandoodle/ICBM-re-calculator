@@ -7,9 +7,9 @@ make_depth_groups <- function(input) {
 	two_combination_depths <- NULL
 	three_combination_depths <- NULL
 	
-	one_combination_k <- NULL
-	two_combination_k <- NULL
-	three_combination_k <- NULL
+	one_combination_lowest_depth <- NULL
+	two_combination_lowest_depth <- NULL
+	three_combination_lowest_depth <- NULL
 	
 	if(nrow(z) >= 1) {
 		one_combination <- combn(z$soil_depth, 1) %>%
@@ -20,15 +20,15 @@ make_depth_groups <- function(input) {
 						 max1 = as.numeric(str_split(V1,"-")[[1]][2])) %>%
 			mutate(min_unique = (any(duplicated(c(min1)))),
 						 max_unique = (any(duplicated(c(max1)))),
-						 k = (max1) - (min1)) %>%
+						 lowest_depth = (max1) - (min1)) %>%
 			filter(!min_unique,
 						 !max_unique) %>%
 			# Select the depth closest to 30
 			ungroup() %>%
-			mutate(k_diff = abs(30-k)) %>%
-			filter(k_diff == min(k_diff))
+			mutate(lowest_depth_diff = abs(30-lowest_depth)) %>%
+			filter(lowest_depth_diff == min(lowest_depth_diff))
 		
-		one_combination_k <- one_combination$k %>%
+		one_combination_lowest_depth <- one_combination$lowest_depth %>%
 			unique()
 		
 		one_combination_depths <- one_combination %>%
@@ -47,15 +47,15 @@ make_depth_groups <- function(input) {
 						 max2 = as.numeric(str_split(V2,"-")[[1]][2])) %>%
 			mutate(min_unique = (any(duplicated(c(min1, min2)))),
 						 max_unique = (any(duplicated(c(max1, max2)))),
-						 k = (max1 + max2) - (min1 + min2)) %>%
+						 lowest_depth = (max1 + max2) - (min1 + min2)) %>%
 			filter(!min_unique,
 						 !max_unique) %>%
 			# Select the depth closest to 30
 			ungroup() %>%
-			mutate(k_diff = abs(30-k)) %>%
-			filter(k_diff == min(k_diff))
+			mutate(lowest_depth_diff = abs(30-lowest_depth)) %>%
+			filter(lowest_depth_diff == min(lowest_depth_diff))
 		
-		two_combination_k <- two_combination$k %>%
+		two_combination_lowest_depth <- two_combination$lowest_depth %>%
 			unique()
 		
 		two_combination_depths <- two_combination %>%
@@ -76,15 +76,15 @@ make_depth_groups <- function(input) {
 						 max3 = as.numeric(str_split(V3,"-")[[1]][2])) %>%
 			mutate(min_unique = (any(duplicated(c(min1, min2, min3)))),
 						 max_unique = (any(duplicated(c(max1, max2, max3)))),
-						 k = (max1 + max2 + max3) - (min1 + min2 + min3)) %>%
+						 lowest_depth = (max1 + max2 + max3) - (min1 + min2 + min3)) %>%
 			filter(!min_unique,
 						 !max_unique) %>%
 			# Select the depth closest to 30
 			ungroup() %>%
-			mutate(k_diff = abs(30-k)) %>%
-			filter(k_diff == min(k_diff))
+			mutate(lowest_depth_diff = abs(30-lowest_depth)) %>%
+			filter(lowest_depth_diff == min(lowest_depth_diff))
 		
-		three_combination_k <- three_combination$k %>%
+		three_combination_lowest_depth <- three_combination$lowest_depth %>%
 			unique()
 		
 		three_combination_depths <- three_combination %>%
@@ -95,18 +95,18 @@ make_depth_groups <- function(input) {
 	one_combination_rows <- z %>%
 		filter(soil_depth %in% one_combination_depths) %>%
 		mutate(combination_group = 1,
-					 k = one_combination_k)
+					 lowest_depth = one_combination_lowest_depth)
 	two_combination_rows <- z %>%
 		filter(soil_depth %in% two_combination_depths) %>%
 		mutate(combination_group = 2,
-					 k = two_combination_k)
+					 lowest_depth = two_combination_lowest_depth)
 	three_combination_rows <- z %>%
 		filter(soil_depth %in% three_combination_depths) %>%
 		mutate(combination_group = 3,
-					 k = three_combination_k)
+					 lowest_depth = three_combination_lowest_depth)
 	
 	result <- bind_rows(one_combination_rows, two_combination_rows, three_combination_rows) %>%
-		filter(k == max(k))
+		filter(lowest_depth == max(lowest_depth))
 	
 	print(result$location_name)
 	print(result$treatment_name)
