@@ -1,5 +1,5 @@
 ---
-title: 'Illustrating the "dynamic depth mixing" method for correcting SOC depth measurements and testing DSM estimates of initial SOC'
+title: 'Comparing naive and dynamic SOC depth correction approaches, and testing DSM estimates of initial SOC'
 author: "Francis Durnin-Vermette"
 date: "2023/01/24"
 output:
@@ -22,7 +22,6 @@ library(here)
 library(stringr)
 library(tidyr)
 
-
 dir.create(tempdir()) #This fixes a bug if the temporary directory is not found
 
 here::i_am("qc_initialc.rmd")
@@ -31,644 +30,336 @@ source(here("r/make_depth_groups.r"))
 
 ```
 
-```{r, results='hide', message=FALSE, warning=FALSE}
-site_data_all <- readr::read_csv(here("data/all_experiments_dummy.csv")) %>%
-#site_data_all <- readr::read_csv(here("data/lte_master_beta_dec02.csv")) %>%
+```{r, results='hide', message=FALSE, warning=FALSE, include=FALSE}
+site_data_all <- readr::read_csv(here("data/lte_master_beta_dec02.csv")) %>%
 	mutate(soil_depth = paste0(soil_depth_min_cm,"-",soil_depth_max_cm))
+
+initialc_dsm <- readr::read_csv(here("data/lte_soc_30_cm_dsm.csv")) %>%
+	mutate(location_name = location_n) %>%
+	select(location_name, initial_dsm = `Can_SOC30 (Mg ha-1)`) %>%
+	unique
+initialc_cmods <- readr::read_csv(here("data/ExptSiteList.csv")) %>%
+	select(location_name, initial_cmods = init_soc) %>%
+	unique
 ```
 The purpose of this report is to 
-1. give an overview of how depth measurements from field data can be corrected to the target depth for use in SOC model validation using a "dynamic depth mixing" method, and
-2. visualize the realism of initial SOC estimates for Canadian long-term experimental sites.
 
-These estimates were obtained using a digital soil mapping (DSM) method because some sites do not have an initial (meaning before the beginning of the experiment) SOC measurement, which is an important parameter in SOC modelling.
+1. Give an overview of how depth measurements from field data can be corrected to the target depth for use in SOC model validation using a dynamic depth correction approach, and
+2. Visualize the realism of initial SOC estimates for Canadian long-term experimental sites.
+
+These estimates were obtained using a digital soil mapping (DSM) method because some sites do not have an initial SOC measurement, which is an important parameter in SOC modelling.
 
 # Assumptions
 
+We assume:
+- Soil management has no effect on bulk density
+- When using the naive depth correction approach, we assume SOC levels are homogenous throughout the soil, but when using the dynamic depth correction approach, we do not assume homogeneity.
+- The initial year from the DSM estimates are either 1999, or the year of the first SOC measurement in that experiment; whichever is earlier (This assumption only affects visualizations, not SOC calculations).
+
+# Depth correction method
 Many of these experiments did not sample SOC at depths 0-30cm.
 We corrected these values using two different algorithms: the naive method, and the dynamic method.
 
-## Naive depth correction
+## Naive
 
-Assume the the measured SOC is evenly distributed from 0 to 30cm.
+If we assume the the measured SOC is evenly distributed between 0 and 30cm (i.e. the soil is homogenous), we can correct the measured soil depth to 0-30cm using the following equation:
 
 $$
 SOC_{30} = SOC_{measured} * \frac{30cm}{max_{depth} - min_{depth}}
 $$
 
-## Dynamic depth correction
+## Dynamic
 
-If we assume that the top 20cm of soil changes relative to treatment effect, but that the bottom 10cm remains relatively constant, then we could perform depth correction using a more "dynamic" approach.
-
-We can test this assumption by looking at SOC measurements from different depths:
-
-```{r}
-site_data_control_comparison <- site_data_all %>%
-	mutate(is_control = ifelse(treatment_number == 1, TRUE, FALSE)) %>%
-	group_by(location_name, is_control, soil_depth) %>%
-	summarise(soc = mean(soc_tha, na.rm=T), sd = sd(soc_tha, na.rm=T)) %>%
-	mutate(soc_upper = soc+sd,
-				 soc_lower = soc-sd) %>%
-	filter(!is.na(soc)) %>%
-	filter(!is.na(is_control))
-site_data_control_comparison
-
-ggplot(site_data_control_comparison, aes(y=soc, x=soil_depth, fill=is_control)) +
-	facet_wrap(vars(location_name)) +
-	geom_col(position="dodge") +
-	geom_errorbar(aes(ymin = soc_lower, ymax = soc_upper), position="dodge")
-	
-	
-```
+However, it is not safe to assume that the soil has homogeneous SOC stocks because it is known that C content changes drastically at different depths.
+If we do not assume homogeneity, then we must take into account SOC at different depths during our depth corrections. 
+In order to do this, we can use the initial C estimate (which is estimated for 0-30cm), and find the difference between this and the measured C (e.g. 0-20cm) in order to establish a constant 20-30cm C value for that experiment.
+The fact that this difference is constant is an assumption based on the premise that the SOC content at lower depths (e.g. 20-30cm) does not fluctuate as much as lower depths, and are also not as affected by treatment effects.
 
 In order to correct for SOC following the dynamic method, I follow these steps:
 
-- For each treatment, sum every SOC depth measurement under 20cm deep. For instance, sum the measurements of 0-7.5cm and 7.5-15cm to calculate 0-15cm. Take this value and correct it to 0-20cm
-- Take the control value from the same experiment, find the single depth measurement closest to 20-30cm, and correct this measurement to 20-30cm
-- Sum the 0-20cm treatment SOC and the 20-30cm control SOC to get a corrected 0-30cm SOC estimate where the top 20cm are affected by changes in the treatment, and the lowest 10cm is set to the control SOC and therefore not swayed by treatment effects.
+- For each treatment, sum every SOC depth measurement less than or equal to 30cm deep. For instance, sum the measurements of 0-7.5cm and 7.5-15cm to calculate 0-15cm.
+- Take the DSM initial C estimate from the same experiment (0-30cm), and find the difference in SOC between the first measured SOC (0-15cm) and the initial SOC (0-30cm), which represents SOC at 15-30cm.
+- Sum the measured 0-15cm with the estimated 15-30cm SOC to arrive at an estimated 0-30cm SOC.
+- The same value for 15-30cm will be used for the entire site/treatment, because the initial DSM estimate doesn't change within the site/treatment, and neither does the first measured SOC point.
 
-In order to apply depth corrections, we used the following equation:
-$$
-SOC_{depth_{target}} = SOC_{measured} * \frac{depth_{target}}{depth_{measurement_{max}} - depth_{measurement_{min}}}
-$$
+Other situations that need to be handled:
 
-## Initial C year
-In order to visualize the change in SOC between the initial C estimate and the first measurement of SOC in the experiment, we need to decide on a year that the initial SOC estimate represents.
-Here is my approach:
-If the first SOC measurement in the experiment is after or during 2000, then I set the initial SOC to be the value in 1999.
-If the first SOC measurement in the experiment is before 2000, then I assume that the initial C represents the SOC for the year *before* the first SOC measurement.
+- If the measured SOC points have been measured at different depths, and it is possible to arrive at 0-30cm depth using multiple combinations of sampling depths, then we calculate the 0-30cm depth using all possible combinations, and get the average between all groupings.
+<!-- - Within the same site/treatment, if some years have been measured at 0-30cm and others only at 0-15cm, then we need to perform depth correction on the 0-15cm data points but not the 0-30cm data points. -->
 
-# Testing SOC corrections (dynamic depth correction vs. naive correction)
 
-First we need to handle SOC measurement depth correction.
+# Testing SOC depth correction method
 
-It turns out to be difficult to determine which treatment is a control based on the treatment name alone - especially for rotation trials.
-We assume that a treatment is a control if the treatment_number is 1.
+One problem we run into with the data is that sometimes there are multiple ways to arrive at 0-30cm from the same site.
+For instance, some treatments in Lethbridge measure 0-7.5, 7.5-15, 15-30, and 0-15.
+In this case, there are two ways to arrive at 0-30: either 0-7.5 + 7.5-15 + 15-30, or just 0-15 + 15-30.
 
-```{r}
-site_data_corrected <- site_data_all %>%
-	select(location_name, experiment_name, treatment_number,treatment_name, year_name, replication_number, soil_depth, soil_depth_min_cm, soil_depth_max_cm,
-				 soc_tha,soc_tha_30cm, initial_soc_tha, initial_soc_year) %>%
+In order to handle this, I made a function `make_depth_groups` which makes a dataset with both groupings in order to arrive at 0-30cm. In the above example, this duplicates the 15-30cm measurements since they are used in both groupings.
+
+In order to avoid duplicating data which could affect the statistical properties of simulations, we find the average SOC between possible depth groupings.
+
+```{r message=FALSE, warning=FALSE, results='hide'}
+site_data_depth_groups <- site_data_all %>%
+	full_join(initialc_dsm, by=c("location_name")) %>%
+	full_join(initialc_cmods, by="location_name") %>%
+	select(Exp_ID, location_name, treatment_number,treatment_name, year_name, replication_number, soil_depth, soil_depth_min_cm, soil_depth_max_cm,
+				 initial_soc_year,
+				 initial_dataset = initial_soc_tha,
+				 soc_tha) %>%
 	filter(!is.na(soc_tha)) %>%
 	# Get the mean for field_name, replication_number, and block
-	group_by(location_name, experiment_name, year_name, treatment_number, treatment_name, soil_depth_min_cm, soil_depth_max_cm) %>%
-	group_by(.add=T, initial_soc_year) %>%
-	summarise(across(soc_tha:initial_soc_tha, mean)) %>%
-	# Find bottom 10cm of soil profile SOC using control from that treatment
-	mutate(f_control = (abs(20-soil_depth_min_cm) +  abs(30-soil_depth_max_cm)),
-				 f_control_depth = soil_depth_max_cm - soil_depth_min_cm) %>%
-	group_by(location_name, experiment_name, year_name) %>%
-	mutate(soc_tha_control = ifelse(1 %in% treatment_number,
-																	filter(cur_data(),
-																				 treatment_number==1,
-																				 f_control == min(cur_data()$f_control))$soc_tha,
-																	# If a control treatment is not indicated by treatment_number = 1, just use the first row in group
-																	slice(cur_data(),1)$soc_tha), 
-				 soc_tha_10cm_control = ifelse(1 %in% treatment_number,
-				 															soc_tha_control*(10/(filter(cur_data(),
-				 																													treatment_number==1,
-				 																													f_control == min(f_control))$f_control_depth)),
-				 															slice(cur_data(),1)$f_control_depth)) %>%
-	# Compute the total measured depth (only including depths < 20cm) for each treatment, use this to estimate 0-20cm SOC	
-	group_by(location_name, experiment_name, treatment_name, year_name) %>%
-	group_by(.add=T, initial_soc_tha, initial_soc_year) %>%
-	summarise(lowest_depth = -sum(-soil_depth_max_cm[soil_depth_max_cm<=20], soil_depth_min_cm[soil_depth_max_cm<=20]),
-						soc_lowestdepth_dynamic = sum(soc_tha[soil_depth_max_cm<=20]),
-						soc_30cm_naive = mean(soc_tha_30cm),
-						soc_10cm_control = mean(soc_tha_10cm_control)) %>%
-	mutate(soc_20cm_dynamic = soc_lowestdepth_dynamic*(20/lowest_depth),
-				 soc_20cm_naive = soc_30cm_naive*(20/30),
-				 soc_30cm_dynamic_control = soc_20cm_dynamic + soc_10cm_control,
-				 soc_30cm_naive_control = soc_20cm_naive + soc_10cm_control)
+	group_by(Exp_ID, location_name, year_name, treatment_number, treatment_name, soil_depth_min_cm, soil_depth_max_cm, initial_soc_year) %>%
+	summarise(across(initial_dataset:soc_tha, mean)) %>%
+	group_by(Exp_ID, location_name, year_name, treatment_number, treatment_name) %>%
+	group_split() %>%
+	purrr::map(~make_depth_groups(.)) %>%
+	bind_rows
+```
+
+Now we add different estimates of initial C. These come from the digital soil mapping (DSM) estimates and the CMods repository.
+
+We assume that the DSM estimates are from the year 1999 or earlier, and if the first measures SOC event for that experiment is before 1999 we choose the first year before that measurement as the initial SOC estimate year.
+
+```{r}
+site_data_joined <- site_data_depth_groups %>%
+	left_join(initialc_dsm, by=c("location_name")) %>%
+	left_join(initialc_cmods, by="location_name") %>%
+	select(Exp_ID, location_name, treatment_number,treatment_name, year_name, lowest_depth, soil_depth,
+				 soil_depth_min_cm, soil_depth_max_cm, combination_group,
+				 soc_tha, initial_dataset, initial_dsm, initial_cmods, initial_soc_year) %>%
+	# Set the initial C to either be 1 year before the first year ever measured for that site, or 1999 (maximum start date).
+	group_by(Exp_ID, location_name) %>%
+	mutate(initial_soc_year_dsm = ifelse(min(year_name) < 2000, min(year_name)-1, 1999))
 
 ```
 
+<!-- We need to handle situations where different lowest depths are measured within the same treatment/site. This will mean that multiple estimates of the DSM difference (DSM initial C - first measured C) will need to be obtained for different depth ranges. -->
+
+<!-- ```{r} -->
+<!-- site_data_depth_ranges <- site_data_joined %>% -->
+<!-- 	group_by(Exp_ID, location_name, treatment_number, treatment_name, soil_depth) %>% -->
+<!-- 	filter(year_name == first(year_name)) %>% -->
+<!-- 	filter(soil_depth_min_cm == 0) -->
+<!-- 	filter(soil_depth_max_cm == lowest_depth) -->
+
+<!-- 	mutate(dsm_diff = initial_dsm - first(soc_tha)) -->
+
+<!-- ``` -->
+
+Now we sum each of the depths for each depth group in order to arrive at the total SOC for the lowest measured depth.
+
+```{r}
+site_data_summed <- site_data_joined %>%
+	group_by(Exp_ID, location_name, year_name, treatment_number, treatment_name, initial_dataset, initial_dsm, initial_cmods, initial_soc_year, initial_soc_year_dsm, combination_group, lowest_depth) %>%
+	summarise(soc_tha_lowest_depth = sum(soc_tha)) %>%
+	# Get mean values for each combination group to remove duplicates
+	group_by(Exp_ID, location_name, year_name, treatment_number, treatment_name, initial_dataset, initial_dsm, initial_cmods, initial_soc_year, initial_soc_year_dsm, lowest_depth) %>%
+	summarise(across(c("soc_tha_lowest_depth"), mean))
+```
+
+
+
+
+Now, in circumstances where 0-30cm is measured, we can just use this number.
+However, if less or more than 30cm is measured in total, then we need to perform correction.
+
+In order to do this, we find the difference between the initial DSM estimate for the site/treatment, and find the difference between that and the first SOC measurements for that site_treatment. Then, we just add that difference to each measurement of SOC for the site/treatment.
+
+```{r}
+site_data_corrected <- site_data_summed %>%
+	group_by(Exp_ID, location_name, treatment_number, treatment_name) %>%
+	mutate(first_soc_treatment = first(soc_tha_lowest_depth),
+				 soc_dsm_difference = initial_dsm - first_soc_treatment,
+				 lowest_depth_difference = 30 - lowest_depth,
+				 soc_30cm_dynamic = ifelse(lowest_depth_difference != 0,
+				 											soc_tha_lowest_depth + soc_dsm_difference,
+				 											soc_tha_lowest_depth)) %>%
+	mutate(soc_30cm_naive = soc_tha_lowest_depth * (30/lowest_depth))
+```
+
+## Lethbridge 
+
+```{r}
+site_data_corrected %>%
+	select(Exp_ID, location_name, treatment_name, year_name,
+				 initial_dsm, 
+				 soc_30cm_naive, soc_30cm_dynamic
+	) %>%
+	filter(location_name == "Lethbridge") %>%
+	filter(!is.na(soc_30cm_naive)) %>%
+	filter(treatment_name == "Fw-Wt I")
+```
+
+For year = 1992:
+
+SOC was measured at 0-7.5, 7.5-15, and 15-30cm for this year.
+
+### Naive
+
+Treatment 0-30cm = **101.500**
+
+### Dynamic
+
+There is no difference between the dynamic approach and the naive approach because 30cm was measured in total.
 
 ## Ellerslie 
 
+```{r}
+site_data_corrected %>%
+	select(Exp_ID, location_name, treatment_name, year_name,
+				 initial_dsm, soc_tha_lowest_depth,
+				 soc_30cm_naive, soc_30cm_dynamic
+	) %>%
+	filter(location_name == "Ellerslie") %>%
+	filter(!is.na(soc_30cm_naive)) %>%
+	filter(treatment_name == "F25NS")
+```
+
 
 Let's see if our new method of estimating SOC at 30cm works.
-```{r}
-site_data_all %>%
-	select(location_name, treatment_number, treatment_name, year_name, soc_tha, soc_tha_30cm, soil_depth) %>%
-	filter(location_name == "Ellerslie") %>%
-	filter(!is.na(soc_tha)) %>%
-	filter(treatment_number == 1 |
-				 	treatment_name == "F25NS",
-				 year_name == 2009)
-```
-Following our method, we should see that the whole 0-20 profile from the treatment is used, and added to a 10cm profile from the control
 
 For year = 2009:
 
 ### Naive
 
+Treatment 0-20cm = 123.3200
+
 Treatment 0-30cm = 123.3200 * (30/20) = **184.98**
 
 ### Dynamic
 
-Treatment 0-20cm = 123.32
+Treatment 0-20cm = 123.3200
 
-Control 20-30cm = 118.8533 * (10/20) = 59.42665
+DSM Initial 0-30cm = 131.9
 
-Treatment 0-30cm = 123.32 + 59.42665 = **182.7466**
+Treatment 0-20cm in first year = 110.21
 
-```{r}
-site_data_corrected %>%
-	filter(location_name == "Ellerslie",
-				 treatment_name == "F25NS",
-				 year_name == 2009) %>%
-	select(year_name, location_name, treatment_name, soc_30cm_naive, soc_30cm_dynamic_control)
-```
-The dynamic method only decreased our estimated SOC by about 1% in this case. However, it is a particularly simple sampling scheme so there was not much room for difference.
+DSM Initial 10-30cm = 131.9	- 110.21 = 21.69
 
-Now let's see what happens with a more complex soil sampling scheme.
+Treatment 0-30cm = 123.3200 + 21.69 = **145.01**
 
-## Lethbridge 
-
-```{r}
-site_data_all %>%
-	select(location_name, treatment_number, treatment_name, year_name, soc_tha, soc_tha_30cm, soil_depth) %>%
-	filter(location_name == "Lethbridge") %>%
-	filter(!is.na(soc_tha)) %>%
-	filter(treatment_number == 1 |
-				 	treatment_name == "Fw-Wt I",
-				 year_name == 1992) %>%
-	group_by(location_name, treatment_name, treatment_number, soil_depth) %>%
-	summarise_all(mean)
-```
-
-For year = 1992:
-
-### Naive
-Treatment 0-30cm = mean(56.50, 116.00, 117.50) = **96.66667**
-
-### Dynamic
-Treatment 0-7.5cm = 14.125
-
-Treatment 7.5-15cm = 29.375
-
-Treatment 15-30cm = 58.000
-
-Treatment 0-30cm = 14.125 + 29.375 + 58.000 = 101.5
-
-Control 0-7.5cm = 14.450
-
-Control 7.5-15cm = 31.325
-
-Control 15-30cm = 58.425
-
-Control 0-30cm = 14.450 + 31.325 + 58.425 = 104.2
-
-Control 20-30cm = 104.2 * (10/30) = 34.73333
-
-Treatment 0-20cm = 101.5 * (20/30) = 67.66667
-
-Treatment 0-30cm = 34.73333 + 67.66667 = **102.4**
-
-## Dynamic with 0-15cm treatment
-The dynamic method has some specifics that need to be ironed out. For instance, in this case we have measurements from 0-7.5, 7.5-15, and 15-30cm. So if we want to estimate 0-20cm, should we do this using the 0-30cm measurements, or the 0-15cm measurements?
-In the above example, I use the 0-30cm measurements for simplicity's sake, and the actual difference in SOC between the two methods is probably so minute it's below a detection threshold, but this is still something that needs to be made explicit in the method.
-
-Let's test:
-
-Treatment 0-15 = 14.125 + 29.375 = 43.5
-
-Treatment 0-20cm = 43.5 * (20/15) = 58
-
-Treatment 0-30cm = 34.73333 + 58 = **92.73333**
-
-It turns out that using only the 0-15cm measurements and correction to 0-20cm decreases the SOC by about **9.5%**, which is higher than I was expecting.
-
-### Dynamic with 15-30cm control
-The same logic can be applied to the control treatment. Again, for simplicity's sake, I used the 0-30cm control measurement and corrected this to 20-30cm, but in reality I probably should have used the 15-30cm depth because this is closest to 20-30cm.
-
-Control 15-30cm = 58.425
-
-Control 20-30cm = 58.425 * (10/15) = 38.95
-
-Treatment 0-30cm = 38.95 + 67.66667 = **106.6167**
-
-In this case, using just the 15-30cm control increases SOC by about **4%**.
-
-### Dynamic with both 0-15cm treatment and 15-30cm control
-Treatment 0-30cm = 38.95 + 58 = **96.95**
-
-That's funny - in this case the most complex dynamic method calculated essentially the same SOC value as the fully naive method.
-Still, because we are using soil samples from specific depths, we have more control over what is being calculated using this method.
-
-```{r}
-site_data_corrected %>%
-	filter(location_name == "Lethbridge",
-				 treatment_name == "Fw-Wt I",
-				 year_name == 1992) %>%
-	select(year_name, location_name, treatment_name, soc_30cm_naive, soc_30cm_dynamic_control)
-```
-
-
-## Suggestions for dynamic depth correction
-Based on the above calculations, I think it is fair to suggest that we should probably try to use the most complex correction method, because in some cases the SOC stocks estimated using the fully dynamic approach and the naive approach can be different by over 10%.
-
-Here are my suggestions for how to perform the dynamic method:
-
-1. Control treatments should be explicitly and generically (meaning that every control treatment in the dataset should have the same indication - it doesn't help if control treatments could be named either "CK" or "N0", etc...) indicated in the data. For this dataset, I suggest that every control treatment is assigned treatment_number = 1.
-2. To estimate control 20-30cm, I suggest that a single depth measurement that is closest to this interval should be used to calculate it. The closest interval can be calculated by minimizing the following term: $f = (20 - depth_{min}) + (30 - depth_{max})$. For instance, if you had to choose between control measurements that were either measured at 10-25 or 15-30cm, you could use $f_{7.5-15} = (20 - 10) + (30 - 25) = 15$ and $f_{15-30} = (20 - 15) + (30 - 30) = 5$ to decide that the 15-30cm depth is closest to the target 20-30cm.
-3. To estimate the 0-20cm depth from the treatment, we should also use a combination of depths that gets us closest to 0-20cm. If the system of measurements is quite complex, this can be difficult to do generally I did not attempt to make a general solution. Instead, the approach I took was to sum the SOC for all depth measurements under 20cm, and correct these values to 0-20cm. This works for the Lethbridge data because the deepest measurement under 20 is the 7.5-15cm depth. However, this would not work if soil was sampled down to 23cm, for instance. In this case, the constant values in my method could be re-set, or a general solution could be employed.
-
-```{r}
-site_data_corrected %>%
-	filter(location_name == "Lethbridge",
-				 treatment_name == "Fw-Wt I",
-				 year_name == 1992) %>%
-	select(year_name, location_name, treatment_name, soc_30cm_naive, soc_30cm_dynamic_control)
-```
-
-
-```{r, results='hide', message=FALSE, warning=FALSE}
-
-initialc_dsm <- readr::read_csv(here("data/lte_soc_30_cm_dsm.csv")) %>%
-	rowwise() %>%
-	mutate(location_name = stringr::str_split(location_n, ", ")[[1]][1])
-
-initialc_cmods <- readr::read_csv(here("data/ExptSiteList.csv"))
-
-site_data_all_joined <- full_join(site_data_corrected, initialc_dsm, by="location_name") %>%
-	full_join(initialc_cmods, by="location_name") %>%
-	select(location_name,
-				 initial_dsm = `Can_SOC30 (Mg ha-1)`, initial_cmods = init_soc, initial_soc_year,
-				 treatment_name,
-				 year_name,
-				 soc_30cm_naive, soc_30cm_dynamic_control) %>%
-	group_by(location_name, treatment_name) %>%
-	# Set the initial C to either be 1 year before the first year in the experiment, or 1999 (maximum start date).
-	mutate(initial_soc_year = ifelse(first(year_name) < 2000, first(year_name)-1, 1999)) %>%
-	filter(!is.na(soc_30cm_naive))
-site_data_all_joined
-
-```
+Using the dynamic approach in Ellerslie decreased the measured SOC stock by almost 10%, which is quite significant. Since the 20-30cm in Ellerslie has never been measured, we have no way to test which approach is more accurate.
 
 # Graphing
 
 ## All sites
 
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
-site_data_all_joined %>%
-	pivot_longer(c("soc_30cm_naive", "soc_30cm_dynamic_control"), names_to="soc_method", values_to="soc") %>%
+Looking at all the sites, we can see that the DSM initial estimates seem to generally agree well with measured SOC values.
+
+Additionally, it appears that in many cases (e.g. Ellerslie) the dynamic SOC estimation method leads to SOC values that seem more realistic within the context of the DSM initial C estimates.
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE, fig.width=7, fig.height=7}
+site_data_corrected %>%
+	pivot_longer(c("soc_30cm_naive", "soc_30cm_dynamic"), names_to="soc_method", values_to="soc") %>%
 	pivot_longer(c("initial_dsm", "initial_cmods"), names_to="initial_method", values_to="initial") %>%
 	ggplot(aes(x=year_name)) +
-	geom_point(aes(y=soc, color=soc_method), alpha=0.4) +
-	geom_point(aes(y=initial, shape=initial_method, x=initial_soc_year), color="red") +
+	geom_point(aes(y=soc, color=soc_method), alpha=0.2) +
+	geom_point(aes(y=initial, shape=initial_method, x=initial_soc_year_dsm), color="green") +
 	theme_bw() +
 	facet_wrap(vars(location_name)) +
-	ylab("SOC (Mg/ha)") +
-	xlab("Year") +
-	theme(aspect.ratio = 1)
+	labs(x = "Year", y = "SOC (Mg/ha)",
+				 color = "Depth \ncorrection \nmethod", shape = "Initial C \nestimation \nmethod") +
+	theme(aspect.ratio = 1) +
+	scale_color_manual(labels = c("Dynamic", "Naive"), values = c("blue", "red")) +
+		scale_shape_manual(labels = c("CMods", "DSM"), values = c("square", "triangle"))
 ```
+
+
+
+```{r include=FALSE}
+
+make_normal_plot <- function(location) {
+	site_data_corrected %>%
+		filter(location_name == location) %>%
+		pivot_longer(c("soc_30cm_naive", "soc_30cm_dynamic"), names_to="soc_method", values_to="soc") %>%
+		pivot_longer(c("initial_dsm", "initial_cmods"), names_to="initial_method", values_to="initial") %>%
+		ggplot(aes(x=year_name, y=soc_30cm_naive)) +
+		geom_point(aes(y=soc, color=soc_method), alpha=0.2) +
+		geom_point(aes(y=initial, shape=initial_method, x=initial_soc_year_dsm), color="green") +
+		theme_bw() +
+		facet_wrap(vars(treatment_name)) +
+		labs(title = location, x = "Year", y = "SOC (Mg/ha)",
+				 color = "Depth \ncorrection \nmethod", shape = "Initial C \nestimation \nmethod") +
+		theme(aspect.ratio = 1) +
+		scale_color_manual(labels = c("Dynamic", "Naive"), values = c("blue", "red")) +
+		scale_shape_manual(labels = c("CMods", "DSM"), values = c("square", "triangle"))
+	
+}
+```
+
+
 
 ### Ellerslie
 
-There are large differences between the initial C estimates for Ellerslie.
-The CMods estimates seem to cohere with the measured data best, but the DSM estimates could be made more realistic if the initial values were assumed to be from 10 years before 1999 (shown in blue).
+The DSM estimates and dynamic depth correction approach have the effect of decreasing SOC values, and also reducing the rate of change of SOC values over time.
 
-```{r, message=FALSE, warning=FALSE, fig.width = 10, fig.height = 10, echo=FALSE}
-ellerslie_increase <- site_data_all_joined %>%
-	filter(location_name == "Ellerslie") %>%
-	group_by_all() %>%
-	summarise_all(mean) %>%
-	summarise_all(mean) %>%
-	group_by(treatment_name) %>%
-	mutate(first_soc = first(soc_30cm_naive),
-				 first_soc_year = first(year_name)) %>%
-	select(treatment_name, first_soc, first_soc_year, initial_dsm, initial_soc_year) %>%
-	unique %>%
-	mutate(increase = first_soc - initial_dsm,
-				 increase_per_year = increase / (first_soc_year - initial_soc_year),
-				 fraction_increase = increase/initial_dsm,
-				 fraction_increase_per_year = fraction_increase / (first_soc_year - initial_soc_year),
-				 sign = ifelse(fraction_increase_per_year<0, "-", "+"),
-				 
-				 recommended_initial_soc_year = initial_soc_year-10,
-				 recommended_increase_per_year = increase / (first_soc_year - recommended_initial_soc_year),
-				 recommended_fraction_increase_per_year = recommended_increase_per_year/initial_dsm)
-
-site_data_all_joined %>%
-	filter(location_name == "Ellerslie") %>%
-	# Get mean values between replicates and soil depth measurements. Lethbridge requires a particularly difficult grouping scheme
-	group_by_all() %>%
-	summarise_all(mean) %>%
-	summarise_all(mean) %>%
-	pivot_longer(c("soc_30cm_naive", "soc_30cm_dynamic_control"), names_to="soc_method", values_to="soc") %>%
-	pivot_longer(c("initial_dsm", "initial_cmods"), names_to="initial_method", values_to="initial") %>%
-	ggplot(aes(x=year_name, y=soc_30cm_naive)) +
-	geom_segment(data=ellerslie_increase, aes(y=initial_dsm, x=initial_soc_year, yend=first_soc, xend=first_soc_year), color="red",
-							 arrow = arrow(length = unit(0.1, "inches"))) +
-	geom_text(data=ellerslie_increase, aes(x=first_soc_year, y=first_soc, hjust=ifelse(first_soc_year < 1990, -0.1, 1.1), label=paste0(sign,round(increase_per_year, 2)," Mg/ha/yr\n",sign,round(fraction_increase_per_year,2)*100, "%/yr")),
-						color="red") +
-	geom_segment(data=ellerslie_increase, aes(y=initial_dsm, x=recommended_initial_soc_year, yend=first_soc, xend=first_soc_year), color="blue",
-							 arrow = arrow(length = unit(0.1, "inches"))) +
-	geom_text(data=ellerslie_increase, aes(x=recommended_initial_soc_year, y=initial_dsm, label=paste0(sign,round(recommended_increase_per_year, 2)," Mg/ha/yr\n",sign,round(recommended_fraction_increase_per_year,2)*100, "%/yr")),
-						color="blue", hjust=-0.1, vjust=0) +
-	geom_point(aes(y=soc, color=soc_method), alpha=0.7) +
-	geom_point(aes(y=initial, shape=initial_method, x=initial_soc_year), color="red") +
-	theme_bw() +
-	facet_wrap(vars(treatment_name)) +
-	ylab("SOC (Mg/ha)") +
-	xlab("Year") +
-	ggtitle("Ellerslie") +
-	theme(aspect.ratio = 1)
+```{r, message=FALSE, warning=FALSE, fig.width = 6, fig.height = 6, echo=FALSE}
+make_normal_plot("Ellerslie")
 ```
 
 ### Harrow
-All three estimates of initial C are realistic for Harrow.
-The DSM estimates are the furthest away from the first measured value, but only represents a 4% increase / year, which is still within reason.
-```{r, message=FALSE, warning=FALSE, fig.width = 10, fig.height = 10, echo=FALSE}
-harrow_increase <- site_data_all_joined %>%
-	filter(location_name == "Harrow") %>%
-	group_by_all() %>%
-	summarise_all(mean) %>%
-	summarise_all(mean) %>%
-	group_by(treatment_name) %>%
-	mutate(first_soc = first(soc_30cm_naive),
-				 first_soc_year = first(year_name)) %>%
-	select(treatment_name, first_soc, first_soc_year, initial_dsm, initial_soc_year) %>%
-	unique %>%
-	mutate(increase = first_soc - initial_dsm,
-				 increase_per_year = increase / (first_soc_year - initial_soc_year),
-				 fraction_increase = increase/initial_dsm,
-				 fraction_increase_per_year = fraction_increase / (first_soc_year - initial_soc_year),
-				 sign = ifelse(fraction_increase_per_year<0, "-", "+"))
 
-site_data_all_joined %>%
-	filter(location_name == "Harrow") %>%
-	# Get mean values between replicates and soil depth measurements. Lethbridge requires a particularly difficult grouping scheme
-	group_by_all() %>%
-	summarise_all(mean) %>%
-	summarise_all(mean) %>%
-	pivot_longer(c("soc_30cm_naive", "soc_30cm_dynamic_control"), names_to="soc_method", values_to="soc") %>%
-	pivot_longer(c("initial_dsm", "initial_cmods"), names_to="initial_method", values_to="initial") %>%
-	ggplot(aes(x=year_name, y=soc_30cm_naive)) +
-	geom_segment(data=harrow_increase, aes(y=initial_dsm, x=initial_soc_year, yend=first_soc, xend=first_soc_year), color="red",
-							 arrow = arrow(length = unit(0.1, "inches"))) +
-	geom_text(data=harrow_increase, aes(x=first_soc_year, y=first_soc, hjust=ifelse(first_soc_year < 1990, -0.1, 1.1), label=paste0(sign,round(increase_per_year, 2)," Mg/ha/yr\n",sign,round(fraction_increase_per_year,2)*100, "%/yr")),
-						color="red") +
-	geom_point(aes(y=soc, color=soc_method), alpha=0.7) +
-	geom_point(aes(y=initial, shape=initial_method, x=initial_soc_year), color="red") +
-	theme_bw() +
-	facet_wrap(vars(treatment_name)) +
-	ylab("SOC (Mg/ha)") +
-	xlab("Year") +
-	ggtitle("Harrow") +
-	theme(aspect.ratio = 1)
+Both estimates of initial C are realistic for Harrow.
+The DSM estimates are further away from the first measured value than the CMods initial estimates.
+
+```{r, message=FALSE, warning=FALSE, fig.width = 6, fig.height = 6, echo=FALSE}
+make_normal_plot("Harrow")
+```
+
+### Indian Head
+
+Both estimates of initial C are realistic for Harrow.
+The DSM estimates are further away from the first measured value than the CMods initial estimates.
+
+```{r, message=FALSE, warning=FALSE, fig.width = 6, fig.height = 6, echo=FALSE}
+make_normal_plot("Indian Head")
 ```
 
 
 ### Lethbridge
 
 The DSM values for Lethbridge work well with the measured values, and are an improvement over the CMods initial estimates.
-The difference between the initial value and the first measured value rarely exceeds 2%/year.
 
-Lethbridge is an instance of a site where SOC was measured at depths 0-7.5, 0-15, 7.5-15, and 15-30cm.
-In every case, SOC at 0-30cm was gap-filled using the above equation.
-```{r, message=FALSE, warning=FALSE, fig.width = 10, fig.height = 10, echo=FALSE}
-lethbridge_increase <- site_data_all_joined %>%
-	filter(location_name == "Lethbridge") %>%
-	group_by_all() %>%
-	summarise_all(mean) %>%
-	summarise_all(mean) %>%
-	group_by(treatment_name) %>%
-	mutate(first_soc = first(soc_30cm_naive),
-				 first_soc_year = first(year_name)) %>%
-	select(treatment_name, first_soc, first_soc_year, initial_dsm, initial_soc_year) %>%
-	unique %>%
-	mutate(increase = first_soc - initial_dsm,
-				 increase_per_year = increase / (first_soc_year - initial_soc_year),
-				 fraction_increase = increase/initial_dsm,
-				 fraction_increase_per_year = fraction_increase / (first_soc_year - initial_soc_year),
-				 sign = ifelse(fraction_increase_per_year<0, "-", "+"))
+There are some issues with the data for the fertilization experiment (Exp_ID = 5; treatments = N0P0, N0P20, N45P0, N45P20). There are some instances in the data where only 0-15cm is measured, and others where 0-30cm is measured.
 
-site_data_all_joined %>%
-	filter(location_name == "Lethbridge") %>%
-	# Get mean values between replicates and soil depth measurements. Lethbridge requires a particularly difficult grouping scheme
-	group_by_all() %>%
-	summarise_all(mean) %>%
-	summarise_all(mean) %>%
-	pivot_longer(c("soc_30cm_naive", "soc_30cm_dynamic_control"), names_to="soc_method", values_to="soc") %>%
-	pivot_longer(c("initial_dsm", "initial_cmods"), names_to="initial_method", values_to="initial") %>%
-	ggplot(aes(x=year_name, y=soc_30cm_naive)) +
-	geom_segment(data=lethbridge_increase, aes(y=initial_dsm, x=initial_soc_year, yend=first_soc, xend=first_soc_year), color="red",
-							 arrow = arrow(length = unit(0.1, "inches"))) +
-	geom_text(data=lethbridge_increase, aes(x=first_soc_year, y=first_soc, hjust=ifelse(first_soc_year < 1990, -0.1, 1.1), label=paste0(sign,round(increase_per_year, 2)," Mg/ha/yr\n",sign,round(fraction_increase_per_year,2)*100, "%/yr")),
-						color="red") +
-	geom_point(aes(y=soc, color=soc_method), alpha=0.7) +
-	geom_point(aes(y=initial, shape=initial_method, x=initial_soc_year), color="red") +
-	theme_bw() +
-	facet_wrap(vars(treatment_name)) +
-	ylab("SOC (Mg/ha)") +
-	xlab("Year") +
-	ggtitle("Lethbridge") +
-	theme(aspect.ratio = 1)
+```{r, message=FALSE, warning=FALSE, fig.width = 8, fig.height = 8, echo=FALSE}
+make_normal_plot("Lethbridge")
 ```
 
 ### Ottawa
 
 The DSM initial C estimate does not work as well for our Ottawa data - there are large 40-50% increases in SOC from the initial C to the first measured value.
-I suspect this is because I am setting the initial C year to the year before the first measurement.
-
-These values would work better if we consider this to be the initial C ~10 years before the beginning of the experiment. This is shown in blue.
 
 The CMods initial estimates are a bit more realistic, because they show a sudden SOC decrease following the beginning of the experiment.
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
-ottawa_increase <- site_data_all_joined %>%
-	filter(location_name == "Ottawa") %>%
-	group_by(treatment_name) %>%
-	mutate(first_soc = first(soc_30cm_naive),
-				 first_soc_year = first(year_name)) %>%
-	select(treatment_name, first_soc, first_soc_year, initial_dsm, initial_soc_year) %>%
-	unique %>%
-	mutate(increase = first_soc - initial_dsm,
-				 increase_per_year = increase / (first_soc_year - initial_soc_year),
-				 fraction_increase = increase/initial_dsm,
-				 fraction_increase_per_year = fraction_increase / (first_soc_year - initial_soc_year),
-				 sign = ifelse(fraction_increase_per_year<0, "-", "+"),
-				 
-				 recommended_initial_soc_year = initial_soc_year-10,
-				 recommended_increase_per_year = increase / (first_soc_year - recommended_initial_soc_year),
-				 recommended_fraction_increase_per_year = recommended_increase_per_year/initial_dsm)
 
-site_data_all_joined %>%
-	filter(location_name == "Ottawa") %>%
-	pivot_longer(c("soc_30cm_naive", "soc_30cm_dynamic_control"), names_to="soc_method", values_to="soc") %>%
-	pivot_longer(c("initial_dsm", "initial_cmods"), names_to="initial_method", values_to="initial") %>%
-	ggplot(aes(x=year_name, y=soc_30cm_naive)) +
-	geom_segment(data=ottawa_increase, aes(y=initial_dsm, x=initial_soc_year, yend=first_soc, xend=first_soc_year), color="red",
-							 arrow = arrow(length = unit(0.1, "inches"))) +
-	geom_text(data=ottawa_increase, aes(x=first_soc_year, y=first_soc, label=paste0(sign,round(increase_per_year, 2)," Mg/ha/yr\n",sign,round(fraction_increase_per_year,2)*100, "%/yr")),
-						color="red", hjust=-0.1) +
-	geom_segment(data=ottawa_increase, aes(y=initial_dsm, x=recommended_initial_soc_year, yend=first_soc, xend=first_soc_year), color="blue",
-							 arrow = arrow(length = unit(0.1, "inches"))) +
-	geom_text(data=ottawa_increase, aes(x=recommended_initial_soc_year, y=initial_dsm, label=paste0(sign,round(recommended_increase_per_year, 2)," Mg/ha/yr\n",sign,round(recommended_fraction_increase_per_year,2)*100, "%/yr")),
-						color="blue", hjust=-0.1, vjust=0) +
-	geom_point(aes(y=soc, color=soc_method), alpha=0.7) +
-	geom_point(aes(y=initial, shape=initial_method, x=initial_soc_year), color="red") +
-	theme_bw() +
-	facet_wrap(vars(treatment_name)) +
-	ylab("SOC (Mg/ha)") +
-	xlab("Year") +
-	ggtitle("Ottawa") +
-	theme(aspect.ratio = 1)
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+make_normal_plot("Ottawa")
 ```
 
 ### Scott
 
-The DSM initial C values do not work very well for the Scott experiments.
-These are very large increases between the initial C value and the first measurement of SOC.
+Using the DSM initial estimates along with the dynamic approach makes the data for Scott more realistic.
 
-More reasonable increases (about +5%/year) are seen if we instead assume that the initial C represents the case 15 years before the first SOC measurement in the experiment (shown in blue).
-
-SOC measurements in Scott are taken at depths 0-7.5, 7.5-15, and 0-15cm.
-We gap-filled these values to 0-30cm using the equation above.
 ```{r, message=FALSE, warning=FALSE, fig.width = 10, fig.height = 10, echo=FALSE}
-scott_increase <- site_data_all_joined %>%
-	filter(location_name == "Scott") %>%
-	group_by_all() %>%
-	summarise_all(mean) %>%
-	group_by(treatment_name) %>%
-	mutate(first_soc = first(soc_30cm_naive),
-				 first_soc_year = first(year_name)) %>%
-	select(treatment_name, first_soc, first_soc_year, initial_dsm, initial_soc_year) %>%
-	unique %>%
-	mutate(increase = first_soc - initial_dsm,
-				 increase_per_year = increase / (first_soc_year - initial_soc_year),
-				 fraction_increase = increase/initial_dsm,
-				 fraction_increase_per_year = fraction_increase / (first_soc_year - initial_soc_year),
-				 sign = ifelse(fraction_increase_per_year<0, "-", "+"),
-				 
-				 recommended_initial_soc_year = initial_soc_year-15,
-				 recommended_increase_per_year = increase / (first_soc_year - recommended_initial_soc_year),
-				 recommended_fraction_increase_per_year = recommended_increase_per_year/initial_dsm)
-
-site_data_all_joined %>%
-	filter(location_name == "Scott") %>%
-	group_by_all() %>%
-	summarise_all(mean) %>%
-	pivot_longer(c("soc_30cm_naive", "soc_30cm_dynamic_control"), names_to="soc_method", values_to="soc") %>%
-		pivot_longer(c("initial_dsm", "initial_cmods"), names_to="initial_method", values_to="initial") %>%
-
-	ggplot(aes(x=year_name, y=soc_30cm_naive)) +
-	geom_segment(data=scott_increase, aes(y=initial_dsm, x=initial_soc_year, yend=first_soc, xend=first_soc_year), color="red",
-							 arrow = arrow(length = unit(0.1, "inches"))) +
-	geom_text(data=scott_increase, aes(x=first_soc_year, y=first_soc, label=paste0(sign,round(increase_per_year, 2)," Mg/ha/yr\n",sign,round(fraction_increase_per_year,2)*100, "%/yr")),
-						color="red", hjust=-0.1, size=3) +
-	geom_segment(data=scott_increase, aes(y=initial_dsm, x=recommended_initial_soc_year, yend=first_soc, xend=first_soc_year), color="blue",
-							 arrow = arrow(length = unit(0.1, "inches"))) +
-	geom_text(data=scott_increase, aes(x=recommended_initial_soc_year, y=initial_dsm, label=paste0(sign,round(recommended_increase_per_year, 2)," Mg/ha/yr\n",sign,round(recommended_fraction_increase_per_year,2)*100, "%/yr")),
-						color="blue", hjust=-0.1, vjust=0, size=3) +
-	geom_point(aes(y=soc, color=soc_method), alpha=0.7) +
-	geom_point(aes(y=initial, shape=initial_method, x=initial_soc_year), color="red") +
-	theme_bw() +
-	facet_wrap(vars(treatment_name)) +
-	ylab("SOC (Mg/ha)") +
-	xlab("Year") +
-	ggtitle("Scott") +
-	theme(aspect.ratio = 1)
+make_normal_plot("Scott")
 ```
 
 ### Swift Current New
 
-The DSM initial C values do not work very well for the Swift Current New experiments, however they are large improvements over the CMods estimates.
-These are very large increases between the initial C value and the first measurement of SOC.
+The DSM initial C values work very well for the Swift Current New experiments, and they are large improvements over the CMods estimates.
 
-More realistic values of % C increase (about 2-3% MgC/ha/yr) if we assume that the initial C value represents the SOC at 10 years before the beginning of the experiment (shown in blue).
-```{r, message=FALSE, warning=FALSE, fig.width = 10, fig.height = 10, echo=FALSE}
-swiftcurrentnew_increase <- site_data_all_joined %>%
-	filter(location_name == "Swift Current New") %>%
-	group_by_all() %>%
-	summarise_all(mean) %>%
-	group_by(treatment_name) %>%
-	mutate(first_soc = first(soc_30cm_naive),
-				 first_soc_year = first(year_name)) %>%
-	select(treatment_name, first_soc, first_soc_year, initial_dsm, initial_soc_year) %>%
-	unique %>%
-	mutate(increase = first_soc - initial_dsm,
-				 increase_per_year = increase / (first_soc_year - initial_soc_year),
-				 fraction_increase = increase/initial_dsm,
-				 fraction_increase_per_year = fraction_increase / (first_soc_year - initial_soc_year),
-				 sign = ifelse(fraction_increase_per_year<0, "-", "+"),
-				 
-				 recommended_initial_soc_year = initial_soc_year-10,
-				 recommended_increase_per_year = increase / (first_soc_year - recommended_initial_soc_year),
-				 recommended_fraction_increase_per_year = recommended_increase_per_year/initial_dsm) %>%
-	summarise_all(first)
+Additionally, the dynamic approach to SOC correction seems to agree much better with the DSM estimates compared to the naive approach.
 
-site_data_all_joined %>%
-	filter(location_name == "Swift Current New") %>%
-	group_by_all() %>%
-	summarise_all(mean) %>%
-	pivot_longer(c("soc_30cm_naive", "soc_30cm_dynamic_control"), names_to="soc_method", values_to="soc") %>%
-	
-		pivot_longer(c("initial_dsm", "initial_cmods"), names_to="initial_method", values_to="initial") %>%
-ggplot(aes(x=year_name, y=soc_30cm_naive)) +
-	geom_segment(data=swiftcurrentnew_increase, aes(y=initial_dsm, x=initial_soc_year, yend=first_soc, xend=first_soc_year), color="red",
-							 arrow = arrow(length = unit(0.1, "inches"))) +
-	geom_text(data=swiftcurrentnew_increase, aes(x=first_soc_year, y=first_soc, label=paste0(sign,round(increase_per_year, 2)," Mg/ha/yr\n",sign,round(fraction_increase_per_year,2)*100, "%/yr")),
-						color="red", hjust=-0.1) +
-	geom_segment(data=swiftcurrentnew_increase, aes(y=initial_dsm, x=recommended_initial_soc_year, yend=first_soc, xend=first_soc_year), color="blue",
-							 arrow = arrow(length = unit(0.1, "inches"))) +
-	geom_text(data=swiftcurrentnew_increase, aes(x=recommended_initial_soc_year, y=initial_dsm, label=paste0(sign,round(recommended_increase_per_year, 2)," Mg/ha/yr\n",sign,round(recommended_fraction_increase_per_year,2)*100, "%/yr")),
-						color="blue", hjust=-0.1, vjust=0) +
-	geom_point(aes(y=soc, color=soc_method), alpha=0.7) +
-	geom_point(aes(y=initial, shape=initial_method, x=initial_soc_year), color="red") +
-	theme_bw() +
-	facet_wrap(vars(treatment_name)) +
-	ylab("SOC (Mg/ha)") +
-	xlab("Year") +
-	ggtitle("Swift Current New") +
-	theme(aspect.ratio = 1)
+```{r, message=FALSE, warning=FALSE, fig.width = 8, fig.height = 8, echo=FALSE}
+make_normal_plot("Swift Current New")
 ```
 
 ### Swift Current Old
 
 The DSM initial C estimates generally work well for Swift Current Old, and are also large improvements over the CMods estimates.
-Most treatments see increases of about +1-4% MgC/ha/yr SOC from the initial C estimate to the first year of SOC sampling.
 
-There are, however, some instances where this increase is in the range of 10-15%, which is less realistic.
-These instances of large increases are the result of my assumption that the initial C is one year before the beginning of the experiment.
-If we follow another assumption to decide the initial C year, then we might achieve more realistic changes in SOC at the beginning of the experiment.
-
-Using the dynamic method to correct SOC measurements boosts the SOC levels in these fields. This causes the initial SOC estimates to seem more unrealistic.
+Using the dynamic method to correct SOC measurements is completely equivalent to using the naive approach.
 
 ```{r, message=FALSE, warning=FALSE, fig.width = 10, fig.height = 10, echo=FALSE}
-swiftcurrentold_increase <- site_data_all_joined %>%
-	filter(location_name == "Swift Current Old") %>%
-	group_by_all() %>%
-	group_by(treatment_name) %>%
-	mutate(first_soc = first(soc_30cm_naive),
-				 first_soc_year = first(year_name)) %>%
-	select(treatment_name, first_soc, first_soc_year, initial_dsm, initial_soc_year) %>%
-	unique %>%
-	mutate(increase = first_soc - initial_dsm,
-				 increase_per_year = increase / (first_soc_year - initial_soc_year),
-				 fraction_increase = increase/initial_dsm,
-				 fraction_increase_per_year = fraction_increase / (first_soc_year - initial_soc_year),
-				 sign = ifelse(fraction_increase_per_year<0, "-", "+")) %>%
-	summarise_all(first)
-
-site_data_all_joined %>%
-	filter(location_name == "Swift Current Old") %>%
-	group_by_all() %>%
-	summarise_all(mean) %>%
-	pivot_longer(c("soc_30cm_naive", "soc_30cm_dynamic_control"), names_to="soc_method", values_to="soc") %>%
-		pivot_longer(c("initial_dsm", "initial_cmods"), names_to="initial_method", values_to="initial") %>%
-ggplot(aes(x=year_name, y=soc_30cm_naive)) +
-	geom_segment(data=swiftcurrentold_increase, aes(y=initial_dsm, x=initial_soc_year, yend=first_soc, xend=first_soc_year), color="red",
-							 arrow = arrow(length = unit(0.1, "inches"))) +
-	geom_text(data=swiftcurrentold_increase, aes(hjust=ifelse(first_soc_year < 2000, -0.1, 1.1), x=first_soc_year, y=first_soc, label=paste0(sign,round(increase_per_year, 2)," Mg/ha/yr\n",sign,round(fraction_increase_per_year,2)*100, "%/yr")),
-						color="red") +
-	geom_point(aes(y=soc, color=soc_method), alpha=0.7) +
-	geom_point(aes(y=initial, shape=initial_method, x=initial_soc_year), color="red") +
-	theme_bw() +
-	facet_wrap(vars(treatment_name)) +
-	ylab("SOC (Mg/ha)") +
-	xlab("Year") +
-	ggtitle("Swift Current Old") +
-	theme(aspect.ratio = 1)
+make_normal_plot("Swift Current Old")
 ```
