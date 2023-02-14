@@ -306,6 +306,13 @@ The DSM estimates are further away from the first measured value than the CMods 
 make_normal_plot("Harrow")
 ```
 
+### Indian Head
+Both estimates of initial C are realistic for Harrow.
+The DSM estimates are further away from the first measured value than the CMods initial estimates.
+```{r, message=FALSE, warning=FALSE, fig.width = 6, fig.height = 6, echo=FALSE}
+make_normal_plot("Indian Head")
+```
+
 
 ### Lethbridge
 
