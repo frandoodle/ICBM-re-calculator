@@ -31,7 +31,7 @@ source(here("r/make_depth_groups.r"))
 ```
 
 ```{r, results='hide', message=FALSE, warning=FALSE, include=FALSE}
-site_data_all <- readr::read_csv(here("data/lte_master_beta_dec02.csv")) %>%
+site_data_1_all <- readr::read_csv(here("data/lte_master_beta_dec02.csv")) %>%
 	mutate(soil_depth = paste0(soil_depth_min_cm,"-",soil_depth_max_cm))
 
 initialc_dsm <- readr::read_csv(here("data/lte_soc_30_cm_dsm.csv")) %>%
@@ -99,7 +99,7 @@ In order to handle this, I made a function `make_depth_groups` which makes a dat
 In order to avoid duplicating data which could affect the statistical properties of simulations, we find the average SOC between possible depth groupings.
 
 ```{r message=FALSE, warning=FALSE, results='hide'}
-site_data_depth_groups <- site_data_all %>%
+site_data_2_depth_groups <- site_data_1_all %>%
 	full_join(initialc_dsm, by=c("location_name")) %>%
 	full_join(initialc_cmods, by="location_name") %>%
 	select(Exp_ID, location_name, treatment_number,treatment_name, year_name, replication_number, soil_depth, soil_depth_min_cm, soil_depth_max_cm,
@@ -121,7 +121,7 @@ Now we add different estimates of initial C. These come from the digital soil ma
 We assume that the DSM estimates are from the year 1999 or earlier, and if the first measures SOC event for that experiment is before 1999 we choose the first year before that measurement as the initial SOC estimate year.
 
 ```{r}
-site_data_joined <- site_data_depth_groups %>%
+site_data_3_joined <- site_data_2_depth_groups %>%
 	left_join(initialc_dsm, by=c("location_name")) %>%
 	left_join(initialc_cmods, by="location_name") %>%
 	select(Exp_ID, location_name, treatment_number,treatment_name, year_name, lowest_depth, soil_depth,
@@ -133,23 +133,10 @@ site_data_joined <- site_data_depth_groups %>%
 
 ```
 
-<!-- We need to handle situations where different lowest depths are measured within the same treatment/site. This will mean that multiple estimates of the DSM difference (DSM initial C - first measured C) will need to be obtained for different depth ranges. -->
-
-<!-- ```{r} -->
-<!-- site_data_depth_ranges <- site_data_joined %>% -->
-<!-- 	group_by(Exp_ID, location_name, treatment_number, treatment_name, soil_depth) %>% -->
-<!-- 	filter(year_name == first(year_name)) %>% -->
-<!-- 	filter(soil_depth_min_cm == 0) -->
-<!-- 	filter(soil_depth_max_cm == lowest_depth) -->
-
-<!-- 	mutate(dsm_diff = initial_dsm - first(soc_tha)) -->
-
-<!-- ``` -->
-
 Now we sum each of the depths for each depth group in order to arrive at the total SOC for the lowest measured depth.
 
 ```{r}
-site_data_summed <- site_data_joined %>%
+site_data_4_summed <- site_data_3_joined %>%
 	group_by(Exp_ID, location_name, year_name, treatment_number, treatment_name, initial_dataset, initial_dsm, initial_cmods, initial_soc_year, initial_soc_year_dsm, combination_group, lowest_depth) %>%
 	summarise(soc_tha_lowest_depth = sum(soc_tha)) %>%
 	# Get mean values for each combination group to remove duplicates
@@ -165,22 +152,52 @@ However, if less or more than 30cm is measured in total, then we need to perform
 
 In order to do this, we find the difference between the initial DSM estimate for the site/treatment, and find the difference between that and the first SOC measurements for that site_treatment. Then, we just add that difference to each measurement of SOC for the site/treatment.
 
-```{r}
-site_data_corrected <- site_data_summed %>%
+Furthermore, we perform some additional gap-filling for cases where only 0-15cm was measured even though 0-30cm was measured for the rest of the site. We handle this by getting the average value of the 15-30cm measurement and adding this to the 0-15cm value.
+
+```{r message=FALSE, warning=FALSE}
+fifteenthirty <- site_data_3_joined %>%
+	select(-combination_group) %>%
+	filter(soil_depth == "15-30") %>%
+	unique() %>%
+	rename(id = Exp_ID,
+				 loc = location_name,
+				 year = year_name,
+				 trmt = treatment_name)
+
+site_data_5_corrected <- site_data_4_summed %>%
 	group_by(Exp_ID, location_name, treatment_number, treatment_name) %>%
+	# If we are missing the 15-30cm measurement, then calculate the average value of the 15-30cm of the points surrounding the gaps.
+	mutate(fifteen_to_thirty_average_additional = ifelse(max(cur_data()$lowest_depth) == 30 &
+																											 	lowest_depth != max(cur_data()$lowest_depth),
+																											 mean(
+																											 	c(
+																											 		fifteenthirty %>%
+																											 			filter(id == Exp_ID,
+																											 						 trmt == treatment_name) %>%
+																											 			filter(year == min(unique(year[year > year_name]))) %>%
+																											 			pull(soc_tha),
+																											 		fifteenthirty %>%
+																											 			filter(id == Exp_ID,
+																											 						 trmt == treatment_name) %>%
+																											 			filter(year == min(unique(year[year < year_name]))) %>%
+																											 			pull(soc_tha)
+																											 	)),
+																											 
+																											 0)) %>%
+	# Perform corrections
 	mutate(first_soc_treatment = first(soc_tha_lowest_depth),
 				 soc_dsm_difference = initial_dsm - first_soc_treatment,
 				 lowest_depth_difference = 30 - lowest_depth,
 				 soc_30cm_dynamic = ifelse(lowest_depth_difference != 0,
-				 											soc_tha_lowest_depth + soc_dsm_difference,
-				 											soc_tha_lowest_depth)) %>%
+				 													soc_tha_lowest_depth + soc_dsm_difference + fifteen_to_thirty_average_additional,
+				 													soc_tha_lowest_depth + fifteen_to_thirty_average_additional)) %>%
 	mutate(soc_30cm_naive = soc_tha_lowest_depth * (30/lowest_depth))
 ```
 
 ## Lethbridge 
 
 ```{r}
-site_data_corrected %>%
+site_data_5_corrected %>%
 	select(Exp_ID, location_name, treatment_name, year_name,
 				 initial_dsm, 
 				 soc_30cm_naive, soc_30cm_dynamic
@@ -205,7 +222,7 @@ There is no difference between the dynamic approach and the naive approach becau
 ## Ellerslie 
 
 ```{r}
-site_data_corrected %>%
+site_data_5_corrected %>%
 	select(Exp_ID, location_name, treatment_name, year_name,
 				 initial_dsm, soc_tha_lowest_depth,
 				 soc_30cm_naive, soc_30cm_dynamic
@@ -249,7 +266,7 @@ Looking at all the sites, we can see that the DSM initial estimates seem to gene
 Additionally, it appears that in many cases (e.g. Ellerslie) the dynamic SOC estimation method leads to SOC values that seem more realistic within the context of the DSM initial C estimates.
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE, fig.width=7, fig.height=7}
-site_data_corrected %>%
+site_data_5_corrected %>%
 	pivot_longer(c("soc_30cm_naive", "soc_30cm_dynamic"), names_to="soc_method", values_to="soc") %>%
 	pivot_longer(c("initial_dsm", "initial_cmods"), names_to="initial_method", values_to="initial") %>%
 	ggplot(aes(x=year_name)) +
@@ -258,10 +275,10 @@ site_data_corrected %>%
 	theme_bw() +
 	facet_wrap(vars(location_name)) +
 	labs(x = "Year", y = "SOC (Mg/ha)",
-				 color = "Depth \ncorrection \nmethod", shape = "Initial C \nestimation \nmethod") +
+			 color = "Depth \ncorrection \nmethod", shape = "Initial C \nestimation \nmethod") +
 	theme(aspect.ratio = 1) +
 	scale_color_manual(labels = c("Dynamic", "Naive"), values = c("blue", "red")) +
-		scale_shape_manual(labels = c("CMods", "DSM"), values = c("square", "triangle"))
+	scale_shape_manual(labels = c("CMods", "DSM"), values = c("square", "triangle"))
 ```
 
 
@@ -269,9 +286,9 @@ site_data_corrected %>%
 ```{r include=FALSE}
 
 make_normal_plot <- function(location) {
-	site_data_corrected %>%
+	site_data_5_corrected %>%
 		filter(location_name == location) %>%
-		pivot_longer(c("soc_30cm_naive", "soc_30cm_dynamic"), names_to="soc_method", values_to="soc") %>%
+		pivot_longer(c("soc_30cm_naive", "soc_30cm_dynamic", "soc_tha_lowest_depth"), names_to="soc_method", values_to="soc") %>%
 		pivot_longer(c("initial_dsm", "initial_cmods"), names_to="initial_method", values_to="initial") %>%
 		ggplot(aes(x=year_name, y=soc_30cm_naive)) +
 		geom_point(aes(y=soc, color=soc_method), alpha=0.2) +
@@ -281,7 +298,7 @@ make_normal_plot <- function(location) {
 		labs(title = location, x = "Year", y = "SOC (Mg/ha)",
 				 color = "Depth \ncorrection \nmethod", shape = "Initial C \nestimation \nmethod") +
 		theme(aspect.ratio = 1) +
-		scale_color_manual(labels = c("Dynamic", "Naive"), values = c("blue", "red")) +
+		scale_color_manual(labels = c("Dynamic", "Naive", "Uncorrected"), values = c("blue", "red", "#666666")) +
 		scale_shape_manual(labels = c("CMods", "DSM"), values = c("square", "triangle"))
 	
 }
