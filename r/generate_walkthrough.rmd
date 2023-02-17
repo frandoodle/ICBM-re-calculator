@@ -7,15 +7,11 @@ output:
     toc: true
     number_sections: true
     df_print: paged
-  html_notebook:
-    toc: true
-    number_sections: true
-    df_print: paged
 bibliography: bib.bib
 editor_options:
   chunk_output_type: inline
 knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, encoding = encoding, output_dir = "doc") })
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "../doc", output_file = "walkthrough.html") })
 ---
 
 ```{r include=FALSE}
@@ -32,7 +28,7 @@ library(tidyr)
 
 dir.create(tempdir()) #This fixes a bug if the temporary directory is not found
 
-here::i_am("walkthrough_re.rmd")
+here::i_am("re.rproj")
 source(here::here("r/icbm_calculate_re.r"))
 
 ```
