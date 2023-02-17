@@ -1,4 +1,4 @@
-# ICBM-re-calculator
+# ICBM re calculator
 This is an R implementation of the ICBM re calculation
 
 All required inputs and calculation steps are demonstrated in doc/walkthrough.html
